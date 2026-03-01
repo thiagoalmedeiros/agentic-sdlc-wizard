@@ -5,7 +5,13 @@ Install and configure AI agents, prompts, and MCP servers for your IDE.
 ## Installation
 
 ```bash
-npm install -g agentic-sdlc-wizard
+uv tool install agentic-sdlc-wizard
+```
+
+Or install from source:
+
+```bash
+uv pip install -e .
 ```
 
 ## Usage
@@ -42,16 +48,31 @@ Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket). The server fil
 wizard install mcps
 ```
 
-The MCP servers run as local Node.js processes started via `node <path>/index.js`, making them available to Copilot and other AI tools through the standard MCP stdio protocol.
+The MCP servers are Python packages run via `uv run python -m <module>`, making them available to Copilot and other AI tools through the standard MCP stdio protocol.
 
 ## Project Structure
 
 ```
+wizard/              - Python CLI package
+  cli.py             - CLI entry point and argument routing
+  config.py          - Configuration management
+  commands/          - Command implementations
+    install.py       - IDE selection
+    install_agents.py  - Agent installation
+    install_prompts.py - Prompt installation
+    install_mcps.py    - MCP server installation
 templates/
-  agents/       - Agent definition markdown files
-  prompts/      - Prompt template markdown files
-  mcps/         - MCP server implementations
-    bitbucket-mcp/  - Bitbucket MCP server example
+  agents/            - Agent definition markdown files
+  prompts/           - Prompt template markdown files
+  mcps/              - MCP server implementations
+    bitbucket-mcp/   - Bitbucket MCP server (Python, pyproject.toml)
+```
+
+## Development
+
+```bash
+uv sync
+uv run pytest
 ```
 
 ## License
