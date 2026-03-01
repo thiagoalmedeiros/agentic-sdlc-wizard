@@ -64,7 +64,7 @@ async function installMcps() {
 
       const envEntries = {};
       for (const param of envParams) {
-        envEntries[param.name] = `\${input:${param.name}}`;
+        envEntries[param.name] = '${input:' + param.name + '}';
       }
 
       mcpConfig.servers[mcpName] = {
