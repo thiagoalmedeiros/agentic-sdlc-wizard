@@ -1,8 +1,5 @@
 """Bitbucket MCP server."""
 
-import json
-import sys
-
 from .server import McpServer
 
 
