@@ -1,0 +1,28 @@
+{
+  "name": "agentic-sdlc-wizard",
+  "version": "1.0.0",
+  "description": "Agentic SDLC Wizard - Install and configure AI agents, prompts, and MCP servers for your IDE",
+  "main": "src/cli.js",
+  "bin": {
+    "wizard": "./bin/wizard.js"
+  },
+  "scripts": {
+    "test": "node --test tests/**/*.test.js"
+  },
+  "keywords": [
+    "agentic",
+    "sdlc",
+    "wizard",
+    "copilot",
+    "agents",
+    "mcp",
+    "vscode",
+    "antigravity"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^13.1.0",
+    "fs-extra": "^11.3.0",
+    "inquirer": "^12.4.2"
+  }
+}

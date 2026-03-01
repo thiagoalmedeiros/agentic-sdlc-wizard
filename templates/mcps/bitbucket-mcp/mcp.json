@@ -1,0 +1,23 @@
+{
+  "name": "bitbucket-mcp",
+  "version": "1.0.0",
+  "description": "Bitbucket MCP server for agentic SDLC",
+  "main": "index.js",
+  "envParams": [
+    {
+      "name": "BITBUCKET_URL",
+      "description": "Bitbucket server URL",
+      "required": true
+    },
+    {
+      "name": "BITBUCKET_TOKEN",
+      "description": "Bitbucket personal access token",
+      "required": true
+    },
+    {
+      "name": "BITBUCKET_USERNAME",
+      "description": "Bitbucket username",
+      "required": false
+    }
+  ]
+}
