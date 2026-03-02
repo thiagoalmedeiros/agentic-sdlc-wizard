@@ -1,0 +1,9 @@
+node_modules/
+.test-workspace/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+.venv/
+uv.lock
+.pytest_cache/
