@@ -16,6 +16,8 @@ const {
   getIdeAgentsTarget,
   getIdePromptsTarget,
   getMcpConfigPath,
+  getGitignorePath,
+  updateGitignore,
 } = require("../src/config");
 
 let testDir;
@@ -66,7 +68,7 @@ test("getIdeAgentsTarget for vscode", () => {
 test("getIdeAgentsTarget for antigravity", () => {
   const targets = getIdeAgentsTarget(testDir, [IDE_ANTIGRAVITY]);
   expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".antigravity", "agents")
+    path.join(testDir, ".gemini", "agents")
   );
   expect(targets[IDE_VSCODE]).toBeUndefined();
 });
@@ -75,7 +77,7 @@ test("getIdeAgentsTarget for both", () => {
   const targets = getIdeAgentsTarget(testDir, [IDE_VSCODE, IDE_ANTIGRAVITY]);
   expect(targets[IDE_VSCODE]).toBe(path.join(testDir, ".vscode", "agents"));
   expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".antigravity", "agents")
+    path.join(testDir, ".gemini", "agents")
   );
 });
 
@@ -87,7 +89,7 @@ test("getIdePromptsTarget for vscode", () => {
 test("getIdePromptsTarget for antigravity", () => {
   const targets = getIdePromptsTarget(testDir, [IDE_ANTIGRAVITY]);
   expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".antigravity", "prompts")
+    path.join(testDir, ".gemini", "prompts")
   );
 });
 
@@ -99,10 +101,45 @@ test("getMcpConfigPath for vscode", () => {
 
 test("getMcpConfigPath for antigravity", () => {
   expect(getMcpConfigPath(testDir, IDE_ANTIGRAVITY)).toBe(
-    path.join(testDir, ".antigravity", "mcp.json")
+    path.join(testDir, ".gemini", "mcp.json")
   );
 });
 
 test("getMcpConfigPath for unknown returns null", () => {
   expect(getMcpConfigPath(testDir, "unknown")).toBeNull();
+});
+
+test("getGitignorePath returns path with .gitignore", () => {
+  expect(getGitignorePath(testDir)).toBe(path.join(testDir, ".gitignore"));
+});
+
+test("updateGitignore creates .gitignore when missing", () => {
+  updateGitignore(testDir, [".vscode/agents/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  expect(content).toContain(".vscode/agents/");
+});
+
+test("updateGitignore appends new entries", () => {
+  fs.writeFileSync(path.join(testDir, ".gitignore"), "node_modules/\n");
+  updateGitignore(testDir, [".vscode/agents/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  expect(content).toContain("node_modules/");
+  expect(content).toContain(".vscode/agents/");
+});
+
+test("updateGitignore skips existing entries", () => {
+  fs.writeFileSync(path.join(testDir, ".gitignore"), ".vscode/agents/\n");
+  updateGitignore(testDir, [".vscode/agents/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  const occurrences = content
+    .split("\n")
+    .filter((l) => l.trim() === ".vscode/agents/").length;
+  expect(occurrences).toBe(1);
+});
+
+test("updateGitignore adds multiple entries at once", () => {
+  updateGitignore(testDir, [".vscode/mcp.json", ".wizard-mcps/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  expect(content).toContain(".vscode/mcp.json");
+  expect(content).toContain(".wizard-mcps/");
 });

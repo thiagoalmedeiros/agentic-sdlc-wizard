@@ -48,7 +48,7 @@ describe("InstallAgents", () => {
     const agentsDir = getAgentsDir();
     const files = fs.readdirSync(agentsDir).filter((f) => f.endsWith(".md"));
 
-    const targetDir = path.join(testDir, ".antigravity", "agents");
+    const targetDir = path.join(testDir, ".gemini", "agents");
     fs.mkdirSync(targetDir, { recursive: true });
     for (const f of files) {
       fs.copyFileSync(path.join(agentsDir, f), path.join(targetDir, f));
@@ -107,7 +107,11 @@ describe("InstallMcps", () => {
 
     const envEntries = {};
     for (const param of mcpMeta.env) {
-      envEntries[param.name] = "${input:" + param.name + "}";
+      if (param.default !== undefined) {
+        envEntries[param.name] = param.default;
+      } else {
+        envEntries[param.name] = "${input:" + param.name + "}";
+      }
     }
 
     const mcpConfig = {
@@ -115,7 +119,7 @@ describe("InstallMcps", () => {
         [mcpName]: {
           type: "stdio",
           command: "node",
-          args: [path.join(mcpDestDir, "server.js")],
+          args: [path.relative(testDir, path.join(mcpDestDir, "server.js"))],
           env: envEntries,
         },
       },
@@ -131,8 +135,11 @@ describe("InstallMcps", () => {
     expect(written.servers[mcpName]).toBeDefined();
     expect(written.servers[mcpName].type).toBe("stdio");
     expect(written.servers[mcpName].command).toBe("node");
-    expect(written.servers[mcpName].env.BITBUCKET_URL).toBeDefined();
+    expect(written.servers[mcpName].env.BITBUCKET_URL).toBe(
+      "https://api.bitbucket.org/2.0"
+    );
     expect(written.servers[mcpName].env.BITBUCKET_TOKEN).toBeDefined();
+    expect(path.isAbsolute(written.servers[mcpName].args[0])).toBe(false);
   });
 
   test("merge with existing mcp config", () => {
@@ -173,7 +180,8 @@ describe("ReadMcpConfig", () => {
 
     expect(config.env.length).toBe(3);
     expect(config.env[0].name).toBe("BITBUCKET_URL");
-    expect(config.env[0].required).toBe(true);
+    expect(config.env[0].required).toBe(false);
+    expect(config.env[0].default).toBe("https://api.bitbucket.org/2.0");
     expect(config.env[1].name).toBe("BITBUCKET_TOKEN");
     expect(config.env[1].required).toBe(true);
     expect(config.env[2].name).toBe("BITBUCKET_USERNAME");
@@ -287,12 +295,38 @@ describe("InstallAll", () => {
       )
     ).toBe(true);
 
+    // Verify relative path is used for bitbucket MCP args
+    const bitbucketArgs = mcpConfig.servers["bitbucket-mcp"].args;
+    expect(bitbucketArgs.length).toBe(1);
+    expect(path.isAbsolute(bitbucketArgs[0])).toBe(false);
+    expect(bitbucketArgs[0]).toBe(
+      path.join(".wizard-mcps", "bitbucket-mcp", "server.js")
+    );
+
+    // Verify BITBUCKET_URL uses default value (not input prompt)
+    expect(mcpConfig.servers["bitbucket-mcp"].env.BITBUCKET_URL).toBe(
+      "https://api.bitbucket.org/2.0"
+    );
+    expect(mcpConfig.servers["bitbucket-mcp"].env.BITBUCKET_TOKEN).toBe(
+      "${input:BITBUCKET_TOKEN}"
+    );
+
     // Brave Search uses npx (standard npm package, no files copied)
     expect(mcpConfig.servers["brave-search-mcp"]).toBeDefined();
     expect(mcpConfig.servers["brave-search-mcp"].command).toBe("npx");
     expect(
       fs.existsSync(path.join(testDir, ".wizard-mcps", "brave-search-mcp"))
     ).toBe(false);
+
+    // Verify .gitignore was updated with installed paths
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    expect(gitignore).toContain(".vscode/agents/");
+    expect(gitignore).toContain(".vscode/prompts/");
+    expect(gitignore).toContain(".vscode/mcp.json");
+    expect(gitignore).toContain(".wizard-mcps/");
   });
 
   test("install all with no config shows message", () => {
@@ -308,5 +342,52 @@ describe("InstallAll", () => {
     expect(logs.some((l) => l.includes("No wizard configuration found"))).toBe(
       true
     );
+  });
+});
+
+describe("Gitignore", () => {
+  test("install MCPs updates .gitignore with mcp config and wizard-mcps", () => {
+    writeConfig(testDir, { ides: [IDE_VSCODE] });
+    const { installSelectedMcps } = require("../src/commands/install-mcps");
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    expect(gitignore).toContain(".vscode/mcp.json");
+    expect(gitignore).toContain(".wizard-mcps/");
+  });
+
+  test("install MCPs does not duplicate .gitignore entries on re-run", () => {
+    writeConfig(testDir, { ides: [IDE_VSCODE] });
+    const { installSelectedMcps } = require("../src/commands/install-mcps");
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    const lines = gitignore.split("\n").filter((l) => l.trim() !== "");
+    const mcpJsonEntries = lines.filter((l) => l === ".vscode/mcp.json");
+    expect(mcpJsonEntries.length).toBe(1);
+  });
+
+  test("install MCPs for antigravity updates .gitignore with gemini paths", () => {
+    writeConfig(testDir, { ides: [IDE_ANTIGRAVITY] });
+    const { installSelectedMcps } = require("../src/commands/install-mcps");
+    installSelectedMcps(
+      testDir,
+      { ides: [IDE_ANTIGRAVITY] },
+      ["brave-search-mcp"]
+    );
+
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    expect(gitignore).toContain(".gemini/mcp.json");
+    expect(gitignore).toContain(".wizard-mcps/");
   });
 });

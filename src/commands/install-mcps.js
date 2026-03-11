@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { getMcpsDir, getMcpConfigPath, readConfig } = require("../config");
+const { getMcpsDir, getMcpConfigPath, readConfig, updateGitignore } = require("../config");
 
 function copyDirSync(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
@@ -83,7 +83,11 @@ function installSelectedMcps(cwd, config, selected) {
 
       const envEntries = {};
       for (const param of envParams) {
-        envEntries[param.name] = "${input:" + param.name + "}";
+        if (param.default !== undefined) {
+          envEntries[param.name] = param.default;
+        } else {
+          envEntries[param.name] = "${input:" + param.name + "}";
+        }
       }
 
       const command = mcpMeta.command || "node";
@@ -104,7 +108,7 @@ function installSelectedMcps(cwd, config, selected) {
         mcpConfig.servers[mcpName] = {
           type: "stdio",
           command: "node",
-          args: [path.join(mcpDestDir, module)],
+          args: [path.relative(cwd, path.join(mcpDestDir, module))],
           env: envEntries,
         };
       }
@@ -112,9 +116,9 @@ function installSelectedMcps(cwd, config, selected) {
 
     fs.mkdirSync(path.dirname(mcpConfigPath), { recursive: true });
     fs.writeFileSync(mcpConfigPath, JSON.stringify(mcpConfig, null, 2));
-    console.log(
-      `MCP configuration written to ${path.relative(cwd, mcpConfigPath)}`
-    );
+    const relMcpConfig = path.relative(cwd, mcpConfigPath);
+    updateGitignore(cwd, [relMcpConfig, ".wizard-mcps/"]);
+    console.log(`MCP configuration written to ${relMcpConfig}`);
   }
 
   console.log(

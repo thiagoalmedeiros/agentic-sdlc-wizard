@@ -9,6 +9,7 @@ const {
   getMcpsDir,
   getPromptsDir,
   readConfig,
+  updateGitignore,
 } = require("../config");
 const { installSelectedMcps } = require("./install-mcps");
 
@@ -48,7 +49,9 @@ function installAllAgents(cwd, config) {
       const dest = path.join(targetDir, agent);
       fs.copyFileSync(src, dest);
     }
-    console.log(`Agents installed to ${path.relative(cwd, targetDir)}/`);
+    const relDir = path.relative(cwd, targetDir);
+    updateGitignore(cwd, [relDir + "/"]);
+    console.log(`Agents installed to ${relDir}/`);
   }
 }
 
@@ -72,7 +75,9 @@ function installAllPrompts(cwd, config) {
       const dest = path.join(targetDir, prompt);
       fs.copyFileSync(src, dest);
     }
-    console.log(`Prompts installed to ${path.relative(cwd, targetDir)}/`);
+    const relDir = path.relative(cwd, targetDir);
+    updateGitignore(cwd, [relDir + "/"]);
+    console.log(`Prompts installed to ${relDir}/`);
   }
 }
 

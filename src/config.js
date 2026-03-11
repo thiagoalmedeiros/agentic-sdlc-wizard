@@ -49,7 +49,7 @@ function getIdeAgentsTarget(cwd, ides) {
     targets[IDE_VSCODE] = path.join(cwd, ".vscode", "agents");
   }
   if (ides.includes(IDE_ANTIGRAVITY)) {
-    targets[IDE_ANTIGRAVITY] = path.join(cwd, ".antigravity", "agents");
+    targets[IDE_ANTIGRAVITY] = path.join(cwd, ".gemini", "agents");
   }
   return targets;
 }
@@ -60,7 +60,7 @@ function getIdePromptsTarget(cwd, ides) {
     targets[IDE_VSCODE] = path.join(cwd, ".vscode", "prompts");
   }
   if (ides.includes(IDE_ANTIGRAVITY)) {
-    targets[IDE_ANTIGRAVITY] = path.join(cwd, ".antigravity", "prompts");
+    targets[IDE_ANTIGRAVITY] = path.join(cwd, ".gemini", "prompts");
   }
   return targets;
 }
@@ -70,9 +70,28 @@ function getMcpConfigPath(cwd, ide) {
     return path.join(cwd, ".vscode", "mcp.json");
   }
   if (ide === IDE_ANTIGRAVITY) {
-    return path.join(cwd, ".antigravity", "mcp.json");
+    return path.join(cwd, ".gemini", "mcp.json");
   }
   return null;
+}
+
+function getGitignorePath(cwd) {
+  return path.join(cwd, ".gitignore");
+}
+
+function updateGitignore(cwd, entries) {
+  const gitignorePath = getGitignorePath(cwd);
+  const existing = fs.existsSync(gitignorePath)
+    ? fs.readFileSync(gitignorePath, "utf-8")
+    : "";
+
+  const lines = existing.split("\n");
+  const toAdd = entries.filter((e) => !lines.some((l) => l.trim() === e.trim()));
+
+  if (toAdd.length === 0) return;
+
+  const prefix = existing.length > 0 && !existing.endsWith("\n") ? "\n" : "";
+  fs.writeFileSync(gitignorePath, existing + prefix + toAdd.join("\n") + "\n");
 }
 
 module.exports = {
@@ -90,4 +109,6 @@ module.exports = {
   getIdeAgentsTarget,
   getIdePromptsTarget,
   getMcpConfigPath,
+  getGitignorePath,
+  updateGitignore,
 };

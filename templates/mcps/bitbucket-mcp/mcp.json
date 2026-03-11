@@ -5,8 +5,9 @@
   "env": [
     {
       "name": "BITBUCKET_URL",
-      "description": "Bitbucket server URL",
-      "required": true
+      "description": "Bitbucket API URL",
+      "required": false,
+      "default": "https://api.bitbucket.org/2.0"
     },
     {
       "name": "BITBUCKET_TOKEN",

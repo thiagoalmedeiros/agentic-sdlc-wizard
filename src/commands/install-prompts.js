@@ -6,6 +6,7 @@ const {
   getPromptsDir,
   getIdePromptsTarget,
   readConfig,
+  updateGitignore,
 } = require("../config");
 
 async function installPromptsCommand(cwd) {
@@ -51,7 +52,9 @@ async function installPromptsCommand(cwd) {
       const dest = path.join(targetDir, prompt);
       fs.copyFileSync(src, dest);
     }
-    console.log(`Prompts installed to ${path.relative(cwd, targetDir)}/`);
+    const relDir = path.relative(cwd, targetDir);
+    updateGitignore(cwd, [relDir + "/"]);
+    console.log(`Prompts installed to ${relDir}/`);
   }
 }
 
