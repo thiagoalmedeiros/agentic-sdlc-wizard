@@ -4,6 +4,7 @@ import sys
 
 from wizard.commands.install import install_command
 from wizard.commands.install_agents import install_agents_command
+from wizard.commands.install_all import install_all_command
 from wizard.commands.install_mcps import install_mcps_command
 from wizard.commands.install_prompts import install_prompts_command
 
@@ -30,6 +31,8 @@ def main():
             install_prompts_command()
         elif sub == "mcps":
             install_mcps_command()
+        elif sub == "all":
+            install_all_command()
         elif sub in ("-h", "--help"):
             print_install_help()
         else:
@@ -69,6 +72,7 @@ def print_install_help():
         "  agents           Install AI agent definitions for your IDE\n"
         "  prompts          Install prompt templates for your IDE\n"
         "  mcps             Install and configure MCP servers for your IDE\n"
+        "  all              Install all agents, prompts, and MCP servers at once\n"
         "\n"
         "Options:\n"
         "  -h, --help       Show this help message"

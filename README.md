@@ -42,13 +42,21 @@ wizard install prompts
 
 ### 4. Install MCP servers
 
-Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket). The server files are copied locally and your IDE's `mcp.json` is configured automatically. Environment variables are referenced using `${input:VAR_NAME}` so the IDE can prompt for them.
+Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket, Brave Search). The server files are copied locally and your IDE's `mcp.json` is configured automatically. Environment variables are referenced using `${input:VAR_NAME}` so the IDE can prompt for them.
 
 ```bash
 wizard install mcps
 ```
 
 The MCP servers are Python packages run via `uv run python -m <module>`, making them available to Copilot and other AI tools through the standard MCP stdio protocol.
+
+### 5. Install everything at once
+
+Run `wizard install all` to install all available agents, prompts, and MCP servers at once without interactive selection.
+
+```bash
+wizard install all
+```
 
 ## Project Structure
 
@@ -66,6 +74,7 @@ templates/
   prompts/           - Prompt template markdown files
   mcps/              - MCP server implementations
     bitbucket-mcp/   - Bitbucket MCP server (Python, pyproject.toml)
+    brave-search-mcp/ - Brave Search MCP server (Python, pyproject.toml)
 ```
 
 ## Development
