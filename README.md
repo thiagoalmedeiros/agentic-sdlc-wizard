@@ -5,13 +5,14 @@ Install and configure AI agents, prompts, and MCP servers for your IDE.
 ## Installation
 
 ```bash
-uv tool install agentic-sdlc-wizard
+npm install -g agentic-sdlc-wizard
 ```
 
 Or install from source:
 
 ```bash
-uv pip install -e .
+npm install
+npm link
 ```
 
 ## Usage
@@ -42,37 +43,50 @@ wizard install prompts
 
 ### 4. Install MCP servers
 
-Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket). The server files are copied locally and your IDE's `mcp.json` is configured automatically. Environment variables are referenced using `${input:VAR_NAME}` so the IDE can prompt for them.
+Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket, Brave Search). Your IDE's `mcp.json` is configured automatically. Environment variables are referenced using `${input:VAR_NAME}` so the IDE can prompt for them.
 
 ```bash
 wizard install mcps
 ```
 
-The MCP servers are Python packages run via `uv run python -m <module>`, making them available to Copilot and other AI tools through the standard MCP stdio protocol.
+MCP servers come in two flavors:
+
+- **Standard (npx)** – Published npm packages like `@modelcontextprotocol/server-brave-search` are run via `npx` with no local files needed.
+- **Custom (node)** – Project-specific servers (e.g. Bitbucket) are copied to `.wizard-mcps/` and run via `node`.
+
+### 5. Install everything at once
+
+Run `wizard install all` to install all available agents, prompts, and MCP servers at once without interactive selection.
+
+```bash
+wizard install all
+```
 
 ## Project Structure
 
 ```
-wizard/              - Python CLI package
-  cli.py             - CLI entry point and argument routing
-  config.py          - Configuration management
+src/                 - Node.js CLI source
+  cli.js             - CLI entry point and argument routing
+  config.js          - Configuration management
   commands/          - Command implementations
-    install.py       - IDE selection
-    install_agents.py  - Agent installation
-    install_prompts.py - Prompt installation
-    install_mcps.py    - MCP server installation
+    install.js       - IDE selection
+    install-agents.js  - Agent installation
+    install-prompts.js - Prompt installation
+    install-all.js     - Install all components at once
+    install-mcps.js    - MCP server installation
 templates/
   agents/            - Agent definition markdown files
   prompts/           - Prompt template markdown files
-  mcps/              - MCP server implementations
-    bitbucket-mcp/   - Bitbucket MCP server (Python, pyproject.toml)
+  mcps/              - MCP server configurations
+    bitbucket-mcp/   - Bitbucket MCP server (Node.js, custom)
+    brave-search-mcp/ - Brave Search MCP (npx, @modelcontextprotocol)
 ```
 
 ## Development
 
 ```bash
-uv sync
-uv run pytest
+npm install
+npm test
 ```
 
 ## License
