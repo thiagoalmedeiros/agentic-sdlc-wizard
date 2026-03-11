@@ -75,6 +75,25 @@ function getMcpConfigPath(cwd, ide) {
   return null;
 }
 
+function getGitignorePath(cwd) {
+  return path.join(cwd, ".gitignore");
+}
+
+function updateGitignore(cwd, entries) {
+  const gitignorePath = getGitignorePath(cwd);
+  const existing = fs.existsSync(gitignorePath)
+    ? fs.readFileSync(gitignorePath, "utf-8")
+    : "";
+
+  const lines = existing.split("\n");
+  const toAdd = entries.filter((e) => !lines.some((l) => l.trim() === e.trim()));
+
+  if (toAdd.length === 0) return;
+
+  const prefix = existing.length > 0 && !existing.endsWith("\n") ? "\n" : "";
+  fs.writeFileSync(gitignorePath, existing + prefix + toAdd.join("\n") + "\n");
+}
+
 module.exports = {
   CONFIG_FILE,
   IDE_VSCODE,
@@ -90,4 +109,6 @@ module.exports = {
   getIdeAgentsTarget,
   getIdePromptsTarget,
   getMcpConfigPath,
+  getGitignorePath,
+  updateGitignore,
 };

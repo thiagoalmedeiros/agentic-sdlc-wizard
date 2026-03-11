@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { getAgentsDir, getIdeAgentsTarget, readConfig } = require("../config");
+const { getAgentsDir, getIdeAgentsTarget, readConfig, updateGitignore } = require("../config");
 
 async function installAgentsCommand(cwd) {
   const { checkbox } = require("@inquirer/prompts");
@@ -47,7 +47,9 @@ async function installAgentsCommand(cwd) {
       const dest = path.join(targetDir, agent);
       fs.copyFileSync(src, dest);
     }
-    console.log(`Agents installed to ${path.relative(cwd, targetDir)}/`);
+    const relDir = path.relative(cwd, targetDir);
+    updateGitignore(cwd, [relDir + "/"]);
+    console.log(`Agents installed to ${relDir}/`);
   }
 }
 

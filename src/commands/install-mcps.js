@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { getMcpsDir, getMcpConfigPath, readConfig } = require("../config");
+const { getMcpsDir, getMcpConfigPath, readConfig, updateGitignore } = require("../config");
 
 function copyDirSync(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
@@ -116,9 +116,9 @@ function installSelectedMcps(cwd, config, selected) {
 
     fs.mkdirSync(path.dirname(mcpConfigPath), { recursive: true });
     fs.writeFileSync(mcpConfigPath, JSON.stringify(mcpConfig, null, 2));
-    console.log(
-      `MCP configuration written to ${path.relative(cwd, mcpConfigPath)}`
-    );
+    const relMcpConfig = path.relative(cwd, mcpConfigPath);
+    updateGitignore(cwd, [relMcpConfig, ".wizard-mcps/"]);
+    console.log(`MCP configuration written to ${relMcpConfig}`);
   }
 
   console.log(

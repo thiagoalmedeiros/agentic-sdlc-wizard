@@ -16,6 +16,8 @@ const {
   getIdeAgentsTarget,
   getIdePromptsTarget,
   getMcpConfigPath,
+  getGitignorePath,
+  updateGitignore,
 } = require("../src/config");
 
 let testDir;
@@ -105,4 +107,39 @@ test("getMcpConfigPath for antigravity", () => {
 
 test("getMcpConfigPath for unknown returns null", () => {
   expect(getMcpConfigPath(testDir, "unknown")).toBeNull();
+});
+
+test("getGitignorePath returns path with .gitignore", () => {
+  expect(getGitignorePath(testDir)).toBe(path.join(testDir, ".gitignore"));
+});
+
+test("updateGitignore creates .gitignore when missing", () => {
+  updateGitignore(testDir, [".vscode/agents/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  expect(content).toContain(".vscode/agents/");
+});
+
+test("updateGitignore appends new entries", () => {
+  fs.writeFileSync(path.join(testDir, ".gitignore"), "node_modules/\n");
+  updateGitignore(testDir, [".vscode/agents/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  expect(content).toContain("node_modules/");
+  expect(content).toContain(".vscode/agents/");
+});
+
+test("updateGitignore skips existing entries", () => {
+  fs.writeFileSync(path.join(testDir, ".gitignore"), ".vscode/agents/\n");
+  updateGitignore(testDir, [".vscode/agents/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  const occurrences = content
+    .split("\n")
+    .filter((l) => l.trim() === ".vscode/agents/").length;
+  expect(occurrences).toBe(1);
+});
+
+test("updateGitignore adds multiple entries at once", () => {
+  updateGitignore(testDir, [".vscode/mcp.json", ".wizard-mcps/"]);
+  const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
+  expect(content).toContain(".vscode/mcp.json");
+  expect(content).toContain(".wizard-mcps/");
 });

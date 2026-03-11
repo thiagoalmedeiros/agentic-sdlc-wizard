@@ -317,6 +317,16 @@ describe("InstallAll", () => {
     expect(
       fs.existsSync(path.join(testDir, ".wizard-mcps", "brave-search-mcp"))
     ).toBe(false);
+
+    // Verify .gitignore was updated with installed paths
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    expect(gitignore).toContain(".vscode/agents/");
+    expect(gitignore).toContain(".vscode/prompts/");
+    expect(gitignore).toContain(".vscode/mcp.json");
+    expect(gitignore).toContain(".wizard-mcps/");
   });
 
   test("install all with no config shows message", () => {
@@ -332,5 +342,52 @@ describe("InstallAll", () => {
     expect(logs.some((l) => l.includes("No wizard configuration found"))).toBe(
       true
     );
+  });
+});
+
+describe("Gitignore", () => {
+  test("install MCPs updates .gitignore with mcp config and wizard-mcps", () => {
+    writeConfig(testDir, { ides: [IDE_VSCODE] });
+    const { installSelectedMcps } = require("../src/commands/install-mcps");
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    expect(gitignore).toContain(".vscode/mcp.json");
+    expect(gitignore).toContain(".wizard-mcps/");
+  });
+
+  test("install MCPs does not duplicate .gitignore entries on re-run", () => {
+    writeConfig(testDir, { ides: [IDE_VSCODE] });
+    const { installSelectedMcps } = require("../src/commands/install-mcps");
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    const lines = gitignore.split("\n").filter((l) => l.trim() !== "");
+    const mcpJsonEntries = lines.filter((l) => l === ".vscode/mcp.json");
+    expect(mcpJsonEntries.length).toBe(1);
+  });
+
+  test("install MCPs for antigravity updates .gitignore with gemini paths", () => {
+    writeConfig(testDir, { ides: [IDE_ANTIGRAVITY] });
+    const { installSelectedMcps } = require("../src/commands/install-mcps");
+    installSelectedMcps(
+      testDir,
+      { ides: [IDE_ANTIGRAVITY] },
+      ["brave-search-mcp"]
+    );
+
+    const gitignore = fs.readFileSync(
+      path.join(testDir, ".gitignore"),
+      "utf-8"
+    );
+    expect(gitignore).toContain(".gemini/mcp.json");
+    expect(gitignore).toContain(".wizard-mcps/");
   });
 });
