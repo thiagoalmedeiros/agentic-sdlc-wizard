@@ -42,13 +42,16 @@ wizard install prompts
 
 ### 4. Install MCP servers
 
-Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket, Brave Search). The server files are copied locally and your IDE's `mcp.json` is configured automatically. Environment variables are referenced using `${input:VAR_NAME}` so the IDE can prompt for them.
+Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket, Brave Search). Your IDE's `mcp.json` is configured automatically. Environment variables are referenced using `${input:VAR_NAME}` so the IDE can prompt for them.
 
 ```bash
 wizard install mcps
 ```
 
-The MCP servers are Python packages run via `uv run python -m <module>`, making them available to Copilot and other AI tools through the standard MCP stdio protocol.
+MCP servers come in two flavors:
+
+- **Standard (npx)** – Published npm packages like `@modelcontextprotocol/server-brave-search` are run via `npx` with no local files needed.
+- **Custom (node)** – Project-specific servers (e.g. Bitbucket) are copied to `.wizard-mcps/` and run via `node`.
 
 ### 5. Install everything at once
 
@@ -68,13 +71,14 @@ wizard/              - Python CLI package
     install.py       - IDE selection
     install_agents.py  - Agent installation
     install_prompts.py - Prompt installation
+    install_all.py     - Install all components at once
     install_mcps.py    - MCP server installation
 templates/
   agents/            - Agent definition markdown files
   prompts/           - Prompt template markdown files
-  mcps/              - MCP server implementations
-    bitbucket-mcp/   - Bitbucket MCP server (Python, pyproject.toml)
-    brave-search-mcp/ - Brave Search MCP server (Python, pyproject.toml)
+  mcps/              - MCP server configurations
+    bitbucket-mcp/   - Bitbucket MCP server (Node.js, custom)
+    brave-search-mcp/ - Brave Search MCP (npx, @modelcontextprotocol)
 ```
 
 ## Development

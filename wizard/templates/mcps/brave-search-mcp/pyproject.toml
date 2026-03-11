@@ -1,16 +1,7 @@
-[project]
-name = "brave-search-mcp"
-version = "1.0.0"
-description = "Brave Search MCP server for agentic SDLC"
-requires-python = ">=3.10"
-dependencies = []
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [tool.mcp]
-name = "brave-search-mcp"
+name = "brave-search"
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-brave-search"]
 
 [[tool.mcp.env]]
 name = "BRAVE_API_KEY"

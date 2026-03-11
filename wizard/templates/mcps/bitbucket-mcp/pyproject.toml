@@ -1,16 +1,7 @@
-[project]
-name = "bitbucket-mcp"
-version = "1.0.0"
-description = "Bitbucket MCP server for agentic SDLC"
-requires-python = ">=3.10"
-dependencies = []
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [tool.mcp]
 name = "bitbucket-mcp"
+command = "node"
+module = "server.js"
 
 [[tool.mcp.env]]
 name = "BITBUCKET_URL"

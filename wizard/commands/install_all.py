@@ -1,6 +1,5 @@
 """Install all components (agents, prompts, MCPs) at once."""
 
-import json
 import os
 import shutil
 
@@ -8,12 +7,11 @@ from wizard.config import (
     get_agents_dir,
     get_ide_agents_target,
     get_ide_prompts_target,
-    get_mcp_config_path,
     get_mcps_dir,
     get_prompts_dir,
     read_config,
 )
-from wizard.commands.install_mcps import _parse_env_params
+from wizard.commands.install_mcps import _install_selected_mcps
 
 
 def install_all_command(cwd: str | None = None) -> None:
@@ -85,45 +83,4 @@ def _install_all_mcps(cwd: str, config: dict) -> None:
         print("No MCP server templates available.")
         return
 
-    for ide in config["ides"]:
-        mcp_config_path = get_mcp_config_path(cwd, ide)
-        if not mcp_config_path:
-            continue
-
-        mcp_config: dict = {"servers": {}}
-        if os.path.exists(mcp_config_path):
-            with open(mcp_config_path, "r") as f:
-                mcp_config = json.load(f)
-            if "servers" not in mcp_config:
-                mcp_config["servers"] = {}
-
-        for mcp_name in mcp_dirs:
-            mcp_src_dir = os.path.join(mcps_dir, mcp_name)
-            pyproject_path = os.path.join(mcp_src_dir, "pyproject.toml")
-            env_params = []
-
-            if os.path.exists(pyproject_path):
-                env_params = _parse_env_params(pyproject_path)
-
-            mcp_dest_dir = os.path.join(cwd, ".wizard-mcps", mcp_name)
-            if os.path.exists(mcp_dest_dir):
-                shutil.rmtree(mcp_dest_dir)
-            shutil.copytree(mcp_src_dir, mcp_dest_dir)
-
-            env_entries = {}
-            for param in env_params:
-                env_entries[param["name"]] = "${input:" + param["name"] + "}"
-
-            mcp_config["servers"][mcp_name] = {
-                "type": "stdio",
-                "command": "uv",
-                "args": ["run", "--directory", mcp_dest_dir, "python", "-m", mcp_name.replace("-", "_")],
-                "env": env_entries,
-            }
-
-        os.makedirs(os.path.dirname(mcp_config_path), exist_ok=True)
-        with open(mcp_config_path, "w") as f:
-            json.dump(mcp_config, f, indent=2)
-        print(f"MCP configuration written to {os.path.relpath(mcp_config_path, cwd)}")
-
-    print("\nMCP servers installed. Update the environment variables in your MCP config.")
+    _install_selected_mcps(cwd, config, mcp_dirs)

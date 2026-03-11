@@ -40,6 +40,13 @@ def install_mcps_command(cwd: str | None = None) -> None:
         print("No MCP servers selected. Aborting.")
         return
 
+    _install_selected_mcps(cwd, config, selected)
+
+
+def _install_selected_mcps(cwd: str, config: dict, selected: list[str]) -> None:
+    """Install the selected MCP servers for all configured IDEs."""
+    mcps_dir = get_mcps_dir()
+
     for ide in config["ides"]:
         mcp_config_path = get_mcp_config_path(cwd, ide)
         if not mcp_config_path:
@@ -55,26 +62,37 @@ def install_mcps_command(cwd: str | None = None) -> None:
         for mcp_name in selected:
             mcp_src_dir = os.path.join(mcps_dir, mcp_name)
             pyproject_path = os.path.join(mcp_src_dir, "pyproject.toml")
-            env_params = []
 
-            if os.path.exists(pyproject_path):
-                env_params = _parse_env_params(pyproject_path)
-
-            mcp_dest_dir = os.path.join(cwd, ".wizard-mcps", mcp_name)
-            if os.path.exists(mcp_dest_dir):
-                shutil.rmtree(mcp_dest_dir)
-            shutil.copytree(mcp_src_dir, mcp_dest_dir)
+            mcp_meta = _parse_mcp_config(pyproject_path)
+            env_params = _parse_env_params(pyproject_path)
 
             env_entries = {}
             for param in env_params:
                 env_entries[param["name"]] = "${input:" + param["name"] + "}"
 
-            mcp_config["servers"][mcp_name] = {
-                "type": "stdio",
-                "command": "uv",
-                "args": ["run", "--directory", mcp_dest_dir, "python", "-m", mcp_name.replace("-", "_")],
-                "env": env_entries,
-            }
+            command = mcp_meta.get("command", "node")
+
+            if command == "npx":
+                args = mcp_meta.get("args", [])
+                mcp_config["servers"][mcp_name] = {
+                    "type": "stdio",
+                    "command": "npx",
+                    "args": args,
+                    "env": env_entries,
+                }
+            else:
+                module = mcp_meta.get("module", "server.js")
+                mcp_dest_dir = os.path.join(cwd, ".wizard-mcps", mcp_name)
+                if os.path.exists(mcp_dest_dir):
+                    shutil.rmtree(mcp_dest_dir)
+                shutil.copytree(mcp_src_dir, mcp_dest_dir)
+
+                mcp_config["servers"][mcp_name] = {
+                    "type": "stdio",
+                    "command": "node",
+                    "args": [os.path.join(mcp_dest_dir, module)],
+                    "env": env_entries,
+                }
 
         os.makedirs(os.path.dirname(mcp_config_path), exist_ok=True)
         with open(mcp_config_path, "w") as f:
@@ -82,6 +100,48 @@ def install_mcps_command(cwd: str | None = None) -> None:
         print(f"MCP configuration written to {os.path.relpath(mcp_config_path, cwd)}")
 
     print("\nMCP servers installed. Update the environment variables in your MCP config.")
+
+
+def _parse_mcp_config(pyproject_path: str) -> dict:
+    """Parse MCP command configuration from a pyproject.toml file."""
+    config: dict = {}
+    in_mcp_section = False
+
+    with open(pyproject_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line == "[tool.mcp]":
+                in_mcp_section = True
+                continue
+            if in_mcp_section:
+                if line.startswith("["):
+                    break
+                if "=" in line:
+                    key, value = line.split("=", 1)
+                    key = key.strip()
+                    value = value.strip()
+                    if key == "command":
+                        config["command"] = value.strip('"')
+                    elif key == "module":
+                        config["module"] = value.strip('"')
+                    elif key == "args":
+                        config["args"] = _parse_toml_array(value)
+
+    return config
+
+
+def _parse_toml_array(value: str) -> list[str]:
+    """Parse a simple TOML inline array of strings."""
+    value = value.strip()
+    if value.startswith("[") and value.endswith("]"):
+        value = value[1:-1]
+        items = []
+        for item in value.split(","):
+            item = item.strip().strip('"').strip("'")
+            if item:
+                items.append(item)
+        return items
+    return []
 
 
 def _parse_env_params(pyproject_path: str) -> list[dict]:

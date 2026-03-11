@@ -86,19 +86,21 @@ class TestInstallMcps:
 
         # Verify files were copied
         assert os.path.exists(os.path.join(mcp_dest_dir, "pyproject.toml"))
-        assert os.path.exists(
-            os.path.join(mcp_dest_dir, "bitbucket_mcp", "__init__.py")
-        )
-        assert os.path.exists(
-            os.path.join(mcp_dest_dir, "bitbucket_mcp", "server.py")
-        )
+        assert os.path.exists(os.path.join(mcp_dest_dir, "server.js"))
+        assert os.path.exists(os.path.join(mcp_dest_dir, "package.json"))
 
         # Build MCP config
-        from wizard.commands.install_mcps import _parse_env_params
+        from wizard.commands.install_mcps import _parse_env_params, _parse_mcp_config
 
         env_params = _parse_env_params(
             os.path.join(mcp_dest_dir, "pyproject.toml")
         )
+        mcp_meta = _parse_mcp_config(
+            os.path.join(mcp_dest_dir, "pyproject.toml")
+        )
+
+        assert mcp_meta["command"] == "node"
+        assert mcp_meta["module"] == "server.js"
 
         env_entries = {}
         for param in env_params:
@@ -108,14 +110,9 @@ class TestInstallMcps:
             "servers": {
                 mcp_name: {
                     "type": "stdio",
-                    "command": "uv",
+                    "command": "node",
                     "args": [
-                        "run",
-                        "--directory",
-                        mcp_dest_dir,
-                        "python",
-                        "-m",
-                        "bitbucket_mcp",
+                        os.path.join(mcp_dest_dir, "server.js"),
                     ],
                     "env": env_entries,
                 }
@@ -133,7 +130,7 @@ class TestInstallMcps:
             written = json.load(f)
         assert mcp_name in written["servers"]
         assert written["servers"][mcp_name]["type"] == "stdio"
-        assert written["servers"][mcp_name]["command"] == "uv"
+        assert written["servers"][mcp_name]["command"] == "node"
         assert "BITBUCKET_URL" in written["servers"][mcp_name]["env"]
         assert "BITBUCKET_TOKEN" in written["servers"][mcp_name]["env"]
 
@@ -146,8 +143,8 @@ class TestInstallMcps:
                     "servers": {
                         "existing-mcp": {
                             "type": "stdio",
-                            "command": "python",
-                            "args": ["existing.py"],
+                            "command": "node",
+                            "args": ["existing.js"],
                         }
                     }
                 },
@@ -158,8 +155,8 @@ class TestInstallMcps:
             mcp_config = json.load(f)
         mcp_config["servers"]["bitbucket-mcp"] = {
             "type": "stdio",
-            "command": "uv",
-            "args": ["run", "bitbucket"],
+            "command": "node",
+            "args": ["server.js"],
         }
         with open(mcp_config_path, "w") as f:
             json.dump(mcp_config, f, indent=2)
@@ -200,67 +197,56 @@ class TestParseEnvParams:
         assert params[0]["required"] is True
 
 
+class TestParseMcpConfig:
+    def test_parse_npx_mcp_config(self):
+        from wizard.commands.install_mcps import _parse_mcp_config
+
+        pyproject_path = os.path.join(
+            get_mcps_dir(), "brave-search-mcp", "pyproject.toml"
+        )
+        config = _parse_mcp_config(pyproject_path)
+
+        assert config["command"] == "npx"
+        assert config["args"] == ["-y", "@modelcontextprotocol/server-brave-search"]
+
+    def test_parse_node_mcp_config(self):
+        from wizard.commands.install_mcps import _parse_mcp_config
+
+        pyproject_path = os.path.join(
+            get_mcps_dir(), "bitbucket-mcp", "pyproject.toml"
+        )
+        config = _parse_mcp_config(pyproject_path)
+
+        assert config["command"] == "node"
+        assert config["module"] == "server.js"
+
+
 class TestBraveSearchMcp:
-    def test_copy_brave_mcp_and_create_config_vscode(self, test_dir):
+    def test_brave_search_npx_config(self, test_dir):
+        """Brave Search MCP uses npx with the standard npm package."""
         write_config(test_dir, {"ides": [IDE_VSCODE]})
-        mcps_dir = get_mcps_dir()
-        mcp_name = "brave-search-mcp"
-        mcp_src_dir = os.path.join(mcps_dir, mcp_name)
 
-        mcp_dest_dir = os.path.join(test_dir, ".wizard-mcps", mcp_name)
-        shutil.copytree(mcp_src_dir, mcp_dest_dir)
+        from wizard.commands.install_mcps import _install_selected_mcps
 
-        # Verify files were copied
-        assert os.path.exists(os.path.join(mcp_dest_dir, "pyproject.toml"))
-        assert os.path.exists(
-            os.path.join(mcp_dest_dir, "brave_search_mcp", "__init__.py")
+        _install_selected_mcps(test_dir, {"ides": [IDE_VSCODE]}, ["brave-search-mcp"])
+
+        # Verify no files were copied (npx MCP)
+        assert not os.path.exists(
+            os.path.join(test_dir, ".wizard-mcps", "brave-search-mcp")
         )
-        assert os.path.exists(
-            os.path.join(mcp_dest_dir, "brave_search_mcp", "server.py")
-        )
-
-        # Build MCP config
-        from wizard.commands.install_mcps import _parse_env_params
-
-        env_params = _parse_env_params(
-            os.path.join(mcp_dest_dir, "pyproject.toml")
-        )
-
-        env_entries = {}
-        for param in env_params:
-            env_entries[param["name"]] = "${input:" + param["name"] + "}"
-
-        mcp_config = {
-            "servers": {
-                mcp_name: {
-                    "type": "stdio",
-                    "command": "uv",
-                    "args": [
-                        "run",
-                        "--directory",
-                        mcp_dest_dir,
-                        "python",
-                        "-m",
-                        "brave_search_mcp",
-                    ],
-                    "env": env_entries,
-                }
-            }
-        }
-
-        mcp_config_path = os.path.join(test_dir, ".vscode", "mcp.json")
-        os.makedirs(os.path.dirname(mcp_config_path), exist_ok=True)
-        with open(mcp_config_path, "w") as f:
-            json.dump(mcp_config, f, indent=2)
 
         # Verify mcp.json
+        mcp_config_path = os.path.join(test_dir, ".vscode", "mcp.json")
         assert os.path.exists(mcp_config_path)
         with open(mcp_config_path) as f:
             written = json.load(f)
-        assert mcp_name in written["servers"]
-        assert written["servers"][mcp_name]["type"] == "stdio"
-        assert written["servers"][mcp_name]["command"] == "uv"
-        assert "BRAVE_API_KEY" in written["servers"][mcp_name]["env"]
+        assert "brave-search-mcp" in written["servers"]
+        assert written["servers"]["brave-search-mcp"]["command"] == "npx"
+        assert written["servers"]["brave-search-mcp"]["args"] == [
+            "-y",
+            "@modelcontextprotocol/server-brave-search",
+        ]
+        assert "BRAVE_API_KEY" in written["servers"]["brave-search-mcp"]["env"]
 
 
 class TestInstallAll:
@@ -287,23 +273,25 @@ class TestInstallAll:
         installed_prompts = os.listdir(vscode_prompts_dir)
         assert len(installed_prompts) == len(prompt_files)
 
-        # Verify MCPs were installed
-        mcps_dir = get_mcps_dir()
-        mcp_dirs = [
-            d for d in os.listdir(mcps_dir) if os.path.isdir(os.path.join(mcps_dir, d))
-        ]
-        for mcp_name in mcp_dirs:
-            assert os.path.exists(
-                os.path.join(test_dir, ".wizard-mcps", mcp_name, "pyproject.toml")
-            )
-
-        # Verify mcp.json was created
+        # Verify mcp.json was created with correct config
         mcp_config_path = os.path.join(test_dir, ".vscode", "mcp.json")
         assert os.path.exists(mcp_config_path)
         with open(mcp_config_path) as f:
             mcp_config = json.load(f)
-        for mcp_name in mcp_dirs:
-            assert mcp_name in mcp_config["servers"]
+
+        # Bitbucket uses node (custom MCP, files copied)
+        assert "bitbucket-mcp" in mcp_config["servers"]
+        assert mcp_config["servers"]["bitbucket-mcp"]["command"] == "node"
+        assert os.path.exists(
+            os.path.join(test_dir, ".wizard-mcps", "bitbucket-mcp", "server.js")
+        )
+
+        # Brave Search uses npx (standard npm package, no files copied)
+        assert "brave-search-mcp" in mcp_config["servers"]
+        assert mcp_config["servers"]["brave-search-mcp"]["command"] == "npx"
+        assert not os.path.exists(
+            os.path.join(test_dir, ".wizard-mcps", "brave-search-mcp")
+        )
 
     def test_install_all_no_config(self, test_dir, capsys):
         from wizard.commands.install_all import install_all_command
