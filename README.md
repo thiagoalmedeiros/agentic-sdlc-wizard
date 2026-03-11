@@ -5,13 +5,14 @@ Install and configure AI agents, prompts, and MCP servers for your IDE.
 ## Installation
 
 ```bash
-uv tool install agentic-sdlc-wizard
+npm install -g agentic-sdlc-wizard
 ```
 
 Or install from source:
 
 ```bash
-uv pip install -e .
+npm install
+npm link
 ```
 
 ## Usage
@@ -64,15 +65,15 @@ wizard install all
 ## Project Structure
 
 ```
-wizard/              - Python CLI package
-  cli.py             - CLI entry point and argument routing
-  config.py          - Configuration management
+src/                 - Node.js CLI source
+  cli.js             - CLI entry point and argument routing
+  config.js          - Configuration management
   commands/          - Command implementations
-    install.py       - IDE selection
-    install_agents.py  - Agent installation
-    install_prompts.py - Prompt installation
-    install_all.py     - Install all components at once
-    install_mcps.py    - MCP server installation
+    install.js       - IDE selection
+    install-agents.js  - Agent installation
+    install-prompts.js - Prompt installation
+    install-all.js     - Install all components at once
+    install-mcps.js    - MCP server installation
 templates/
   agents/            - Agent definition markdown files
   prompts/           - Prompt template markdown files
@@ -84,8 +85,8 @@ templates/
 ## Development
 
 ```bash
-uv sync
-uv run pytest
+npm install
+npm test
 ```
 
 ## License

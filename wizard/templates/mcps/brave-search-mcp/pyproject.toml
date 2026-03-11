@@ -1,9 +1,0 @@
-[tool.mcp]
-name = "brave-search"
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-brave-search"]
-
-[[tool.mcp.env]]
-name = "BRAVE_API_KEY"
-description = "Brave Search API key"
-required = true
