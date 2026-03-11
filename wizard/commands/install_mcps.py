@@ -110,6 +110,8 @@ def _parse_mcp_config(pyproject_path: str) -> dict:
     with open(pyproject_path, "r") as f:
         for line in f:
             line = line.strip()
+            if not line or line.startswith("#"):
+                continue
             if line == "[tool.mcp]":
                 in_mcp_section = True
                 continue
@@ -153,6 +155,8 @@ def _parse_env_params(pyproject_path: str) -> list[dict]:
     with open(pyproject_path, "r") as f:
         for line in f:
             line = line.strip()
+            if not line or line.startswith("#"):
+                continue
             if line == "[[tool.mcp.env]]":
                 if current_param:
                     env_params.append(current_param)
