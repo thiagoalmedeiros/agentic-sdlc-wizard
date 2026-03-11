@@ -83,7 +83,11 @@ function installSelectedMcps(cwd, config, selected) {
 
       const envEntries = {};
       for (const param of envParams) {
-        envEntries[param.name] = "${input:" + param.name + "}";
+        if (param.default !== undefined) {
+          envEntries[param.name] = param.default;
+        } else {
+          envEntries[param.name] = "${input:" + param.name + "}";
+        }
       }
 
       const command = mcpMeta.command || "node";
@@ -104,7 +108,7 @@ function installSelectedMcps(cwd, config, selected) {
         mcpConfig.servers[mcpName] = {
           type: "stdio",
           command: "node",
-          args: [path.join(mcpDestDir, module)],
+          args: [path.relative(cwd, path.join(mcpDestDir, module))],
           env: envEntries,
         };
       }

@@ -66,7 +66,7 @@ test("getIdeAgentsTarget for vscode", () => {
 test("getIdeAgentsTarget for antigravity", () => {
   const targets = getIdeAgentsTarget(testDir, [IDE_ANTIGRAVITY]);
   expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".antigravity", "agents")
+    path.join(testDir, ".gemini", "agents")
   );
   expect(targets[IDE_VSCODE]).toBeUndefined();
 });
@@ -75,7 +75,7 @@ test("getIdeAgentsTarget for both", () => {
   const targets = getIdeAgentsTarget(testDir, [IDE_VSCODE, IDE_ANTIGRAVITY]);
   expect(targets[IDE_VSCODE]).toBe(path.join(testDir, ".vscode", "agents"));
   expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".antigravity", "agents")
+    path.join(testDir, ".gemini", "agents")
   );
 });
 
@@ -87,7 +87,7 @@ test("getIdePromptsTarget for vscode", () => {
 test("getIdePromptsTarget for antigravity", () => {
   const targets = getIdePromptsTarget(testDir, [IDE_ANTIGRAVITY]);
   expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".antigravity", "prompts")
+    path.join(testDir, ".gemini", "prompts")
   );
 });
 
@@ -99,7 +99,7 @@ test("getMcpConfigPath for vscode", () => {
 
 test("getMcpConfigPath for antigravity", () => {
   expect(getMcpConfigPath(testDir, IDE_ANTIGRAVITY)).toBe(
-    path.join(testDir, ".antigravity", "mcp.json")
+    path.join(testDir, ".gemini", "mcp.json")
   );
 });
 

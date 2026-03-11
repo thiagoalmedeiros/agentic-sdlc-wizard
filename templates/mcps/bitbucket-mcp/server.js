@@ -91,30 +91,37 @@ class McpServer {
 }
 
 async function listRepos(_params) {
+  const baseUrl = process.env.BITBUCKET_URL || "https://api.bitbucket.org/2.0";
   return {
     description:
       "Lists all repositories in the specified Bitbucket project",
+    baseUrl,
   };
 }
 
 async function getPullRequests(_params) {
+  const baseUrl = process.env.BITBUCKET_URL || "https://api.bitbucket.org/2.0";
   return {
     description: "Retrieves pull requests for the specified repository",
+    baseUrl,
   };
 }
 
 async function createPullRequest(_params) {
+  const baseUrl = process.env.BITBUCKET_URL || "https://api.bitbucket.org/2.0";
   return {
     description:
       "Creates a new pull request in the specified repository",
+    baseUrl,
   };
 }
 
 const server = new McpServer("bitbucket-mcp", [
   {
     name: "BITBUCKET_URL",
-    description: "Bitbucket server URL",
-    required: true,
+    description: "Bitbucket API URL",
+    required: false,
+    default: "https://api.bitbucket.org/2.0",
   },
   {
     name: "BITBUCKET_TOKEN",
