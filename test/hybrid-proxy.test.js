@@ -1,0 +1,185 @@
+"use strict";
+
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const {
+  IDE_VSCODE,
+  writeConfig,
+  getMcpsDir,
+} = require("../src/config");
+
+let testDir;
+
+beforeEach(() => {
+  testDir = fs.mkdtempSync(path.join(os.tmpdir(), "wizard-test-"));
+});
+
+afterEach(() => {
+  fs.rmSync(testDir, { recursive: true, force: true });
+});
+
+describe("HybridProxyMcp", () => {
+  test("template files exist", () => {
+    const mcpsDir = getMcpsDir();
+    const proxyDir = path.join(mcpsDir, "hybrid-proxy-mcp");
+
+    expect(fs.existsSync(path.join(proxyDir, "mcp.json"))).toBe(true);
+    expect(fs.existsSync(path.join(proxyDir, "package.json"))).toBe(true);
+    expect(fs.existsSync(path.join(proxyDir, "tsconfig.json"))).toBe(true);
+    expect(fs.existsSync(path.join(proxyDir, "src", "index.ts"))).toBe(true);
+    expect(fs.existsSync(path.join(proxyDir, "src", "types.ts"))).toBe(true);
+    expect(fs.existsSync(path.join(proxyDir, "src", "router.ts"))).toBe(true);
+    expect(
+      fs.existsSync(path.join(proxyDir, "src", "handlers", "github.ts"))
+    ).toBe(true);
+    expect(
+      fs.existsSync(path.join(proxyDir, "src", "handlers", "bitbucket.ts"))
+    ).toBe(true);
+  });
+
+  test("mcp.json has correct config", () => {
+    const { readMcpConfig } = require("../src/commands/install-mcps");
+    const mcpJsonPath = path.join(
+      getMcpsDir(),
+      "hybrid-proxy-mcp",
+      "mcp.json"
+    );
+    const config = readMcpConfig(mcpJsonPath);
+
+    expect(config.name).toBe("hybrid-proxy-mcp");
+    expect(config.command).toBe("node");
+    expect(config.module).toBe("dist/index.js");
+    expect(config.env.length).toBe(3);
+
+    const envNames = config.env.map((e) => e.name);
+    expect(envNames).toContain("GITHUB_TOKEN");
+    expect(envNames).toContain("BITBUCKET_USERNAME");
+    expect(envNames).toContain("BITBUCKET_APP_PASSWORD");
+  });
+
+  test("package.json has MCP SDK dependency", () => {
+    const mcpsDir = getMcpsDir();
+    const pkgPath = path.join(mcpsDir, "hybrid-proxy-mcp", "package.json");
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+
+    expect(pkg.name).toBe("hybrid-proxy-mcp");
+    expect(pkg.dependencies["@modelcontextprotocol/sdk"]).toBeDefined();
+    expect(pkg.devDependencies["typescript"]).toBeDefined();
+    expect(pkg.scripts.build).toBe("tsc");
+  });
+
+  test("install hybrid-proxy-mcp copies files and creates config", () => {
+    writeConfig(testDir, { ides: [IDE_VSCODE] });
+    const { installSelectedMcps } = require("../src/commands/install-mcps");
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["hybrid-proxy-mcp"]);
+
+    // Verify files were copied (custom node MCP)
+    const mcpDestDir = path.join(testDir, ".wizard-mcps", "hybrid-proxy-mcp");
+    expect(fs.existsSync(mcpDestDir)).toBe(true);
+    expect(fs.existsSync(path.join(mcpDestDir, "mcp.json"))).toBe(true);
+    expect(fs.existsSync(path.join(mcpDestDir, "package.json"))).toBe(true);
+    expect(
+      fs.existsSync(path.join(mcpDestDir, "src", "index.ts"))
+    ).toBe(true);
+
+    // Verify mcp.json config was written
+    const mcpConfigPath = path.join(testDir, ".vscode", "mcp.json");
+    expect(fs.existsSync(mcpConfigPath)).toBe(true);
+    const written = JSON.parse(fs.readFileSync(mcpConfigPath, "utf-8"));
+
+    expect(written.servers["hybrid-proxy-mcp"]).toBeDefined();
+    expect(written.servers["hybrid-proxy-mcp"].type).toBe("stdio");
+    expect(written.servers["hybrid-proxy-mcp"].command).toBe("node");
+
+    // Verify relative path is used for args
+    const args = written.servers["hybrid-proxy-mcp"].args;
+    expect(args.length).toBe(1);
+    expect(path.isAbsolute(args[0])).toBe(false);
+    expect(args[0]).toBe(
+      path.join(".wizard-mcps", "hybrid-proxy-mcp", "dist", "index.js")
+    );
+
+    // Verify env variables are set as input prompts (no defaults)
+    const env = written.servers["hybrid-proxy-mcp"].env;
+    expect(env.GITHUB_TOKEN).toBe("${input:GITHUB_TOKEN}");
+    expect(env.BITBUCKET_USERNAME).toBe("${input:BITBUCKET_USERNAME}");
+    expect(env.BITBUCKET_APP_PASSWORD).toBe("${input:BITBUCKET_APP_PASSWORD}");
+  });
+
+  test("source code contains get_pr_diff tool definition", () => {
+    const mcpsDir = getMcpsDir();
+    const indexTs = fs.readFileSync(
+      path.join(mcpsDir, "hybrid-proxy-mcp", "src", "index.ts"),
+      "utf-8"
+    );
+
+    expect(indexTs).toContain("get_pr_diff");
+    expect(indexTs).toContain("repo_url");
+    expect(indexTs).toContain("pr_identifier");
+    expect(indexTs).toContain("StdioServerTransport");
+  });
+
+  test("router detects github platform from URL", () => {
+    const routerTs = fs.readFileSync(
+      path.join(getMcpsDir(), "hybrid-proxy-mcp", "src", "router.ts"),
+      "utf-8"
+    );
+
+    expect(routerTs).toContain("github.com");
+    expect(routerTs).toContain("bitbucket.org");
+    expect(routerTs).toContain("detectPlatform");
+    expect(routerTs).toContain("Unsupported platform");
+  });
+
+  test("github handler uses MCP Client for proxy", () => {
+    const githubTs = fs.readFileSync(
+      path.join(
+        getMcpsDir(),
+        "hybrid-proxy-mcp",
+        "src",
+        "handlers",
+        "github.ts"
+      ),
+      "utf-8"
+    );
+
+    expect(githubTs).toContain("Client");
+    expect(githubTs).toContain("StdioClientTransport");
+    expect(githubTs).toContain("@modelcontextprotocol/server-github");
+    expect(githubTs).toContain("GITHUB_TOKEN");
+    expect(githubTs).toContain("get_pull_request");
+  });
+
+  test("bitbucket handler uses direct REST API", () => {
+    const bitbucketTs = fs.readFileSync(
+      path.join(
+        getMcpsDir(),
+        "hybrid-proxy-mcp",
+        "src",
+        "handlers",
+        "bitbucket.ts"
+      ),
+      "utf-8"
+    );
+
+    expect(bitbucketTs).toContain("api.bitbucket.org/2.0");
+    expect(bitbucketTs).toContain("BITBUCKET_USERNAME");
+    expect(bitbucketTs).toContain("BITBUCKET_APP_PASSWORD");
+    expect(bitbucketTs).toContain("fetch");
+    // Should NOT use an MCP Client
+    expect(bitbucketTs).not.toContain("StdioClientTransport");
+  });
+
+  test("types include normalization format", () => {
+    const typesTs = fs.readFileSync(
+      path.join(getMcpsDir(), "hybrid-proxy-mcp", "src", "types.ts"),
+      "utf-8"
+    );
+
+    expect(typesTs).toContain("NormalizedDiffResult");
+    expect(typesTs).toContain("formatDiffResult");
+    expect(typesTs).toContain("platform");
+    expect(typesTs).toContain("diff_content");
+  });
+});
