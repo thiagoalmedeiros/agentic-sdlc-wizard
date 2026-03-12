@@ -6,9 +6,9 @@
  *  2. Import and wire the handler in {@link routeRequest}.
  */
 
-import { GetPrDiffArgs, NormalizedDiffResult, Platform } from "./types.js";
-import { getGitHubDiff } from "./handlers/github.js";
-import { getBitbucketDiff } from "./handlers/bitbucket.js";
+import { GetPrDiffArgs, NormalizedDiffResult, Platform, CommentOnPrArgs, CommentResult } from "./types.js";
+import { getGitHubDiff, commentOnGitHubPr } from "./handlers/github.js";
+import { getBitbucketDiff, commentOnBitbucketPr } from "./handlers/bitbucket.js";
 
 /** Map of hostname substrings to platform identifiers. */
 const PLATFORM_PATTERNS: ReadonlyArray<{ pattern: string; platform: Platform }> = [
@@ -40,6 +40,24 @@ export async function routeRequest(
       return getGitHubDiff(args);
     case "bitbucket":
       return getBitbucketDiff(args);
+    default: {
+      const _exhaustive: never = platform;
+      throw new Error(`No handler for platform: ${_exhaustive}`);
+    }
+  }
+}
+
+/** Route a comment_on_pr request to the correct platform handler. */
+export async function routeCommentRequest(
+  args: CommentOnPrArgs,
+): Promise<CommentResult> {
+  const platform = detectPlatform(args.repo_url);
+
+  switch (platform) {
+    case "github":
+      return commentOnGitHubPr(args);
+    case "bitbucket":
+      return commentOnBitbucketPr(args);
     default: {
       const _exhaustive: never = platform;
       throw new Error(`No handler for platform: ${_exhaustive}`);

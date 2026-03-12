@@ -37,7 +37,11 @@ async function installMcpsCommand(cwd) {
   const mcpDirs = fs
     .readdirSync(mcpsDir, { withFileTypes: true })
     .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+    .map((d) => d.name)
+    .filter((name) => {
+      const meta = readMcpConfig(path.join(mcpsDir, name, "mcp.json"));
+      return meta.enabled !== false;
+    });
 
   if (mcpDirs.length === 0) {
     console.log("No MCP server templates available.");

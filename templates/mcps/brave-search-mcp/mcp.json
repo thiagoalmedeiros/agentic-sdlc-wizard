@@ -1,5 +1,6 @@
 {
   "name": "brave-search",
+  "enabled": false,
   "command": "npx",
   "args": ["-y", "@modelcontextprotocol/server-brave-search"],
   "env": [

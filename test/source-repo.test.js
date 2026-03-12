@@ -19,10 +19,10 @@ afterEach(() => {
   fs.rmSync(testDir, { recursive: true, force: true });
 });
 
-describe("HybridProxyMcp", () => {
+describe("SourceRepoMcp", () => {
   test("template files exist", () => {
     const mcpsDir = getMcpsDir();
-    const proxyDir = path.join(mcpsDir, "hybrid-proxy-mcp");
+    const proxyDir = path.join(mcpsDir, "source-repo-mcp");
 
     expect(fs.existsSync(path.join(proxyDir, "mcp.json"))).toBe(true);
     expect(fs.existsSync(path.join(proxyDir, "package.json"))).toBe(true);
@@ -42,12 +42,12 @@ describe("HybridProxyMcp", () => {
     const { readMcpConfig } = require("../src/commands/install-mcps");
     const mcpJsonPath = path.join(
       getMcpsDir(),
-      "hybrid-proxy-mcp",
+      "source-repo-mcp",
       "mcp.json"
     );
     const config = readMcpConfig(mcpJsonPath);
 
-    expect(config.name).toBe("hybrid-proxy-mcp");
+    expect(config.name).toBe("source-repo-mcp");
     expect(config.command).toBe("node");
     expect(config.module).toBe("dist/index.js");
     expect(config.env.length).toBe(3);
@@ -60,22 +60,22 @@ describe("HybridProxyMcp", () => {
 
   test("package.json has MCP SDK dependency", () => {
     const mcpsDir = getMcpsDir();
-    const pkgPath = path.join(mcpsDir, "hybrid-proxy-mcp", "package.json");
+    const pkgPath = path.join(mcpsDir, "source-repo-mcp", "package.json");
     const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
 
-    expect(pkg.name).toBe("hybrid-proxy-mcp");
+    expect(pkg.name).toBe("source-repo-mcp");
     expect(pkg.dependencies["@modelcontextprotocol/sdk"]).toBeDefined();
     expect(pkg.devDependencies["typescript"]).toBeDefined();
     expect(pkg.scripts.build).toBe("tsc");
   });
 
-  test("install hybrid-proxy-mcp copies files and creates config", () => {
+  test("install source-repo-mcp copies files and creates config", () => {
     writeConfig(testDir, { ides: [IDE_VSCODE] });
     const { installSelectedMcps } = require("../src/commands/install-mcps");
-    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["hybrid-proxy-mcp"]);
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["source-repo-mcp"]);
 
     // Verify files were copied (custom node MCP)
-    const mcpDestDir = path.join(testDir, ".wizard-mcps", "hybrid-proxy-mcp");
+    const mcpDestDir = path.join(testDir, ".wizard-mcps", "source-repo-mcp");
     expect(fs.existsSync(mcpDestDir)).toBe(true);
     expect(fs.existsSync(path.join(mcpDestDir, "mcp.json"))).toBe(true);
     expect(fs.existsSync(path.join(mcpDestDir, "package.json"))).toBe(true);
@@ -88,20 +88,20 @@ describe("HybridProxyMcp", () => {
     expect(fs.existsSync(mcpConfigPath)).toBe(true);
     const written = JSON.parse(fs.readFileSync(mcpConfigPath, "utf-8"));
 
-    expect(written.servers["hybrid-proxy-mcp"]).toBeDefined();
-    expect(written.servers["hybrid-proxy-mcp"].type).toBe("stdio");
-    expect(written.servers["hybrid-proxy-mcp"].command).toBe("node");
+    expect(written.servers["source-repo-mcp"]).toBeDefined();
+    expect(written.servers["source-repo-mcp"].type).toBe("stdio");
+    expect(written.servers["source-repo-mcp"].command).toBe("node");
 
     // Verify relative path is used for args
-    const args = written.servers["hybrid-proxy-mcp"].args;
+    const args = written.servers["source-repo-mcp"].args;
     expect(args.length).toBe(1);
     expect(path.isAbsolute(args[0])).toBe(false);
     expect(args[0]).toBe(
-      path.join(".wizard-mcps", "hybrid-proxy-mcp", "dist", "index.js")
+      path.join(".wizard-mcps", "source-repo-mcp", "dist", "index.js")
     );
 
     // Verify env variables are set as input prompts (no defaults)
-    const env = written.servers["hybrid-proxy-mcp"].env;
+    const env = written.servers["source-repo-mcp"].env;
     expect(env.GITHUB_TOKEN).toBe("${input:GITHUB_TOKEN}");
     expect(env.BITBUCKET_EMAIL).toBe("${input:BITBUCKET_EMAIL}");
     expect(env.BITBUCKET_TOKEN).toBe("${input:BITBUCKET_TOKEN}");
@@ -110,7 +110,7 @@ describe("HybridProxyMcp", () => {
   test("source code contains get_pr_diff tool definition", () => {
     const mcpsDir = getMcpsDir();
     const indexTs = fs.readFileSync(
-      path.join(mcpsDir, "hybrid-proxy-mcp", "src", "index.ts"),
+      path.join(mcpsDir, "source-repo-mcp", "src", "index.ts"),
       "utf-8"
     );
 
@@ -122,7 +122,7 @@ describe("HybridProxyMcp", () => {
 
   test("router detects github platform from URL", () => {
     const routerTs = fs.readFileSync(
-      path.join(getMcpsDir(), "hybrid-proxy-mcp", "src", "router.ts"),
+      path.join(getMcpsDir(), "source-repo-mcp", "src", "router.ts"),
       "utf-8"
     );
 
@@ -136,7 +136,7 @@ describe("HybridProxyMcp", () => {
     const githubTs = fs.readFileSync(
       path.join(
         getMcpsDir(),
-        "hybrid-proxy-mcp",
+        "source-repo-mcp",
         "src",
         "handlers",
         "github.ts"
@@ -156,7 +156,7 @@ describe("HybridProxyMcp", () => {
     const bitbucketTs = fs.readFileSync(
       path.join(
         getMcpsDir(),
-        "hybrid-proxy-mcp",
+        "source-repo-mcp",
         "src",
         "handlers",
         "bitbucket.ts"
@@ -174,7 +174,7 @@ describe("HybridProxyMcp", () => {
 
   test("types include normalization format", () => {
     const typesTs = fs.readFileSync(
-      path.join(getMcpsDir(), "hybrid-proxy-mcp", "src", "types.ts"),
+      path.join(getMcpsDir(), "source-repo-mcp", "src", "types.ts"),
       "utf-8"
     );
 
@@ -182,5 +182,78 @@ describe("HybridProxyMcp", () => {
     expect(typesTs).toContain("formatDiffResult");
     expect(typesTs).toContain("platform");
     expect(typesTs).toContain("diff_content");
+  });
+
+  test("source code contains comment_on_pr tool definition", () => {
+    const mcpsDir = getMcpsDir();
+    const indexTs = fs.readFileSync(
+      path.join(mcpsDir, "source-repo-mcp", "src", "index.ts"),
+      "utf-8"
+    );
+
+    expect(indexTs).toContain("comment_on_pr");
+    expect(indexTs).toContain("comment");
+    expect(indexTs).toContain("routeCommentRequest");
+    expect(indexTs).toContain("formatCommentResult");
+  });
+
+  test("github handler contains comment endpoint", () => {
+    const githubTs = fs.readFileSync(
+      path.join(
+        getMcpsDir(),
+        "source-repo-mcp",
+        "src",
+        "handlers",
+        "github.ts"
+      ),
+      "utf-8"
+    );
+
+    expect(githubTs).toContain("commentOnGitHubPr");
+    expect(githubTs).toContain("/issues/");
+    expect(githubTs).toContain("/comments");
+    expect(githubTs).toContain("CommentResult");
+  });
+
+  test("bitbucket handler contains comment endpoint", () => {
+    const bitbucketTs = fs.readFileSync(
+      path.join(
+        getMcpsDir(),
+        "source-repo-mcp",
+        "src",
+        "handlers",
+        "bitbucket.ts"
+      ),
+      "utf-8"
+    );
+
+    expect(bitbucketTs).toContain("commentOnBitbucketPr");
+    expect(bitbucketTs).toContain("/comments");
+    expect(bitbucketTs).toContain("CommentResult");
+    expect(bitbucketTs).toContain("content");
+  });
+
+  test("types include comment result format", () => {
+    const typesTs = fs.readFileSync(
+      path.join(getMcpsDir(), "source-repo-mcp", "src", "types.ts"),
+      "utf-8"
+    );
+
+    expect(typesTs).toContain("CommentOnPrArgs");
+    expect(typesTs).toContain("CommentResult");
+    expect(typesTs).toContain("formatCommentResult");
+    expect(typesTs).toContain("comment_id");
+    expect(typesTs).toContain("comment_url");
+  });
+
+  test("router includes comment routing", () => {
+    const routerTs = fs.readFileSync(
+      path.join(getMcpsDir(), "source-repo-mcp", "src", "router.ts"),
+      "utf-8"
+    );
+
+    expect(routerTs).toContain("routeCommentRequest");
+    expect(routerTs).toContain("commentOnGitHubPr");
+    expect(routerTs).toContain("commentOnBitbucketPr");
   });
 });

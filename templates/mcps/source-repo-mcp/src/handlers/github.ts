@@ -5,7 +5,7 @@
  * Authenticates via Bearer token using the GITHUB_TOKEN environment variable.
  */
 
-import { GetPrDiffArgs, NormalizedDiffResult } from "../types.js";
+import { GetPrDiffArgs, NormalizedDiffResult, CommentOnPrArgs, CommentResult } from "../types.js";
 
 /**
  * Parse owner and repo from a GitHub URL.
@@ -72,5 +72,57 @@ export async function getGitHubDiff(
     repository: `${owner}/${repo}`,
     pr_identifier: String(prNumber),
     diff_content: diffContent,
+  };
+}
+
+/**
+ * Post a general comment on a GitHub PR using the REST API.
+ */
+export async function commentOnGitHubPr(
+  args: CommentOnPrArgs,
+): Promise<CommentResult> {
+  const { owner, repo } = parseGitHubUrl(args.repo_url);
+  const prNumber = Number(args.pr_identifier);
+
+  if (Number.isNaN(prNumber)) {
+    throw new Error(
+      `Invalid PR identifier for GitHub: "${args.pr_identifier}". Must be a number.`,
+    );
+  }
+
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (!githubToken) {
+    throw new Error(
+      "GITHUB_TOKEN environment variable is required for GitHub operations.",
+    );
+  }
+
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues/${prNumber}/comments`;
+
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${githubToken}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+      "User-Agent": "source-repo-mcp",
+    },
+    body: JSON.stringify({ body: args.comment }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `GitHub API error ${response.status}: ${response.statusText} for ${apiUrl}`,
+    );
+  }
+
+  const data = (await response.json()) as { id: number; html_url: string };
+
+  return {
+    platform: "github",
+    repository: `${owner}/${repo}`,
+    pr_identifier: String(prNumber),
+    comment_id: String(data.id),
+    comment_url: data.html_url,
   };
 }

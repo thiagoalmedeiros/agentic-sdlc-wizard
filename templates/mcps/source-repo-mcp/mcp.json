@@ -1,5 +1,5 @@
 {
-  "name": "hybrid-proxy-mcp",
+  "name": "source-repo-mcp",
   "command": "node",
   "module": "dist/index.js",
   "env": [

@@ -1,5 +1,6 @@
 {
   "name": "bitbucket-mcp",
+  "enabled": false,
   "command": "node",
   "module": "server.js",
   "env": [

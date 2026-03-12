@@ -228,29 +228,40 @@ describe("ReadMcpConfig", () => {
   });
 });
 
-describe("BraveSearchMcp", () => {
-  test("brave search uses npx config", () => {
+describe("DisabledMcps", () => {
+  test("disabled MCPs are excluded from install all", () => {
     writeConfig(testDir, { ides: [IDE_VSCODE] });
 
-    const { installSelectedMcps } = require("../src/commands/install-mcps");
-    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+    const { installAllCommand } = require("../src/commands/install-all");
+    installAllCommand(testDir);
 
-    // Verify no files were copied (npx MCP)
-    expect(
-      fs.existsSync(path.join(testDir, ".wizard-mcps", "brave-search-mcp"))
-    ).toBe(false);
-
-    // Verify mcp.json
     const mcpConfigPath = path.join(testDir, ".vscode", "mcp.json");
-    expect(fs.existsSync(mcpConfigPath)).toBe(true);
-    const written = JSON.parse(fs.readFileSync(mcpConfigPath, "utf-8"));
-    expect(written.servers["brave-search-mcp"]).toBeDefined();
-    expect(written.servers["brave-search-mcp"].command).toBe("npx");
-    expect(written.servers["brave-search-mcp"].args).toEqual([
-      "-y",
-      "@modelcontextprotocol/server-brave-search",
-    ]);
-    expect(written.servers["brave-search-mcp"].env.BRAVE_API_KEY).toBeDefined();
+    const mcpConfig = JSON.parse(fs.readFileSync(mcpConfigPath, "utf-8"));
+
+    // Disabled MCPs should not be installed
+    expect(mcpConfig.servers["brave-search-mcp"]).toBeUndefined();
+    expect(mcpConfig.servers["bitbucket-mcp"]).toBeUndefined();
+
+    // Only source-repo-mcp should be installed
+    expect(mcpConfig.servers["source-repo-mcp"]).toBeDefined();
+  });
+
+  test("brave-search-mcp has enabled false", () => {
+    const { readMcpConfig } = require("../src/commands/install-mcps");
+    const mcpJsonPath = path.join(
+      getMcpsDir(),
+      "brave-search-mcp",
+      "mcp.json"
+    );
+    const config = readMcpConfig(mcpJsonPath);
+    expect(config.enabled).toBe(false);
+  });
+
+  test("bitbucket-mcp has enabled false", () => {
+    const { readMcpConfig } = require("../src/commands/install-mcps");
+    const mcpJsonPath = path.join(getMcpsDir(), "bitbucket-mcp", "mcp.json");
+    const config = readMcpConfig(mcpJsonPath);
+    expect(config.enabled).toBe(false);
   });
 });
 
@@ -286,37 +297,26 @@ describe("InstallAll", () => {
     expect(fs.existsSync(mcpConfigPath)).toBe(true);
     const mcpConfig = JSON.parse(fs.readFileSync(mcpConfigPath, "utf-8"));
 
-    // Bitbucket uses node (custom MCP, files copied)
-    expect(mcpConfig.servers["bitbucket-mcp"]).toBeDefined();
-    expect(mcpConfig.servers["bitbucket-mcp"].command).toBe("node");
+    // Only source-repo-mcp should be installed (brave-search and bitbucket are disabled)
+    expect(mcpConfig.servers["source-repo-mcp"]).toBeDefined();
+    expect(mcpConfig.servers["source-repo-mcp"].command).toBe("node");
     expect(
       fs.existsSync(
-        path.join(testDir, ".wizard-mcps", "bitbucket-mcp", "server.js")
+        path.join(testDir, ".wizard-mcps", "source-repo-mcp", "src", "index.ts")
       )
     ).toBe(true);
 
-    // Verify relative path is used for bitbucket MCP args
-    const bitbucketArgs = mcpConfig.servers["bitbucket-mcp"].args;
-    expect(bitbucketArgs.length).toBe(1);
-    expect(path.isAbsolute(bitbucketArgs[0])).toBe(false);
-    expect(bitbucketArgs[0]).toBe(
-      path.join(".wizard-mcps", "bitbucket-mcp", "server.js")
+    // Verify relative path is used for source-repo MCP args
+    const sourceRepoArgs = mcpConfig.servers["source-repo-mcp"].args;
+    expect(sourceRepoArgs.length).toBe(1);
+    expect(path.isAbsolute(sourceRepoArgs[0])).toBe(false);
+    expect(sourceRepoArgs[0]).toBe(
+      path.join(".wizard-mcps", "source-repo-mcp", "dist", "index.js")
     );
 
-    // Verify BITBUCKET_URL uses default value (not input prompt)
-    expect(mcpConfig.servers["bitbucket-mcp"].env.BITBUCKET_URL).toBe(
-      "https://api.bitbucket.org/2.0"
-    );
-    expect(mcpConfig.servers["bitbucket-mcp"].env.BITBUCKET_TOKEN).toBe(
-      "${input:BITBUCKET_TOKEN}"
-    );
-
-    // Brave Search uses npx (standard npm package, no files copied)
-    expect(mcpConfig.servers["brave-search-mcp"]).toBeDefined();
-    expect(mcpConfig.servers["brave-search-mcp"].command).toBe("npx");
-    expect(
-      fs.existsSync(path.join(testDir, ".wizard-mcps", "brave-search-mcp"))
-    ).toBe(false);
+    // Disabled MCPs should not be present
+    expect(mcpConfig.servers["bitbucket-mcp"]).toBeUndefined();
+    expect(mcpConfig.servers["brave-search-mcp"]).toBeUndefined();
 
     // Verify .gitignore was updated with installed paths
     const gitignore = fs.readFileSync(
@@ -349,7 +349,7 @@ describe("Gitignore", () => {
   test("install MCPs updates .gitignore with mcp config and wizard-mcps", () => {
     writeConfig(testDir, { ides: [IDE_VSCODE] });
     const { installSelectedMcps } = require("../src/commands/install-mcps");
-    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["source-repo-mcp"]);
 
     const gitignore = fs.readFileSync(
       path.join(testDir, ".gitignore"),
@@ -362,8 +362,8 @@ describe("Gitignore", () => {
   test("install MCPs does not duplicate .gitignore entries on re-run", () => {
     writeConfig(testDir, { ides: [IDE_VSCODE] });
     const { installSelectedMcps } = require("../src/commands/install-mcps");
-    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
-    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["brave-search-mcp"]);
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["source-repo-mcp"]);
+    installSelectedMcps(testDir, { ides: [IDE_VSCODE] }, ["source-repo-mcp"]);
 
     const gitignore = fs.readFileSync(
       path.join(testDir, ".gitignore"),
@@ -380,7 +380,7 @@ describe("Gitignore", () => {
     installSelectedMcps(
       testDir,
       { ides: [IDE_ANTIGRAVITY] },
-      ["brave-search-mcp"]
+      ["source-repo-mcp"]
     );
 
     const gitignore = fs.readFileSync(

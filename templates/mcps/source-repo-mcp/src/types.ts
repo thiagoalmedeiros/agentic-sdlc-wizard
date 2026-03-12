@@ -24,6 +24,22 @@ export interface NormalizedDiffResult {
   diff_content: string;
 }
 
+/** Input arguments for the comment_on_pr tool. */
+export interface CommentOnPrArgs {
+  repo_url: string;
+  pr_identifier: string;
+  comment: string;
+}
+
+/** Result returned after posting a PR comment. */
+export interface CommentResult {
+  platform: Platform;
+  repository: string;
+  pr_identifier: string;
+  comment_id: string;
+  comment_url: string;
+}
+
 /**
  * Format a {@link NormalizedDiffResult} into a stable text block that the
  * upstream AI agent can parse regardless of which platform produced it.
@@ -37,5 +53,20 @@ export function formatDiffResult(result: NormalizedDiffResult): string {
     ``,
     result.diff_content,
     `=== End of Diff ===`,
+  ].join("\n");
+}
+
+/**
+ * Format a {@link CommentResult} into a stable text block.
+ */
+export function formatCommentResult(result: CommentResult): string {
+  return [
+    `=== Pull Request Comment ===`,
+    `Platform: ${result.platform}`,
+    `Repository: ${result.repository}`,
+    `PR Identifier: ${result.pr_identifier}`,
+    `Comment ID: ${result.comment_id}`,
+    `Comment URL: ${result.comment_url}`,
+    `=== End of Comment ===`,
   ].join("\n");
 }

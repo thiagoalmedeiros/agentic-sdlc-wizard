@@ -7,7 +7,7 @@
  */
 
 import axios, { type AxiosInstance } from "axios";
-import { GetPrDiffArgs, NormalizedDiffResult } from "../types.js";
+import { GetPrDiffArgs, NormalizedDiffResult, CommentOnPrArgs, CommentResult } from "../types.js";
 
 /**
  * Parse workspace and repo slug from a Bitbucket URL.
@@ -98,5 +98,41 @@ export async function getBitbucketDiff(
     repository: `${workspace}/${repoSlug}`,
     pr_identifier: String(prId),
     diff_content: response.data as string,
+  };
+}
+
+/**
+ * Post a general comment on a Bitbucket PR via the REST API.
+ */
+export async function commentOnBitbucketPr(
+  args: CommentOnPrArgs,
+  client: AxiosInstance = createBitbucketClient(),
+): Promise<CommentResult> {
+  const { workspace, repoSlug } = parseBitbucketUrl(args.repo_url);
+  const prId = args.pr_identifier;
+
+  const response = await client.post(
+    `/repositories/${workspace}/${repoSlug}/pullrequests/${prId}/comments`,
+    { content: { raw: args.comment } },
+    {
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+
+  const data = response.data as {
+    id: number;
+    links?: { html?: { href?: string } };
+  };
+
+  const commentUrl =
+    data.links?.html?.href ??
+    `https://bitbucket.org/${workspace}/${repoSlug}/pull-requests/${prId}`;
+
+  return {
+    platform: "bitbucket",
+    repository: `${workspace}/${repoSlug}`,
+    pr_identifier: String(prId),
+    comment_id: String(data.id),
+    comment_url: commentUrl,
   };
 }

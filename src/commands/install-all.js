@@ -11,7 +11,7 @@ const {
   readConfig,
   updateGitignore,
 } = require("../config");
-const { installSelectedMcps } = require("./install-mcps");
+const { installSelectedMcps, readMcpConfig } = require("./install-mcps");
 
 async function installAllCommand(cwd) {
   cwd = cwd || process.cwd();
@@ -86,7 +86,11 @@ function installAllMcps(cwd, config) {
   const mcpDirs = fs
     .readdirSync(mcpsDir, { withFileTypes: true })
     .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+    .map((d) => d.name)
+    .filter((name) => {
+      const meta = readMcpConfig(path.join(mcpsDir, name, "mcp.json"));
+      return meta.enabled !== false;
+    });
 
   if (mcpDirs.length === 0) {
     console.log("No MCP server templates available.");

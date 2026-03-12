@@ -1,7 +1,7 @@
 {
-  "name": "hybrid-proxy-mcp",
+  "name": "source-repo-mcp",
   "version": "1.0.0",
-  "description": "Hybrid Proxy MCP server that unifies GitHub and Bitbucket PR diffs",
+  "description": "Source Repo MCP server that unifies GitHub and Bitbucket PR operations",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
