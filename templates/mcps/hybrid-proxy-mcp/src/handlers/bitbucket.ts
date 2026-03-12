@@ -2,8 +2,8 @@
  * Bitbucket handler — Direct REST API integration.
  *
  * Uses the Bitbucket 2.0 REST API directly (no secondary MCP server).
- * Authenticates via Basic Auth with BITBUCKET_USERNAME and
- * BITBUCKET_APP_PASSWORD environment variables.
+ * Authenticates via Basic Auth with BITBUCKET_EMAIL and
+ * BITBUCKET_TOKEN environment variables.
  */
 
 import { GetPrDiffArgs, NormalizedDiffResult } from "../types.js";
@@ -34,17 +34,17 @@ export function parseBitbucketUrl(
  * Build the Authorization header for Bitbucket Basic Auth.
  */
 function getBitbucketAuthHeader(): string {
-  const username = process.env.BITBUCKET_USERNAME;
-  const appPassword = process.env.BITBUCKET_APP_PASSWORD;
+  const email = process.env.BITBUCKET_EMAIL;
+  const token = process.env.BITBUCKET_TOKEN;
 
-  if (!username || !appPassword) {
+  if (!email || !token) {
     throw new Error(
-      "BITBUCKET_USERNAME and BITBUCKET_APP_PASSWORD environment variables " +
+      "BITBUCKET_EMAIL and BITBUCKET_TOKEN environment variables " +
       "are required for Bitbucket operations.",
     );
   }
 
-  const encoded = Buffer.from(`${username}:${appPassword}`).toString("base64");
+  const encoded = Buffer.from(`${email}:${token}`).toString("base64");
   return `Basic ${encoded}`;
 }
 

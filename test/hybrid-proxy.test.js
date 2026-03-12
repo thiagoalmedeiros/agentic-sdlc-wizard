@@ -54,8 +54,8 @@ describe("HybridProxyMcp", () => {
 
     const envNames = config.env.map((e) => e.name);
     expect(envNames).toContain("GITHUB_TOKEN");
-    expect(envNames).toContain("BITBUCKET_USERNAME");
-    expect(envNames).toContain("BITBUCKET_APP_PASSWORD");
+    expect(envNames).toContain("BITBUCKET_EMAIL");
+    expect(envNames).toContain("BITBUCKET_TOKEN");
   });
 
   test("package.json has MCP SDK dependency", () => {
@@ -103,8 +103,8 @@ describe("HybridProxyMcp", () => {
     // Verify env variables are set as input prompts (no defaults)
     const env = written.servers["hybrid-proxy-mcp"].env;
     expect(env.GITHUB_TOKEN).toBe("${input:GITHUB_TOKEN}");
-    expect(env.BITBUCKET_USERNAME).toBe("${input:BITBUCKET_USERNAME}");
-    expect(env.BITBUCKET_APP_PASSWORD).toBe("${input:BITBUCKET_APP_PASSWORD}");
+    expect(env.BITBUCKET_EMAIL).toBe("${input:BITBUCKET_EMAIL}");
+    expect(env.BITBUCKET_TOKEN).toBe("${input:BITBUCKET_TOKEN}");
   });
 
   test("source code contains get_pr_diff tool definition", () => {
@@ -164,8 +164,8 @@ describe("HybridProxyMcp", () => {
     );
 
     expect(bitbucketTs).toContain("api.bitbucket.org/2.0");
-    expect(bitbucketTs).toContain("BITBUCKET_USERNAME");
-    expect(bitbucketTs).toContain("BITBUCKET_APP_PASSWORD");
+    expect(bitbucketTs).toContain("BITBUCKET_EMAIL");
+    expect(bitbucketTs).toContain("BITBUCKET_TOKEN");
     expect(bitbucketTs).toContain("fetch");
     // Should NOT use an MCP Client
     expect(bitbucketTs).not.toContain("StdioClientTransport");

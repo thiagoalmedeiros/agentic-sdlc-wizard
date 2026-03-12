@@ -129,8 +129,8 @@ const server = new McpServer("bitbucket-mcp", [
     required: true,
   },
   {
-    name: "BITBUCKET_USERNAME",
-    description: "Bitbucket username",
+    name: "BITBUCKET_EMAIL",
+    description: "Bitbucket email",
     required: false,
   },
 ]);

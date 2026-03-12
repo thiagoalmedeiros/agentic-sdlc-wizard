@@ -9,13 +9,13 @@
       "required": false
     },
     {
-      "name": "BITBUCKET_USERNAME",
-      "description": "Bitbucket username for Basic Auth",
+      "name": "BITBUCKET_EMAIL",
+      "description": "Bitbucket email for Basic Auth",
       "required": false
     },
     {
-      "name": "BITBUCKET_APP_PASSWORD",
-      "description": "Bitbucket app password for Basic Auth",
+      "name": "BITBUCKET_TOKEN",
+      "description": "Bitbucket token for Basic Auth",
       "required": false
     }
   ]
