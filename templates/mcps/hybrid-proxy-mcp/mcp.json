@@ -1,0 +1,22 @@
+{
+  "name": "hybrid-proxy-mcp",
+  "command": "node",
+  "module": "dist/index.js",
+  "env": [
+    {
+      "name": "GITHUB_TOKEN",
+      "description": "GitHub personal access token for PR access",
+      "required": false
+    },
+    {
+      "name": "BITBUCKET_USERNAME",
+      "description": "Bitbucket username for Basic Auth",
+      "required": false
+    },
+    {
+      "name": "BITBUCKET_APP_PASSWORD",
+      "description": "Bitbucket app password for Basic Auth",
+      "required": false
+    }
+  ]
+}
