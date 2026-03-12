@@ -1,12 +1,10 @@
 /**
- * GitHub handler — MCP-to-MCP proxy.
+ * GitHub handler — Direct REST API integration.
  *
- * Spawns the official GitHub MCP server as a child process and communicates
- * with it over stdio using the MCP SDK Client.
+ * Uses the GitHub REST API directly (no secondary MCP server).
+ * Authenticates via Bearer token using the GITHUB_TOKEN environment variable.
  */
 
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { GetPrDiffArgs, NormalizedDiffResult } from "../types.js";
 
 /**
@@ -30,7 +28,7 @@ export function parseGitHubUrl(repoUrl: string): { owner: string; repo: string }
 }
 
 /**
- * Fetch a PR diff from GitHub by proxying through the official GitHub MCP server.
+ * Fetch a PR diff from GitHub using the REST API directly.
  */
 export async function getGitHubDiff(
   args: GetPrDiffArgs,
@@ -51,40 +49,28 @@ export async function getGitHubDiff(
     );
   }
 
-  const transport = new StdioClientTransport({
-    command: "npx",
-    args: ["-y", "@modelcontextprotocol/server-github"],
-    env: {
-      ...process.env as Record<string, string>,
-      GITHUB_PERSONAL_ACCESS_TOKEN: githubToken,
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`;
+
+  const response = await fetch(apiUrl, {
+    headers: {
+      Authorization: `Bearer ${githubToken}`,
+      Accept: "application/vnd.github.diff",
+      "User-Agent": "hybrid-proxy-mcp",
     },
   });
 
-  const client = new Client({ name: "hybrid-proxy", version: "1.0.0" });
-
-  try {
-    await client.connect(transport);
-
-    const result = await client.callTool({
-      name: "get_pull_request",
-      arguments: { owner, repo, pull_number: prNumber },
-    });
-
-    const textContent =
-      Array.isArray(result.content)
-        ? result.content
-            .filter((c): c is { type: "text"; text: string } => c.type === "text")
-            .map((c) => c.text)
-            .join("\n")
-        : String(result.content);
-
-    return {
-      platform: "github",
-      repository: `${owner}/${repo}`,
-      pr_identifier: String(prNumber),
-      diff_content: textContent,
-    };
-  } finally {
-    await client.close();
+  if (!response.ok) {
+    throw new Error(
+      `GitHub API error ${response.status}: ${response.statusText} for ${apiUrl}`,
+    );
   }
+
+  const diffContent = await response.text();
+
+  return {
+    platform: "github",
+    repository: `${owner}/${repo}`,
+    pr_identifier: String(prNumber),
+    diff_content: diffContent,
+  };
 }

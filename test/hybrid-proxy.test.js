@@ -132,7 +132,7 @@ describe("HybridProxyMcp", () => {
     expect(routerTs).toContain("Unsupported platform");
   });
 
-  test("github handler uses MCP Client for proxy", () => {
+  test("github handler uses direct REST API", () => {
     const githubTs = fs.readFileSync(
       path.join(
         getMcpsDir(),
@@ -144,11 +144,12 @@ describe("HybridProxyMcp", () => {
       "utf-8"
     );
 
-    expect(githubTs).toContain("Client");
-    expect(githubTs).toContain("StdioClientTransport");
-    expect(githubTs).toContain("@modelcontextprotocol/server-github");
+    expect(githubTs).toContain("api.github.com");
     expect(githubTs).toContain("GITHUB_TOKEN");
-    expect(githubTs).toContain("get_pull_request");
+    expect(githubTs).toContain("application/vnd.github.diff");
+    // Should NOT use the GitHub MCP server as a proxy
+    expect(githubTs).not.toContain("StdioClientTransport");
+    expect(githubTs).not.toContain("@modelcontextprotocol/server-github");
   });
 
   test("bitbucket handler uses direct REST API", () => {
