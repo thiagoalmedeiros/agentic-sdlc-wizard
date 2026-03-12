@@ -6,6 +6,7 @@
  * BITBUCKET_TOKEN environment variables.
  */
 
+import axios, { type AxiosInstance } from "axios";
 import { GetPrDiffArgs, NormalizedDiffResult } from "../types.js";
 
 /**
@@ -31,9 +32,13 @@ export function parseBitbucketUrl(
 }
 
 /**
- * Build the Authorization header for Bitbucket Basic Auth.
+ * Create an axios client for Bitbucket API with auth-aware redirect handling.
+ *
+ * The Bitbucket diff endpoint (and others) returns a 302 redirect.
+ * By default, axios strips auth headers on redirects. This client
+ * disables automatic redirects and follows them manually with auth intact.
  */
-function getBitbucketAuthHeader(): string {
+export function createBitbucketClient(): AxiosInstance {
   const email = process.env.BITBUCKET_EMAIL;
   const token = process.env.BITBUCKET_TOKEN;
 
@@ -44,8 +49,30 @@ function getBitbucketAuthHeader(): string {
     );
   }
 
-  const encoded = Buffer.from(`${email}:${token}`).toString("base64");
-  return `Basic ${encoded}`;
+  const client = axios.create({
+    baseURL: "https://api.bitbucket.org/2.0",
+    auth: {
+      username: email,
+      password: token,
+    },
+    maxRedirects: 0,
+    validateStatus: (s: number) => (s >= 200 && s < 300) || s === 302,
+  });
+
+  client.interceptors.response.use(async (response) => {
+    if (response.status === 302 && response.headers.location) {
+      return client.request({
+        ...response.config,
+        url: response.headers.location,
+        baseURL: undefined,
+        maxRedirects: 5,
+        validateStatus: (s: number) => s >= 200 && s < 300,
+      });
+    }
+    return response;
+  });
+
+  return client;
 }
 
 /**
@@ -53,32 +80,23 @@ function getBitbucketAuthHeader(): string {
  */
 export async function getBitbucketDiff(
   args: GetPrDiffArgs,
+  client: AxiosInstance = createBitbucketClient(),
 ): Promise<NormalizedDiffResult> {
   const { workspace, repoSlug } = parseBitbucketUrl(args.repo_url);
   const prId = args.pr_identifier;
 
-  const apiUrl =
-    `https://api.bitbucket.org/2.0/repositories/${workspace}/${repoSlug}/pullrequests/${prId}/diff`;
-
-  const response = await fetch(apiUrl, {
-    headers: {
-      Authorization: getBitbucketAuthHeader(),
-      Accept: "text/plain",
+  const response = await client.get(
+    `/repositories/${workspace}/${repoSlug}/pullrequests/${prId}/diff`,
+    {
+      headers: { Accept: "text/plain" },
+      responseType: "text",
     },
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Bitbucket API error: ${response.status} ${response.statusText} for ${apiUrl}`,
-    );
-  }
-
-  const diffContent = await response.text();
+  );
 
   return {
     platform: "bitbucket",
     repository: `${workspace}/${repoSlug}`,
     pr_identifier: String(prId),
-    diff_content: diffContent,
+    diff_content: response.data as string,
   };
 }

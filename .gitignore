@@ -1,3 +1,6 @@
 node_modules/
 .test-workspace/
 dist/
+.vscode/mcp.json
+.wizard-mcps/
+.wizard.json

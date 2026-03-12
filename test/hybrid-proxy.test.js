@@ -166,7 +166,7 @@ describe("HybridProxyMcp", () => {
     expect(bitbucketTs).toContain("api.bitbucket.org/2.0");
     expect(bitbucketTs).toContain("BITBUCKET_EMAIL");
     expect(bitbucketTs).toContain("BITBUCKET_TOKEN");
-    expect(bitbucketTs).toContain("fetch");
+    expect(bitbucketTs).toContain("axios");
     // Should NOT use an MCP Client
     expect(bitbucketTs).not.toContain("StdioClientTransport");
   });
