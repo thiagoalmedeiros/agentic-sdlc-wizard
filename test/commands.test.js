@@ -184,7 +184,7 @@ describe("ReadMcpConfig", () => {
     expect(config.env[0].default).toBe("https://api.bitbucket.org/2.0");
     expect(config.env[1].name).toBe("BITBUCKET_TOKEN");
     expect(config.env[1].required).toBe(true);
-    expect(config.env[2].name).toBe("BITBUCKET_USERNAME");
+    expect(config.env[2].name).toBe("BITBUCKET_EMAIL");
     expect(config.env[2].required).toBe(false);
   });
 
