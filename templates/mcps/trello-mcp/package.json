@@ -1,0 +1,6 @@
+{
+  "name": "trello-mcp",
+  "version": "1.0.0",
+  "description": "Trello MCP server for agentic SDLC",
+  "main": "server.js"
+}

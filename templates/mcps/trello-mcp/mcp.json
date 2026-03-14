@@ -1,0 +1,23 @@
+{
+  "name": "trello-mcp",
+  "command": "node",
+  "module": "server.js",
+  "env": [
+    {
+      "name": "TRELLO_API_KEY",
+      "description": "Trello API key",
+      "required": true
+    },
+    {
+      "name": "TRELLO_TOKEN",
+      "description": "Trello personal access token",
+      "required": true
+    },
+    {
+      "name": "TRELLO_BASE_URL",
+      "description": "Trello API base URL",
+      "required": false,
+      "default": "https://api.trello.com/1"
+    }
+  ]
+}

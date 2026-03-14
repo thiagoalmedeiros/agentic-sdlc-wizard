@@ -170,6 +170,73 @@ describe("InstallMcps", () => {
     expect(result.servers["existing-mcp"]).toBeDefined();
     expect(result.servers["bitbucket-mcp"]).toBeDefined();
   });
+
+  test("copy trello mcp and create config for vscode", () => {
+    writeConfig(testDir, { ides: [IDE_VSCODE] });
+    const mcpsDir = getMcpsDir();
+    const mcpName = "trello-mcp";
+    const mcpSrcDir = path.join(mcpsDir, mcpName);
+
+    // Copy files
+    const mcpDestDir = path.join(testDir, ".wizard-mcps", mcpName);
+    fs.mkdirSync(mcpDestDir, { recursive: true });
+    for (const f of fs.readdirSync(mcpSrcDir)) {
+      fs.copyFileSync(path.join(mcpSrcDir, f), path.join(mcpDestDir, f));
+    }
+
+    // Verify files were copied
+    expect(fs.existsSync(path.join(mcpDestDir, "mcp.json"))).toBe(true);
+    expect(fs.existsSync(path.join(mcpDestDir, "server.js"))).toBe(true);
+    expect(fs.existsSync(path.join(mcpDestDir, "package.json"))).toBe(true);
+
+    // Read MCP config
+    const { readMcpConfig } = require("../src/commands/install-mcps");
+    const mcpMeta = readMcpConfig(path.join(mcpDestDir, "mcp.json"));
+
+    expect(mcpMeta.command).toBe("node");
+    expect(mcpMeta.module).toBe("server.js");
+
+    const envEntries = {};
+    for (const param of mcpMeta.env) {
+      if (param.default !== undefined) {
+        envEntries[param.name] = param.default;
+      } else {
+        envEntries[param.name] = "${input:" + param.name + "}";
+      }
+    }
+
+    const mcpConfig = {
+      servers: {
+        [mcpName]: {
+          type: "stdio",
+          command: "node",
+          args: [path.relative(testDir, path.join(mcpDestDir, "server.js"))],
+          env: envEntries,
+        },
+      },
+    };
+
+    const mcpConfigPath = path.join(testDir, ".vscode", "mcp.json");
+    fs.mkdirSync(path.dirname(mcpConfigPath), { recursive: true });
+    fs.writeFileSync(mcpConfigPath, JSON.stringify(mcpConfig, null, 2));
+
+    // Verify mcp.json
+    expect(fs.existsSync(mcpConfigPath)).toBe(true);
+    const written = JSON.parse(fs.readFileSync(mcpConfigPath, "utf-8"));
+    expect(written.servers[mcpName]).toBeDefined();
+    expect(written.servers[mcpName].type).toBe("stdio");
+    expect(written.servers[mcpName].command).toBe("node");
+    expect(written.servers[mcpName].env.TRELLO_BASE_URL).toBe(
+      "https://api.trello.com/1"
+    );
+    expect(written.servers[mcpName].env.TRELLO_API_KEY).toBe(
+      "${input:TRELLO_API_KEY}"
+    );
+    expect(written.servers[mcpName].env.TRELLO_TOKEN).toBe(
+      "${input:TRELLO_TOKEN}"
+    );
+    expect(path.isAbsolute(written.servers[mcpName].args[0])).toBe(false);
+  });
 });
 
 describe("ReadMcpConfig", () => {
@@ -226,6 +293,31 @@ describe("ReadMcpConfig", () => {
     expect(config.command).toBe("node");
     expect(config.module).toBe("server.js");
   });
+
+  test("read env params from trello mcp.json", () => {
+    const { readMcpConfig } = require("../src/commands/install-mcps");
+    const mcpJsonPath = path.join(getMcpsDir(), "trello-mcp", "mcp.json");
+    const config = readMcpConfig(mcpJsonPath);
+
+    expect(config.env.length).toBe(3);
+    expect(config.env[0].name).toBe("TRELLO_API_KEY");
+    expect(config.env[0].required).toBe(true);
+    expect(config.env[1].name).toBe("TRELLO_TOKEN");
+    expect(config.env[1].required).toBe(true);
+    expect(config.env[2].name).toBe("TRELLO_BASE_URL");
+    expect(config.env[2].required).toBe(false);
+    expect(config.env[2].default).toBe("https://api.trello.com/1");
+  });
+
+  test("read trello node mcp config", () => {
+    const { readMcpConfig } = require("../src/commands/install-mcps");
+    const mcpJsonPath = path.join(getMcpsDir(), "trello-mcp", "mcp.json");
+    const config = readMcpConfig(mcpJsonPath);
+
+    expect(config.command).toBe("node");
+    expect(config.module).toBe("server.js");
+    expect(config.enabled).toBeUndefined();
+  });
 });
 
 describe("DisabledMcps", () => {
@@ -242,8 +334,9 @@ describe("DisabledMcps", () => {
     expect(mcpConfig.servers["brave-search-mcp"]).toBeUndefined();
     expect(mcpConfig.servers["bitbucket-mcp"]).toBeUndefined();
 
-    // Only source-repo-mcp should be installed
+    // Enabled MCPs should be installed
     expect(mcpConfig.servers["source-repo-mcp"]).toBeDefined();
+    expect(mcpConfig.servers["trello-mcp"]).toBeDefined();
   });
 
   test("brave-search-mcp has enabled false", () => {
@@ -297,9 +390,11 @@ describe("InstallAll", () => {
     expect(fs.existsSync(mcpConfigPath)).toBe(true);
     const mcpConfig = JSON.parse(fs.readFileSync(mcpConfigPath, "utf-8"));
 
-    // Only source-repo-mcp should be installed (brave-search and bitbucket are disabled)
+    // Enabled MCPs should be installed (brave-search and bitbucket are disabled)
     expect(mcpConfig.servers["source-repo-mcp"]).toBeDefined();
     expect(mcpConfig.servers["source-repo-mcp"].command).toBe("node");
+    expect(mcpConfig.servers["trello-mcp"]).toBeDefined();
+    expect(mcpConfig.servers["trello-mcp"].command).toBe("node");
     expect(
       fs.existsSync(
         path.join(testDir, ".wizard-mcps", "source-repo-mcp", "src", "index.ts")

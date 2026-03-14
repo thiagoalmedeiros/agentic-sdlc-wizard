@@ -1,0 +1,32 @@
+{
+  "name": "source-ticket-mcp",
+  "command": "node",
+  "module": "dist/index.js",
+  "env": [
+    {
+      "name": "TRELLO_API_KEY",
+      "description": "Trello API key for card access",
+      "required": false
+    },
+    {
+      "name": "TRELLO_TOKEN",
+      "description": "Trello personal access token",
+      "required": false
+    },
+    {
+      "name": "JIRA_BASE_URL",
+      "description": "Jira instance base URL (e.g. https://yourcompany.atlassian.net)",
+      "required": false
+    },
+    {
+      "name": "JIRA_API_TOKEN",
+      "description": "Jira API token or Personal Access Token",
+      "required": false
+    },
+    {
+      "name": "JIRA_USER_EMAIL",
+      "description": "Jira user email for Basic Auth (Cloud). Omit for Bearer PAT (Server/DC)",
+      "required": false
+    }
+  ]
+}
