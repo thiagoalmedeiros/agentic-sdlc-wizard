@@ -5,6 +5,7 @@ const { installCommand } = require("./commands/install");
 const { installAgentsCommand } = require("./commands/install-agents");
 const { installPromptsCommand } = require("./commands/install-prompts");
 const { installMcpsCommand } = require("./commands/install-mcps");
+const { installDockerMcpsCommand } = require("./commands/install-docker-mcps");
 const { installAllCommand } = require("./commands/install-all");
 
 function printHelp() {
@@ -32,6 +33,7 @@ function printInstallHelp() {
       "  agents           Install AI agent definitions for your IDE\n" +
       "  prompts          Install prompt templates for your IDE\n" +
       "  mcps             Install and configure MCP servers for your IDE\n" +
+      "  docker-mcps      Generate Docker Compose setup for MCP servers with HTTP/SSE\n" +
       "  all              Install all agents, prompts, and MCP servers at once\n" +
       "\n" +
       "Options:\n" +
@@ -62,6 +64,8 @@ async function main() {
       await installPromptsCommand();
     } else if (sub === "mcps") {
       await installMcpsCommand();
+    } else if (sub === "docker-mcps") {
+      await installDockerMcpsCommand();
     } else if (sub === "all") {
       await installAllCommand();
     } else if (sub === "-h" || sub === "--help") {
