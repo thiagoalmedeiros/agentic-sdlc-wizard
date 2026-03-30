@@ -24,7 +24,8 @@ async function installDockerMcpsCommand(cwd) {
     return;
   }
 
-  const defaultName = imageName.split("/").pop().split(":")[0];
+  const lastSegment = imageName.split("/").pop();
+  const defaultName = lastSegment.replace(/:.*$/, "");
   const serviceName = await input({
     message: "Enter a service name:",
     default: defaultName,
@@ -48,8 +49,10 @@ async function installDockerMcpsCommand(cwd) {
 
   while (addMore) {
     const key = await input({ message: "Variable name:" });
-    const value = await input({ message: `Value for ${key}:` });
-    envVars[key] = value;
+    if (key && key.trim() !== "") {
+      const value = await input({ message: `Value for ${key}:` });
+      envVars[key] = value;
+    }
     addMore = await confirm({
       message: "Add another environment variable?",
       default: false,
