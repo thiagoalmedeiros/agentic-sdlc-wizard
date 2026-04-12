@@ -1,6 +1,0 @@
-{
-  "name": "bitbucket-mcp",
-  "version": "1.0.0",
-  "description": "Bitbucket MCP server for agentic SDLC",
-  "main": "server.js"
-}
