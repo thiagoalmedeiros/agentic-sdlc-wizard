@@ -4,9 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const CONFIG_FILE = ".wizard.json";
-
-const IDE_VSCODE = "vscode";
-const IDE_ANTIGRAVITY = "antigravity";
+const VERSION = "1.0.0";
 
 const TEMPLATES_DIR = path.join(__dirname, "..", "templates");
 
@@ -31,48 +29,12 @@ function getTemplatesDir() {
   return TEMPLATES_DIR;
 }
 
-function getAgentsDir() {
-  return path.join(TEMPLATES_DIR, "agents");
+function getSkillsDir() {
+  return path.join(TEMPLATES_DIR, "skills");
 }
 
 function getPromptsDir() {
   return path.join(TEMPLATES_DIR, "prompts");
-}
-
-function getMcpsDir() {
-  return path.join(TEMPLATES_DIR, "mcps");
-}
-
-function getIdeAgentsTarget(cwd, ides) {
-  const targets = {};
-  if (ides.includes(IDE_VSCODE)) {
-    targets[IDE_VSCODE] = path.join(cwd, ".vscode", "agents");
-  }
-  if (ides.includes(IDE_ANTIGRAVITY)) {
-    targets[IDE_ANTIGRAVITY] = path.join(cwd, ".gemini", "agents");
-  }
-  return targets;
-}
-
-function getIdePromptsTarget(cwd, ides) {
-  const targets = {};
-  if (ides.includes(IDE_VSCODE)) {
-    targets[IDE_VSCODE] = path.join(cwd, ".vscode", "prompts");
-  }
-  if (ides.includes(IDE_ANTIGRAVITY)) {
-    targets[IDE_ANTIGRAVITY] = path.join(cwd, ".gemini", "prompts");
-  }
-  return targets;
-}
-
-function getMcpConfigPath(cwd, ide) {
-  if (ide === IDE_VSCODE) {
-    return path.join(cwd, ".vscode", "mcp.json");
-  }
-  if (ide === IDE_ANTIGRAVITY) {
-    return path.join(cwd, ".gemini", "mcp.json");
-  }
-  return null;
 }
 
 function getGitignorePath(cwd) {
@@ -96,19 +58,14 @@ function updateGitignore(cwd, entries) {
 
 module.exports = {
   CONFIG_FILE,
-  IDE_VSCODE,
-  IDE_ANTIGRAVITY,
+  VERSION,
   TEMPLATES_DIR,
   getConfigPath,
   readConfig,
   writeConfig,
   getTemplatesDir,
-  getAgentsDir,
+  getSkillsDir,
   getPromptsDir,
-  getMcpsDir,
-  getIdeAgentsTarget,
-  getIdePromptsTarget,
-  getMcpConfigPath,
   getGitignorePath,
   updateGitignore,
 };

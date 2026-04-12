@@ -1,6 +1,6 @@
-# Agentic SDLC Wizard
+# SDLC Wizard
 
-Install and configure AI agents, prompts, and MCP servers for your IDE.
+Configure your development environment with AI coding agents (Copilot, Codex, or Claude).
 
 ## Installation
 
@@ -17,69 +17,53 @@ npm link
 
 ## Usage
 
-### 1. Initialize configuration
+### 1. Install the wizard
 
-Run `wizard install` in your project folder. A multi-select prompt will ask which IDEs you need support for (VS Code, Antigravity). Your selection is saved to `.wizard.json`.
+Run `wizard install` in your project folder. This creates the configuration file (`.wizard.json`), installs prompt files and skills.
 
 ```bash
 wizard install
 ```
 
-### 2. Install agents
+The install command will:
+- Create `.wizard.json` with version and step tracking
+- Install the `/sdlc-wizard` prompt to `.github/prompts/` (Copilot) and `.claude/commands/` (Claude)
+- Install skills to `.claude/skills/` (readable by both Copilot and Claude)
 
-Run `wizard install agents` to choose agent definitions. Selected agents are copied to `.vscode/agents/` and/or `.antigravity/agents/` so they appear as custom agents in your IDE chat window.
+### 2. Use the wizard in your IDE
 
-```bash
-wizard install agents
+Open your IDE chat window with any AI coding agent (Copilot, Codex, or Claude) and invoke:
+
+```
+/sdlc-wizard
 ```
 
-### 3. Install prompts
+The wizard will interactively guide you through configuration steps. Currently available:
 
-Run `wizard install prompts` to choose prompt templates. Selected prompts are copied to the IDE-specific prompts directory.
+- **DevContainer** — Set up a `.devcontainer` environment with Docker Compose, Dockerfile, and devcontainer.json
 
-```bash
-wizard install prompts
-```
+## How it works
 
-### 4. Install MCP servers
-
-Run `wizard install mcps` to choose MCP servers (e.g. Bitbucket, Brave Search). Your IDE's `mcp.json` is configured automatically. Environment variables are referenced using `${input:VAR_NAME}` so the IDE can prompt for them.
-
-```bash
-wizard install mcps
-```
-
-MCP servers come in two flavors:
-
-- **Standard (npx)** – Published npm packages like `@modelcontextprotocol/server-brave-search` are run via `npx` with no local files needed.
-- **Custom (node)** – Project-specific servers (e.g. Bitbucket) are copied to `.wizard-mcps/` and run via `node`.
-
-### 5. Install everything at once
-
-Run `wizard install all` to install all available agents, prompts, and MCP servers at once without interactive selection.
-
-```bash
-wizard install all
-```
+1. The `/sdlc-wizard` prompt starts an interactive conversation
+2. You choose which step to configure (e.g., DevContainer)
+3. The agent analyzes your codebase and asks clarifying questions
+4. Once confirmed, a subagent creates the configuration files
+5. The setup is validated (e.g., Docker build and start)
+6. `.wizard.json` is updated to track completed steps
 
 ## Project Structure
 
 ```
-src/                 - Node.js CLI source
-  cli.js             - CLI entry point and argument routing
-  config.js          - Configuration management
-  commands/          - Command implementations
-    install.js       - IDE selection
-    install-agents.js  - Agent installation
-    install-prompts.js - Prompt installation
-    install-all.js     - Install all components at once
-    install-mcps.js    - MCP server installation
+src/                  - Node.js CLI source
+  cli.js              - CLI entry point and argument routing
+  config.js           - Configuration management
+  commands/
+    install.js        - Install command (config + prompts + skills)
 templates/
-  agents/            - Agent definition markdown files
-  prompts/           - Prompt template markdown files
-  mcps/              - MCP server configurations
-    bitbucket-mcp/   - Bitbucket MCP server (Node.js, custom)
-    brave-search-mcp/ - Brave Search MCP (npx, @modelcontextprotocol)
+  prompts/            - Prompt templates (installed for Copilot and Claude)
+    sdlc-wizard.md    - Interactive wizard prompt
+  skills/             - Skill files (installed to .claude/skills/)
+    devcontainer-setup.md - DevContainer setup skill
 ```
 
 ## Development

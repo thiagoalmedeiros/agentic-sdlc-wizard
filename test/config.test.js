@@ -5,17 +5,12 @@ const os = require("os");
 const path = require("path");
 const {
   CONFIG_FILE,
-  IDE_VSCODE,
-  IDE_ANTIGRAVITY,
+  VERSION,
   getConfigPath,
   readConfig,
   writeConfig,
-  getAgentsDir,
+  getSkillsDir,
   getPromptsDir,
-  getMcpsDir,
-  getIdeAgentsTarget,
-  getIdePromptsTarget,
-  getMcpConfigPath,
   getGitignorePath,
   updateGitignore,
 } = require("../src/config");
@@ -39,14 +34,19 @@ test("readConfig returns null when missing", () => {
 });
 
 test("writeConfig and readConfig round-trip", () => {
-  const config = { ides: [IDE_VSCODE] };
+  const config = { version: VERSION, completedSteps: [] };
   writeConfig(testDir, config);
   expect(readConfig(testDir)).toEqual(config);
 });
 
-test("getAgentsDir ends with templates/agents", () => {
-  const d = getAgentsDir();
-  expect(d).toMatch(/templates[/\\]agents$/);
+test("VERSION is defined", () => {
+  expect(VERSION).toBeDefined();
+  expect(typeof VERSION).toBe("string");
+});
+
+test("getSkillsDir ends with templates/skills", () => {
+  const d = getSkillsDir();
+  expect(d).toMatch(/templates[/\\]skills$/);
 });
 
 test("getPromptsDir ends with templates/prompts", () => {
@@ -54,92 +54,37 @@ test("getPromptsDir ends with templates/prompts", () => {
   expect(d).toMatch(/templates[/\\]prompts$/);
 });
 
-test("getMcpsDir ends with templates/mcps", () => {
-  const d = getMcpsDir();
-  expect(d).toMatch(/templates[/\\]mcps$/);
-});
-
-test("getIdeAgentsTarget for vscode", () => {
-  const targets = getIdeAgentsTarget(testDir, [IDE_VSCODE]);
-  expect(targets[IDE_VSCODE]).toBe(path.join(testDir, ".vscode", "agents"));
-  expect(targets[IDE_ANTIGRAVITY]).toBeUndefined();
-});
-
-test("getIdeAgentsTarget for antigravity", () => {
-  const targets = getIdeAgentsTarget(testDir, [IDE_ANTIGRAVITY]);
-  expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".gemini", "agents")
-  );
-  expect(targets[IDE_VSCODE]).toBeUndefined();
-});
-
-test("getIdeAgentsTarget for both", () => {
-  const targets = getIdeAgentsTarget(testDir, [IDE_VSCODE, IDE_ANTIGRAVITY]);
-  expect(targets[IDE_VSCODE]).toBe(path.join(testDir, ".vscode", "agents"));
-  expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".gemini", "agents")
-  );
-});
-
-test("getIdePromptsTarget for vscode", () => {
-  const targets = getIdePromptsTarget(testDir, [IDE_VSCODE]);
-  expect(targets[IDE_VSCODE]).toBe(path.join(testDir, ".vscode", "prompts"));
-});
-
-test("getIdePromptsTarget for antigravity", () => {
-  const targets = getIdePromptsTarget(testDir, [IDE_ANTIGRAVITY]);
-  expect(targets[IDE_ANTIGRAVITY]).toBe(
-    path.join(testDir, ".gemini", "prompts")
-  );
-});
-
-test("getMcpConfigPath for vscode", () => {
-  expect(getMcpConfigPath(testDir, IDE_VSCODE)).toBe(
-    path.join(testDir, ".vscode", "mcp.json")
-  );
-});
-
-test("getMcpConfigPath for antigravity", () => {
-  expect(getMcpConfigPath(testDir, IDE_ANTIGRAVITY)).toBe(
-    path.join(testDir, ".gemini", "mcp.json")
-  );
-});
-
-test("getMcpConfigPath for unknown returns null", () => {
-  expect(getMcpConfigPath(testDir, "unknown")).toBeNull();
-});
-
 test("getGitignorePath returns path with .gitignore", () => {
   expect(getGitignorePath(testDir)).toBe(path.join(testDir, ".gitignore"));
 });
 
 test("updateGitignore creates .gitignore when missing", () => {
-  updateGitignore(testDir, [".vscode/agents/"]);
+  updateGitignore(testDir, [".claude/skills/"]);
   const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
-  expect(content).toContain(".vscode/agents/");
+  expect(content).toContain(".claude/skills/");
 });
 
 test("updateGitignore appends new entries", () => {
   fs.writeFileSync(path.join(testDir, ".gitignore"), "node_modules/\n");
-  updateGitignore(testDir, [".vscode/agents/"]);
+  updateGitignore(testDir, [".claude/skills/"]);
   const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
   expect(content).toContain("node_modules/");
-  expect(content).toContain(".vscode/agents/");
+  expect(content).toContain(".claude/skills/");
 });
 
 test("updateGitignore skips existing entries", () => {
-  fs.writeFileSync(path.join(testDir, ".gitignore"), ".vscode/agents/\n");
-  updateGitignore(testDir, [".vscode/agents/"]);
+  fs.writeFileSync(path.join(testDir, ".gitignore"), ".claude/skills/\n");
+  updateGitignore(testDir, [".claude/skills/"]);
   const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
   const occurrences = content
     .split("\n")
-    .filter((l) => l.trim() === ".vscode/agents/").length;
+    .filter((l) => l.trim() === ".claude/skills/").length;
   expect(occurrences).toBe(1);
 });
 
 test("updateGitignore adds multiple entries at once", () => {
-  updateGitignore(testDir, [".vscode/mcp.json", ".wizard-mcps/"]);
+  updateGitignore(testDir, [".github/prompts/", ".claude/commands/"]);
   const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
-  expect(content).toContain(".vscode/mcp.json");
-  expect(content).toContain(".wizard-mcps/");
+  expect(content).toContain(".github/prompts/");
+  expect(content).toContain(".claude/commands/");
 });
