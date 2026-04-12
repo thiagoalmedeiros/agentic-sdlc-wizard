@@ -178,7 +178,7 @@ Compare each file against the rules defined in the **New setup flow** section ab
 | 6 | `forwardPorts` populated | Must list all ports the app actually exposes |
 | 7 | VS Code extensions listed | Should include linter, formatter, language support, and test runner extensions for the stack |
 | 8 | `editor.formatOnSave` enabled | Recommended in `customizations.vscode.settings` |
-| 9 | `postCreateCommand` usage | Should only install project dependencies, not global tooling |
+| 9 | `postCreateCommand` usage | Verify it only installs project dependencies (e.g. `npm install`), not global tooling |
 
 #### docker-compose.yml
 

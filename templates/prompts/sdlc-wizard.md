@@ -72,7 +72,7 @@ Read all files inside `.devcontainer/` (at minimum: `devcontainer.json`, `docker
 
 ### 3B.2 — Analyze the codebase
 
-Scan the project files to infer the primary language, framework, and tooling — the same analysis as Step 3A.2.
+Scan the project files to infer the primary language, framework, and tooling — the same analysis as Step 3A.1.
 
 ### 3B.3 — Compare against the skill standards
 
@@ -137,10 +137,9 @@ If the user selected one or more suggestions:
 1. **Dispatch a subagent** to apply only the selected changes to the existing files
 2. The subagent must preserve all existing configuration that was not flagged — do **not** rewrite files from scratch
 3. Only modify the specific parts that correspond to the selected suggestions
+4. After applying changes, proceed to **Step 4** (validate)
 
 If the user selected "none", skip directly to **Step 4** (validate).
-
-Then proceed to **Step 4** (validate).
 
 ---
 
