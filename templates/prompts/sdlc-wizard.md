@@ -10,6 +10,7 @@ Ask the user which step they want to configure. Present the available steps as a
 
 **Available steps:**
 1. **DevContainer** — Set up or review a `.devcontainer` environment with Docker Compose, Dockerfile, and devcontainer.json
+2. **Graphify** — Install and configure the graphify knowledge-graph skill so your AI assistant can navigate the codebase via a persistent graph
 
 Ask: "Which step would you like to configure? (enter the number)"
 
@@ -18,11 +19,21 @@ Ask: "Which step would you like to configure? (enter the number)"
 Based on the user's choice, load the corresponding skill:
 
 - **DevContainer** → Read the skill file at `.claude/skills/devcontainer-setup.md`
+- **Graphify** → Read the skill file at `.claude/skills/graphify-setup.md`
+
+### For DevContainer
 
 Then check whether a `.devcontainer` directory already exists in the project root.
 
 - If `.devcontainer/` **does not exist** → go to **Step 3A** (new setup)
 - If `.devcontainer/` **exists** → go to **Step 3B** (audit existing)
+
+### For Graphify
+
+Check whether graphify is already configured (look for `CLAUDE.md`, `AGENTS.md`, `.graphifyignore`, or `.git/hooks/post-commit` referencing graphify).
+
+- If graphify is **not yet configured** → go to **Step 3C** (new graphify setup)
+- If graphify is **already configured** → go to **Step 3D** (audit graphify)
 
 ---
 
@@ -139,13 +150,83 @@ If the user selected one or more suggestions:
 3. Only modify the specific parts that correspond to the selected suggestions
 4. After applying changes, proceed to **Step 4** (validate)
 
-If the user selected "none", skip directly to **Step 4** (validate).
+If the user selected "none", skip directly to **Step 4** (validate devcontainer).
 
 ---
 
-## Step 4 — Validate the configuration
+## Step 3C — New graphify setup
 
-After the files are created or updated, **dispatch a subagent** to validate:
+### 3C.1 — Analyze the project context
+
+Scan the project to determine:
+- Which AI coding assistant(s) are configured (look for `.claude/`, `AGENTS.md`, `.codex/`, `.github/prompts/`)
+- Whether a `.devcontainer/` directory exists (graphify will need to be added to the Dockerfile if so)
+- The primary language/framework so the `.graphifyignore` can be tailored appropriately
+
+### 3C.2 — Present findings
+
+Tell the user what you detected:
+- Active AI platform(s) that will be configured
+- Whether the devcontainer Dockerfile will be updated
+- What will be excluded in `.graphifyignore`
+
+### 3C.3 — Confirm before proceeding
+
+Ask: "Shall I proceed with this graphify configuration?"
+
+### 3C.4 — Execute the configuration
+
+Once confirmed, **dispatch a subagent** to perform the setup following the skill instructions (`.claude/skills/graphify-setup.md`). The subagent must:
+1. Install `graphifyy` via pip
+2. Run `graphify install` for each detected platform
+3. Run the platform-specific always-on install (e.g. `graphify claude install`, `graphify codex install`, `graphify copilot install`)
+4. Run `graphify hook install` to set up post-commit and post-checkout hooks
+5. Create `.graphifyignore` at the project root
+6. If `.devcontainer/Dockerfile` exists, add `pip3 install graphifyy` to it
+7. Run `graphify .` to build the initial knowledge graph
+8. Add `graphify-out/` to `.gitignore`
+
+Then proceed to **Step 4G** (validate graphify).
+
+---
+
+## Step 3D — Audit existing graphify configuration
+
+### 3D.1 — Read existing files
+
+Check for the presence and content of: `CLAUDE.md`, `AGENTS.md`, `.graphifyignore`, `.git/hooks/post-commit`, and `.devcontainer/Dockerfile` (if devcontainer is in use).
+
+### 3D.2 — Compare against skill standards
+
+Using the rules in `.claude/skills/graphify-setup.md`, check each component:
+- `CLAUDE.md` — contains a graphify section instructing Claude to read `GRAPH_REPORT.md`
+- `AGENTS.md` — contains a graphify section (if Codex or other AGENTS.md platform is in use)
+- `.graphifyignore` — exists with appropriate exclusion patterns
+- `.git/hooks/post-commit` — calls graphify hook
+- `.devcontainer/Dockerfile` — includes `pip3 install graphifyy` (if devcontainer is in use)
+- `graphify-out/` — listed in `.gitignore`
+
+### 3D.3 — Present suggestions
+
+List each component with ✅, ⚠️, or ℹ️ status and a description of any issue.
+
+### 3D.4 — Let the user select suggestions
+
+Ask: "Which items would you like me to fix? (enter the numbers separated by commas, 'all' for everything, or 'none' to skip)"
+
+### 3D.5 — Apply selected fixes
+
+**Dispatch a subagent** to apply only the selected changes, preserving all existing configuration.
+
+Then proceed to **Step 4G** (validate graphify).
+
+---
+
+## Step 4 — Validate devcontainer configuration
+
+**(Only reached from steps 3A/3B)**
+
+After the devcontainer files are created or updated, **dispatch a subagent** to validate:
 
 1. Run `docker compose -f .devcontainer/docker-compose.yml build` — verify the image builds
 2. Run `docker compose -f .devcontainer/docker-compose.yml up -d` — verify the container starts
@@ -154,14 +235,40 @@ After the files are created or updated, **dispatch a subagent** to validate:
 
 If any step fails, fix the issue and re-validate.
 
+Then proceed to **Step 5**.
+
+---
+
+## Step 4G — Validate graphify configuration
+
+**(Only reached from steps 3C/3D)**
+
+After the graphify setup is complete, verify:
+
+1. Run `graphify hook status` — confirm hooks are installed
+2. Check that `.graphifyignore` exists at the project root
+3. Check that `graphify-out/GRAPH_REPORT.md` exists (created by the initial `graphify .` run)
+4. If devcontainer is in use, confirm `pip3 install graphifyy` is present in `.devcontainer/Dockerfile`
+
+If any check fails, fix the issue and re-verify.
+
+Then proceed to **Step 5**.
+
+---
+
 ## Step 5 — Update wizard configuration
 
-After successful validation, update `.wizard.json` to mark the step as completed:
+After successful validation, update `.wizard.json` to mark the completed step:
+
+- After devcontainer setup: add `"devcontainer"` to `completedSteps`
+- After graphify setup: add `"graphify"` to `completedSteps`
+
+Example after both steps are done:
 
 ```json
 {
   "version": "<wizard-version>",
-  "completedSteps": ["devcontainer"]
+  "completedSteps": ["devcontainer", "graphify"]
 }
 ```
 
