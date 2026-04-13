@@ -34,6 +34,8 @@ Run the following in the project root:
 pip install graphifyy
 ```
 
+> **Note on package name:** The PyPI package is `graphifyy` (double-y). `pip install graphify` installs an unrelated package. The CLI command itself is still `graphify` (single y).
+
 On systems where `pip` maps to Python 2, use `pip3` instead.
 
 ### Step 2 — Detect the AI platform in use
@@ -80,7 +82,11 @@ Run from the project root:
 graphify hook install
 ```
 
-This installs a `post-commit` and `post-checkout` hook so the knowledge graph is automatically rebuilt after every commit and every branch switch. Hooks are placed in `.git/hooks/` and are local to the repository.
+This installs two hooks in `.git/hooks/`:
+- `post-commit` — rebuilds the knowledge graph after every commit
+- `post-checkout` — rebuilds the knowledge graph after every branch switch
+
+If a rebuild fails, the hook exits with a non-zero code so git surfaces the error instead of silently continuing. Hooks are local to the repository and are not committed — inform the user that teammates must run `graphify hook install` themselves.
 
 ### Step 5 — Create .graphifyignore
 
@@ -103,11 +109,14 @@ Adjust the patterns based on the project's actual build artefacts and third-part
 
 **Only if a `.devcontainer/` directory exists** in the project root:
 
-Open `.devcontainer/Dockerfile` and add the graphify installation **after** the base image declaration, alongside other global tooling:
+Open `.devcontainer/Dockerfile` and add the graphify installation **after** the base image declaration, alongside other global tooling. If other `pip3` packages are already being installed in an existing `RUN` step, add `graphifyy` to that same step to keep the image lean:
 
 ```dockerfile
-# Install graphify for AI-assisted codebase navigation
+# Standalone (no other pip packages yet):
 RUN pip3 install graphifyy
+
+# Combined with other pip packages (preferred when applicable):
+# RUN pip3 install graphifyy other-tool-1 other-tool-2
 ```
 
 Rules:
