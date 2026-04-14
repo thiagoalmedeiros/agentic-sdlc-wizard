@@ -32,17 +32,19 @@ function copyDirRecursive(srcDir, destDir) {
 
 function installSkills(cwd) {
   const skillsDir = getSkillsDir();
-  const skillFiles = fs
-    .readdirSync(skillsDir)
-    .filter((f) => f.endsWith(".md"));
-
   const targetDir = path.join(cwd, ".claude", "skills");
 
-  for (const file of skillFiles) {
-    copyFileSync(path.join(skillsDir, file), targetDir, file);
+  // Copy each skill directory (preserving <name>/SKILL.md structure)
+  const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
+  const skillNames = [];
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      copyDirRecursive(path.join(skillsDir, entry.name), path.join(targetDir, entry.name));
+      skillNames.push(entry.name);
+    }
   }
 
-  return skillFiles;
+  return skillNames;
 }
 
 function installPrompts(cwd) {
@@ -51,16 +53,17 @@ function installPrompts(cwd) {
     .readdirSync(promptsDir)
     .filter((f) => f.endsWith(".md"));
 
-  // Install for Copilot (.github/prompts)
+  // Install for Copilot (.github/prompts) — keep .prompt.md extension as-is
   const copilotDir = path.join(cwd, ".github", "prompts");
   for (const file of promptFiles) {
     copyFileSync(path.join(promptsDir, file), copilotDir, file);
   }
 
-  // Install for Claude (.claude/commands)
+  // Install for Claude (.claude/commands) — strip .prompt from extension
   const claudeDir = path.join(cwd, ".claude", "commands");
   for (const file of promptFiles) {
-    copyFileSync(path.join(promptsDir, file), claudeDir, file);
+    const claudeName = file.replace(/\.prompt\.md$/, ".md");
+    copyFileSync(path.join(promptsDir, file), claudeDir, claudeName);
   }
 
   return promptFiles;
@@ -168,7 +171,7 @@ async function installCommand(cwd, subcommand) {
       `Prompts installed to .github/prompts/ and .claude/commands/`
     );
     console.log(`\nInstalled skills: ${skills.join(", ")}`);
-    console.log(`Installed prompts: ${prompts.join(", ")}`);
+    console.log(`Installed prompts: ${prompts.map(f => f.replace(/\.prompt\.md$/, "").replace(/\.md$/, "")).join(", ")}`);
     console.log(`\nNext steps:`);
     console.log(
       `  Open your IDE chat (Copilot, Codex, or Claude) and use /sdlc-wizard`

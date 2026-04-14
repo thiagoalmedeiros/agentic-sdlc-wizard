@@ -1,4 +1,5 @@
 ---
+name: benjamin
 description: "Benjamin — Implementation agent that writes, modifies, and refactors code based on specifications. Do NOT start generating without mandatory inputs."
 tools:
   - search

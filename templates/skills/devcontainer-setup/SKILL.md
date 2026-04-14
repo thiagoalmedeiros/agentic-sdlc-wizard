@@ -1,3 +1,8 @@
+---
+name: devcontainer-setup
+description: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'
+---
+
 You are a DevOps and developer-experience expert. Set up or review a `.devcontainer` environment for this project.
 
 The environment must be **polyglot-ready**: the base image should come from the official Microsoft devcontainers registry (`mcr.microsoft.com/devcontainers/`) so it ships with the standard non-root user, git integration, and VS Code server support already configured. Choose the variant that best matches the project's primary runtime (e.g., `base:ubuntu`, `javascript-node`, `python`, `universal`, etc.), but do **not** hard-code a specific language image as an example — infer it from the project context.

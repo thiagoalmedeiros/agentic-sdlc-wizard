@@ -1,4 +1,5 @@
 ---
+name: bug-fixer
 description: "Bug-Fixer — autonomous debugging agent that diagnoses and resolves bugs, test failures, and CI issues without hand-holding."
 tools:
   - search

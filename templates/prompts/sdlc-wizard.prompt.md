@@ -1,4 +1,5 @@
 ---
+name: sdlc-wizard
 description: 'SDLC Wizard — interactive configuration for your development environment'
 ---
 
@@ -19,8 +20,8 @@ Ask: "Which step would you like to configure? (enter the number)"
 
 Based on the user's choice, load the corresponding skill:
 
-- **DevContainer** → Read the skill file at `.claude/skills/devcontainer-setup.md`
-- **Graphify** → Read the skill file at `.claude/skills/graphify-setup.md`
+- **DevContainer** → Read the skill file at `.claude/skills/devcontainer-setup/SKILL.md`
+- **Graphify** → Read the skill file at `.claude/skills/graphify-setup/SKILL.md`
 - **Fantastic 4** → Go to **Step 2F** below
 
 ### For DevContainer

@@ -1,4 +1,5 @@
 ---
+name: start-task
 description: "Start a new task — Captain enters the clarification and planning loop before any implementation begins."
 mode: "agent"
 tools:

@@ -1,4 +1,5 @@
 ---
+name: lucas
 description: "Lucas — review and contrarian agent that validates implementations against specs, challenges assumptions, and enforces quality gates."
 tools:
   - search

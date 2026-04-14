@@ -1,4 +1,5 @@
 ---
+name: harper
 description: "Harper — research and architecture agent that explores the codebase, decomposes features into specs, and produces batch plans."
 tools:
   - search

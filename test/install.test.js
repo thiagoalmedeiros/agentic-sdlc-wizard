@@ -44,8 +44,11 @@ describe("installCommand", () => {
     const skillsTarget = path.join(testDir, ".claude", "skills");
     expect(fs.existsSync(skillsTarget)).toBe(true);
 
-    const files = fs.readdirSync(skillsTarget);
-    expect(files).toContain("devcontainer-setup.md");
+    const dirs = fs.readdirSync(skillsTarget);
+    expect(dirs).toContain("devcontainer-setup");
+
+    const skillFile = path.join(skillsTarget, "devcontainer-setup", "SKILL.md");
+    expect(fs.existsSync(skillFile)).toBe(true);
   });
 
   test("installs prompts to .github/prompts/ for Copilot", async () => {
@@ -55,7 +58,7 @@ describe("installCommand", () => {
     expect(fs.existsSync(copilotDir)).toBe(true);
 
     const files = fs.readdirSync(copilotDir);
-    expect(files).toContain("sdlc-wizard.md");
+    expect(files).toContain("sdlc-wizard.prompt.md");
   });
 
   test("installs prompts to .claude/commands/ for Claude", async () => {
@@ -72,11 +75,11 @@ describe("installCommand", () => {
     await installCommand(testDir);
 
     const srcSkill = fs.readFileSync(
-      path.join(getSkillsDir(), "devcontainer-setup.md"),
+      path.join(getSkillsDir(), "devcontainer-setup", "SKILL.md"),
       "utf-8"
     );
     const installedSkill = fs.readFileSync(
-      path.join(testDir, ".claude", "skills", "devcontainer-setup.md"),
+      path.join(testDir, ".claude", "skills", "devcontainer-setup", "SKILL.md"),
       "utf-8"
     );
     expect(installedSkill).toBe(srcSkill);
@@ -86,11 +89,11 @@ describe("installCommand", () => {
     await installCommand(testDir);
 
     const srcPrompt = fs.readFileSync(
-      path.join(getPromptsDir(), "sdlc-wizard.md"),
+      path.join(getPromptsDir(), "sdlc-wizard.prompt.md"),
       "utf-8"
     );
     const copilotPrompt = fs.readFileSync(
-      path.join(testDir, ".github", "prompts", "sdlc-wizard.md"),
+      path.join(testDir, ".github", "prompts", "sdlc-wizard.prompt.md"),
       "utf-8"
     );
     const claudePrompt = fs.readFileSync(
@@ -103,30 +106,33 @@ describe("installCommand", () => {
 });
 
 describe("installSkills", () => {
-  test("copies all skill files to .claude/skills/", () => {
+  test("copies all skill directories to .claude/skills/", () => {
     const skillsDir = getSkillsDir();
-    const templateFiles = fs
-      .readdirSync(skillsDir)
-      .filter((f) => f.endsWith(".md"));
+    const templateDirs = fs
+      .readdirSync(skillsDir, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name);
 
     const installed = installSkills(testDir);
 
-    expect(installed).toEqual(templateFiles);
+    expect(installed).toEqual(templateDirs);
 
     const targetDir = path.join(testDir, ".claude", "skills");
-    const targetFiles = fs.readdirSync(targetDir);
-    expect(targetFiles.length).toBe(templateFiles.length);
+    const targetDirs = fs.readdirSync(targetDir);
+    expect(targetDirs.length).toBe(templateDirs.length);
 
-    for (const file of templateFiles) {
-      expect(targetFiles).toContain(file);
-      const content = fs.readFileSync(path.join(targetDir, file), "utf-8");
+    for (const dir of templateDirs) {
+      expect(targetDirs).toContain(dir);
+      const skillFile = path.join(targetDir, dir, "SKILL.md");
+      expect(fs.existsSync(skillFile)).toBe(true);
+      const content = fs.readFileSync(skillFile, "utf-8");
       expect(content.length).toBeGreaterThan(0);
     }
   });
 });
 
 describe("installPrompts", () => {
-  test("copies all prompt files to .github/prompts/ and .claude/commands/", () => {
+  test("copies prompt files to .github/prompts/ and .claude/commands/", () => {
     const promptsDir = getPromptsDir();
     const templateFiles = fs
       .readdirSync(promptsDir)
@@ -136,19 +142,20 @@ describe("installPrompts", () => {
 
     expect(installed).toEqual(templateFiles);
 
-    // Copilot prompts
+    // Copilot prompts (keep .prompt.md extension)
     const copilotDir = path.join(testDir, ".github", "prompts");
     const copilotFiles = fs.readdirSync(copilotDir);
     expect(copilotFiles.length).toBe(templateFiles.length);
 
-    // Claude commands
+    // Claude commands (strip .prompt from extension)
     const claudeDir = path.join(testDir, ".claude", "commands");
     const claudeFiles = fs.readdirSync(claudeDir);
     expect(claudeFiles.length).toBe(templateFiles.length);
 
     for (const file of templateFiles) {
       expect(copilotFiles).toContain(file);
-      expect(claudeFiles).toContain(file);
+      const claudeName = file.replace(/\.prompt\.md$/, ".md");
+      expect(claudeFiles).toContain(claudeName);
     }
   });
 });

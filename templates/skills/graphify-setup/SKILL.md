@@ -1,3 +1,8 @@
+---
+name: graphify-setup
+description: 'Install and configure graphify so the AI coding assistant can navigate the codebase via a persistent knowledge graph.'
+---
+
 You are a developer-experience expert. Set up graphify (https://github.com/safishamsi/graphify) for this project so that the AI coding assistant can navigate the codebase via a knowledge graph.
 
 ---

@@ -1,4 +1,5 @@
 ---
+name: captain
 description: "Captain — multi-agent orchestrator that coordinates planning, coding, review, and debugging through batch-based workflows with user confirmation gates."
 tools:
   - search
