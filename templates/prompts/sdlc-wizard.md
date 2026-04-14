@@ -11,6 +11,7 @@ Ask the user which step they want to configure. Present the available steps as a
 **Available steps:**
 1. **DevContainer** — Set up or review a `.devcontainer` environment with Docker Compose, Dockerfile, and devcontainer.json
 2. **Graphify** — Install and configure the graphify knowledge-graph skill so your AI assistant can navigate the codebase via a persistent graph
+3. **Fantastic 4** — Install a multi-agent orchestra (Captain, Harper, Benjamin, Lucas, Bug-Fixer) for structured task execution with planning, coding, review, and debugging workflows
 
 Ask: "Which step would you like to configure? (enter the number)"
 
@@ -20,6 +21,7 @@ Based on the user's choice, load the corresponding skill:
 
 - **DevContainer** → Read the skill file at `.claude/skills/devcontainer-setup.md`
 - **Graphify** → Read the skill file at `.claude/skills/graphify-setup.md`
+- **Fantastic 4** → Go to **Step 2F** below
 
 ### For DevContainer
 
@@ -34,6 +36,64 @@ Check whether graphify is already configured (look for `CLAUDE.md`, `AGENTS.md`,
 
 - If graphify is **not yet configured** → go to **Step 3C** (new graphify setup)
 - If graphify is **already configured** → go to **Step 3D** (audit graphify)
+
+### Step 2F — Detect existing Fantastic 4 configuration
+
+Check whether the Fantastic 4 agent orchestra is already installed:
+
+- Look for `.github/agents/captain.agent.md` (Copilot) or `.claude/agents/captain.md` (Claude Code)
+- If **already installed** → tell the user: "The Fantastic 4 agent orchestra is already configured. Would you like to re-install it? (yes/no)". If "no", return to Step 1. If "yes", proceed to Step 3F.
+- If **not installed** → go to **Step 3F**
+
+---
+
+## Step 3F — Install Fantastic 4 agent orchestra
+
+### 3F.1 — Explain what will be installed
+
+Tell the user:
+
+```
+The Fantastic 4 installation will set up:
+
+**Agents (5):** Captain (orchestrator), Harper (planner), Benjamin (coder), Lucas (reviewer), Bug-Fixer (debugger)
+  - Copilot agents → .github/agents/
+  - Claude Code agents → .claude/agents/
+
+**Skills (6):** orchestrator, planner, coder, reviewer, bug-fixer, security-reviewer
+  - Installed to .claude/skills/ (readable by both Copilot and Claude)
+
+**Prompts:** /start-task command for both Copilot and Claude Code
+**Instructions:** Global coding standards for both platforms
+**Support files:** lessons.md (at project root) and tasks/ directory
+```
+
+### 3F.2 — Confirm before proceeding
+
+Ask: "Shall I proceed with the Fantastic 4 installation?"
+
+### 3F.3 — Execute the installation
+
+Once confirmed, run in the terminal:
+
+```bash
+wizard install fantastic4
+```
+
+### 3F.4 — Verify installation
+
+After the command completes, verify key files exist:
+- `.github/agents/captain.agent.md`
+- `.claude/agents/captain.md`
+- `.claude/skills/orchestrator/SKILL.md`
+- `.github/prompts/start-task.prompt.md`
+- `.claude/commands/start-task.md`
+- `lessons.md`
+- `tasks/` directory
+
+If any file is missing, report the issue.
+
+### 3F.5 — Proceed to Step 5
 
 ---
 
@@ -262,14 +322,17 @@ After successful validation, update `.wizard.json` to mark the completed step:
 
 - After devcontainer setup: add `"devcontainer"` to `completedSteps`
 - After graphify setup: add `"graphify"` to `completedSteps`
+- After Fantastic 4 setup: `"fantastic4"` is already added by `wizard install fantastic4`
 
-Example after both steps are done:
+Example after all steps are done:
 
 ```json
 {
   "version": "<wizard-version>",
-  "completedSteps": ["devcontainer", "graphify"]
+  "completedSteps": ["devcontainer", "graphify", "fantastic4"]
 }
 ```
 
 Report success to the user and suggest next steps.
+
+For Fantastic 4, tell the user: "Use `/start-task` in your IDE chat (Copilot or Claude) to begin a new task with Captain orchestrating the team."

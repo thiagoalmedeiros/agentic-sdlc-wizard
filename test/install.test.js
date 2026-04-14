@@ -9,11 +9,13 @@ const {
   readConfig,
   getSkillsDir,
   getPromptsDir,
+  getFantastic4Dir,
 } = require("../src/config");
 const {
   installCommand,
   installSkills,
   installPrompts,
+  installFantastic4,
 } = require("../src/commands/install");
 
 let testDir;
@@ -148,5 +150,184 @@ describe("installPrompts", () => {
       expect(copilotFiles).toContain(file);
       expect(claudeFiles).toContain(file);
     }
+  });
+});
+
+describe("installFantastic4", () => {
+  test("copies Copilot agents to .github/agents/", () => {
+    installFantastic4(testDir);
+
+    const agentsDir = path.join(testDir, ".github", "agents");
+    expect(fs.existsSync(agentsDir)).toBe(true);
+
+    const files = fs.readdirSync(agentsDir);
+    expect(files).toContain("captain.agent.md");
+    expect(files).toContain("benjamin.agent.md");
+    expect(files).toContain("harper.agent.md");
+    expect(files).toContain("lucas.agent.md");
+    expect(files).toContain("bug-fixer.agent.md");
+  });
+
+  test("copies Claude Code agents to .claude/agents/", () => {
+    installFantastic4(testDir);
+
+    const agentsDir = path.join(testDir, ".claude", "agents");
+    expect(fs.existsSync(agentsDir)).toBe(true);
+
+    const files = fs.readdirSync(agentsDir);
+    expect(files).toContain("captain.md");
+    expect(files).toContain("benjamin.md");
+    expect(files).toContain("harper.md");
+    expect(files).toContain("lucas.md");
+    expect(files).toContain("bug-fixer.md");
+  });
+
+  test("copies skills with subdirectory structure to .claude/skills/", () => {
+    installFantastic4(testDir);
+
+    const skillsDir = path.join(testDir, ".claude", "skills");
+    expect(fs.existsSync(skillsDir)).toBe(true);
+
+    // Check skill subdirectories exist with SKILL.md
+    const expectedSkills = [
+      "orchestrator",
+      "planner",
+      "coder",
+      "reviewer",
+      "bug-fixer",
+      "security-reviewer",
+    ];
+    for (const skill of expectedSkills) {
+      const skillFile = path.join(skillsDir, skill, "SKILL.md");
+      expect(fs.existsSync(skillFile)).toBe(true);
+      const content = fs.readFileSync(skillFile, "utf-8");
+      expect(content.length).toBeGreaterThan(0);
+    }
+
+    // Check planner template
+    const templateFile = path.join(
+      skillsDir,
+      "planner",
+      "templates",
+      "task-implementation.md"
+    );
+    expect(fs.existsSync(templateFile)).toBe(true);
+  });
+
+  test("copies start-task prompt to .github/prompts/", () => {
+    installFantastic4(testDir);
+
+    const promptFile = path.join(
+      testDir,
+      ".github",
+      "prompts",
+      "start-task.prompt.md"
+    );
+    expect(fs.existsSync(promptFile)).toBe(true);
+
+    const content = fs.readFileSync(promptFile, "utf-8");
+    expect(content).toContain("Captain");
+  });
+
+  test("copies start-task command to .claude/commands/", () => {
+    installFantastic4(testDir);
+
+    const commandFile = path.join(
+      testDir,
+      ".claude",
+      "commands",
+      "start-task.md"
+    );
+    expect(fs.existsSync(commandFile)).toBe(true);
+
+    const content = fs.readFileSync(commandFile, "utf-8");
+    expect(content).toContain("Captain");
+  });
+
+  test("copies instructions to .github/instructions/ and .claude/instructions/", () => {
+    installFantastic4(testDir);
+
+    const githubInstr = path.join(
+      testDir,
+      ".github",
+      "instructions",
+      "global-coding.instructions.md"
+    );
+    const claudeInstr = path.join(
+      testDir,
+      ".claude",
+      "instructions",
+      "global-coding.instructions.md"
+    );
+
+    expect(fs.existsSync(githubInstr)).toBe(true);
+    expect(fs.existsSync(claudeInstr)).toBe(true);
+
+    const content1 = fs.readFileSync(githubInstr, "utf-8");
+    const content2 = fs.readFileSync(claudeInstr, "utf-8");
+    expect(content1).toBe(content2);
+    expect(content1.length).toBeGreaterThan(0);
+  });
+
+  test("creates lessons.md at project root", () => {
+    installFantastic4(testDir);
+
+    const lessonsFile = path.join(testDir, "lessons.md");
+    expect(fs.existsSync(lessonsFile)).toBe(true);
+
+    const content = fs.readFileSync(lessonsFile, "utf-8");
+    expect(content).toContain("Lessons Learned");
+  });
+
+  test("creates tasks/ directory at project root", () => {
+    installFantastic4(testDir);
+
+    const tasksDir = path.join(testDir, "tasks");
+    expect(fs.existsSync(tasksDir)).toBe(true);
+    expect(fs.statSync(tasksDir).isDirectory()).toBe(true);
+  });
+
+  test("Copilot agent skill paths reference .claude/skills/", () => {
+    installFantastic4(testDir);
+
+    const captainFile = path.join(
+      testDir,
+      ".github",
+      "agents",
+      "captain.agent.md"
+    );
+    const content = fs.readFileSync(captainFile, "utf-8");
+    expect(content).toContain("../../.claude/skills/orchestrator/SKILL.md");
+  });
+});
+
+describe("installCommand with fantastic4 subcommand", () => {
+  test("installs fantastic4 and updates .wizard.json", async () => {
+    // First run base install to create .wizard.json
+    await installCommand(testDir);
+
+    // Then install fantastic4
+    await installCommand(testDir, "fantastic4");
+
+    const config = readConfig(testDir);
+    expect(config.completedSteps).toContain("fantastic4");
+
+    // Verify agents are installed
+    expect(
+      fs.existsSync(path.join(testDir, ".github", "agents", "captain.agent.md"))
+    ).toBe(true);
+    expect(
+      fs.existsSync(path.join(testDir, ".claude", "agents", "captain.md"))
+    ).toBe(true);
+  });
+
+  test("does not duplicate fantastic4 in completedSteps on re-install", async () => {
+    await installCommand(testDir);
+    await installCommand(testDir, "fantastic4");
+    await installCommand(testDir, "fantastic4");
+
+    const config = readConfig(testDir);
+    const count = config.completedSteps.filter((s) => s === "fantastic4").length;
+    expect(count).toBe(1);
   });
 });

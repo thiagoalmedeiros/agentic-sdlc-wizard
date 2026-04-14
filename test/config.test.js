@@ -11,6 +11,7 @@ const {
   writeConfig,
   getSkillsDir,
   getPromptsDir,
+  getFantastic4Dir,
   getGitignorePath,
   updateGitignore,
 } = require("../src/config");
@@ -52,6 +53,11 @@ test("getSkillsDir ends with templates/skills", () => {
 test("getPromptsDir ends with templates/prompts", () => {
   const d = getPromptsDir();
   expect(d).toMatch(/templates[/\\]prompts$/);
+});
+
+test("getFantastic4Dir ends with templates/fantastic4", () => {
+  const d = getFantastic4Dir();
+  expect(d).toMatch(/templates[/\\]fantastic4$/);
 });
 
 test("getGitignorePath returns path with .gitignore", () => {

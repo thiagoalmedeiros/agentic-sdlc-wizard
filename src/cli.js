@@ -11,7 +11,8 @@ function printHelp() {
       "SDLC Wizard - Configure your development environment with AI agents\n" +
       "\n" +
       "Commands:\n" +
-      "  install          Install wizard configuration, prompts, and skills\n" +
+      "  install               Install wizard configuration, prompts, and skills\n" +
+      "  install fantastic4    Install the Fantastic 4 multi-agent orchestra\n" +
       "\n" +
       "Options:\n" +
       "  --version        Show version number\n" +
@@ -37,7 +38,7 @@ async function main() {
       printHelp();
       return;
     }
-    await installCommand();
+    await installCommand(undefined, args[1]);
   } else {
     console.log(`Unknown command: ${args[0]}`);
     printHelp();

@@ -37,6 +37,10 @@ function getPromptsDir() {
   return path.join(TEMPLATES_DIR, "prompts");
 }
 
+function getFantastic4Dir() {
+  return path.join(TEMPLATES_DIR, "fantastic4");
+}
+
 function getGitignorePath(cwd) {
   return path.join(cwd, ".gitignore");
 }
@@ -66,6 +70,7 @@ module.exports = {
   getTemplatesDir,
   getSkillsDir,
   getPromptsDir,
+  getFantastic4Dir,
   getGitignorePath,
   updateGitignore,
 };
