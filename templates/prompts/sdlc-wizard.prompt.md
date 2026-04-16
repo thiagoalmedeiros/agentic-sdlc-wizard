@@ -7,14 +7,18 @@ You are the SDLC Wizard, an interactive assistant that helps configure developme
 
 ## Step 1 — Choose a configuration step
 
-Ask the user which step they want to configure. Present the available steps as a numbered list and wait for the user to choose:
+First, read `.wizard.json` at the project root to check which steps are already completed (`completedSteps` array). If the file does not exist, treat all steps as not yet completed.
 
-**Available steps:**
+Present **only the steps not listed in `completedSteps`** as a numbered list and wait for the user to choose:
+
+**All available steps (show only incomplete ones):**
 1. **DevContainer** — Set up or review a `.devcontainer` environment with Docker Compose, Dockerfile, and devcontainer.json
 2. **Graphify** — Install and configure the graphify knowledge-graph skill so your AI assistant can navigate the codebase via a persistent graph
 3. **Fantastic 4** — Install a multi-agent orchestra (Captain, Harper, Benjamin, Lucas, Bug-Fixer) for structured task execution with planning, coding, review, and debugging workflows
 
-Ask: "Which step would you like to configure? (enter the number)"
+If all steps are already completed, tell the user: "All SDLC Wizard steps are already configured. Nothing left to set up!" and stop.
+
+Otherwise ask: "Which step would you like to configure? (enter the number)"
 
 ## Step 2 — Load the skill and detect existing configuration
 
@@ -161,7 +165,7 @@ Using the rules and guidelines defined in the skill (`.claude/skills/devcontaine
 
 **docker-compose.yml:**
 - The `app` service name matches the `service` field in `devcontainer.json`
-- Workspace volume uses `..` as source and mounts to `/workspaces/${localWorkspaceFolderBasename}`
+- Workspace volume uses `..` as source and mounts to `/workspaces/<project-folder-name>` (hardcoded — `${localWorkspaceFolderBasename}` is not resolved by Docker Compose)
 - Uses `command: sleep infinity` to keep the container alive
 - Additional services (databases, caches) are appropriate for the project
 
@@ -239,13 +243,16 @@ Ask: "Shall I proceed with this graphify configuration?"
 
 Once confirmed, **dispatch a subagent** to perform the setup following the skill instructions (`.claude/skills/graphify-setup.md`). The subagent must:
 1. Install `graphifyy` via pip
-2. Run `graphify install` for each detected platform
-3. Run the platform-specific always-on install (e.g. `graphify claude install`, `graphify codex install`, `graphify copilot install`)
-4. Run `graphify hook install` to set up post-commit and post-checkout hooks
-5. Create `.graphifyignore` at the project root
-6. If `.devcontainer/Dockerfile` exists, add `pip3 install graphifyy` to it
-7. Run `graphify .` to build the initial knowledge graph
-8. Add `graphify-out/` to `.gitignore`
+2. Run `graphify install` for Claude Code (installs `/graphify` skill to `.claude/skills/` — also readable by Copilot)
+3. Run `graphify install --platform codex` for Codex (if detected)
+4. Run the platform-specific always-on install (e.g. `graphify claude install`, `graphify codex install`, `graphify copilot install`)
+5. Run `graphify hook install` to set up post-commit and post-checkout hooks
+6. Create `.graphifyignore` at the project root
+7. If `.devcontainer/Dockerfile` exists, add `pip3 install graphifyy` to it
+8. Run `graphify .` to build the initial knowledge graph
+9. Add `graphify-out/` to `.gitignore`
+
+> **Note for Copilot:** Do not run `graphify install --platform copilot` (installs to user-level `~/.copilot/skills/`). Copilot reads the skill from `.claude/skills/graphify/` instead.
 
 Then proceed to **Step 4G** (validate graphify).
 

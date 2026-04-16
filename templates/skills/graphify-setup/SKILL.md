@@ -75,9 +75,10 @@ graphify codex install               # writes AGENTS.md section + PreToolUse hoo
 
 #### GitHub Copilot
 ```bash
-graphify install --platform copilot   # installs skill to ~/.copilot/skills/
-graphify copilot install               # writes project-level always-on instructions
+graphify copilot install               # writes project-level always-on instructions to .github/copilot-instructions.md
 ```
+
+> **Note:** Do **not** use `graphify install --platform copilot` — it installs to the user-level `~/.copilot/skills/` directory. Instead, Copilot can read the `/graphify` skill from `.claude/skills/graphify/` (installed by the Claude command above). Install Claude first if both platforms are detected.
 
 ### Step 4 — Install git hooks
 

@@ -89,7 +89,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       # Mount the workspace root into the container
-      - ..:/workspaces/${localWorkspaceFolderBasename}:cached
+      # Use the actual folder name here — Docker Compose cannot resolve
+      # ${localWorkspaceFolderBasename} (only VS Code devcontainer.json can)
+      - ..:/workspaces/<project-folder-name>:cached
     # Keep the container running so VS Code can attach to it
     command: sleep infinity
     # Uncomment and add extra services (postgres, redis, etc.) as needed
@@ -97,7 +99,7 @@ services:
 
 **Rules:**
 - The service name must match the `service` field in `devcontainer.json` (default: `app`)
-- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/${localWorkspaceFolderBasename}`
+- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/<project-folder-name>` — **always hardcode the actual folder name here**; `${localWorkspaceFolderBasename}` is a VS Code-only variable that Docker Compose cannot resolve and will substitute with an empty string, causing a "Workspace does not exist" error when reopening in container
 - `command: sleep infinity` keeps the container alive for VS Code to attach; do not use an application start command here
 - Additional services (databases, message brokers, etc.) can be added as sibling services under `services:` when the project requires them
 
