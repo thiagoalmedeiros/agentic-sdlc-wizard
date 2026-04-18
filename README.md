@@ -28,7 +28,7 @@ wizard install
 The install command will:
 - Create `.wizard.json` with version and step tracking
 - Install the `/sdlc-wizard` prompt to `.github/prompts/` (Copilot) and `.claude/commands/` (Claude)
-- Install skills to `.claude/skills/` (readable by both Copilot and Claude)
+- Install shared skills to `.claude/skills/` (readable by both Copilot and Claude): DevContainer, Graphify, and Implementation Plan
 
 ### 2. Use the wizard in your IDE
 
@@ -42,7 +42,10 @@ The wizard will interactively guide you through configuration steps. Currently a
 
 - **DevContainer** — Set up a `.devcontainer` environment with Docker Compose, Dockerfile, and devcontainer.json
 - **Graphify** — Install and configure the graphify knowledge-graph skill
+- **Implementation Plan** — Enable the standalone planning workflow that creates execution-ready implementation plans before coding starts
 - **Fantastic 4** — Install a multi-agent orchestra for structured task execution
+
+After the base install, you can also use `/implementation-plan` in your IDE chat to create a planning artifact for a feature or refactor.
 
 ### 3. Install the Fantastic 4 agent orchestra
 
@@ -65,7 +68,7 @@ After installation, use `/start-task` in your IDE chat to begin a new task with 
 ## How it works
 
 1. The `/sdlc-wizard` prompt starts an interactive conversation
-2. You choose which step to configure (e.g., DevContainer, Fantastic 4)
+2. You choose which step to configure (e.g., DevContainer, Implementation Plan, Fantastic 4)
 3. The agent analyzes your codebase and asks clarifying questions
 4. Once confirmed, a subagent creates the configuration files
 5. The setup is validated (e.g., Docker build and start)
@@ -92,9 +95,11 @@ src/                  - Node.js CLI source
     install.js        - Install command (config + prompts + skills)
 templates/
   prompts/            - Prompt templates (installed for Copilot and Claude)
-    sdlc-wizard.md    - Interactive wizard prompt
+    sdlc-wizard.prompt.md - Interactive wizard prompt
   skills/             - Skill files (installed to .claude/skills/)
-    devcontainer-setup.md - DevContainer setup skill
+    devcontainer-setup/    - DevContainer setup skill
+    graphify-setup/        - Graphify setup skill
+    implementation-plan/   - Standalone implementation planning skill
   fantastic4/         - Fantastic 4 agent orchestra templates
     agents/           - Agent definitions (copilot/ and claude-code/)
     skills/           - Agent skill definitions

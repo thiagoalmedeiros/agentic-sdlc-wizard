@@ -46,9 +46,24 @@ describe("installCommand", () => {
 
     const dirs = fs.readdirSync(skillsTarget);
     expect(dirs).toContain("devcontainer-setup");
+    expect(dirs).toContain("implementation-plan");
 
     const skillFile = path.join(skillsTarget, "devcontainer-setup", "SKILL.md");
     expect(fs.existsSync(skillFile)).toBe(true);
+  });
+
+  test("installs implementation-plan skill content from template", async () => {
+    await installCommand(testDir);
+
+    const srcSkill = fs.readFileSync(
+      path.join(getSkillsDir(), "implementation-plan", "SKILL.md"),
+      "utf-8"
+    );
+    const installedSkill = fs.readFileSync(
+      path.join(testDir, ".claude", "skills", "implementation-plan", "SKILL.md"),
+      "utf-8"
+    );
+    expect(installedSkill).toBe(srcSkill);
   });
 
   test("installs prompts to .github/prompts/ for Copilot", async () => {
@@ -102,6 +117,19 @@ describe("installCommand", () => {
     );
     expect(copilotPrompt).toBe(srcPrompt);
     expect(claudePrompt).toBe(srcPrompt);
+  });
+
+  test("wizard prompt includes implementation-plan step", async () => {
+    await installCommand(testDir);
+
+    const prompt = fs.readFileSync(
+      path.join(testDir, ".github", "prompts", "sdlc-wizard.prompt.md"),
+      "utf-8"
+    );
+
+    expect(prompt).toContain("**Implementation Plan**");
+    expect(prompt).toContain(".claude/skills/implementation-plan/SKILL.md");
+    expect(prompt).toContain('"implementation-plan"');
   });
 });
 

@@ -14,7 +14,8 @@ Present **only the steps not listed in `completedSteps`** as a numbered list and
 **All available steps (show only incomplete ones):**
 1. **DevContainer** — Set up or review a `.devcontainer` environment with Docker Compose, Dockerfile, and devcontainer.json
 2. **Graphify** — Install and configure the graphify knowledge-graph skill so your AI assistant can navigate the codebase via a persistent graph
-3. **Fantastic 4** — Install a multi-agent orchestra (Captain, Harper, Benjamin, Lucas, Bug-Fixer) for structured task execution with planning, coding, review, and debugging workflows
+3. **Implementation Plan** — Enable the standalone implementation-plan skill so the project can generate execution-ready plans before coding starts
+4. **Fantastic 4** — Install a multi-agent orchestra (Captain, Harper, Benjamin, Lucas, Bug-Fixer) for structured task execution with planning, coding, review, and debugging workflows
 
 If all steps are already completed, tell the user: "All SDLC Wizard steps are already configured. Nothing left to set up!" and stop.
 
@@ -26,6 +27,7 @@ Based on the user's choice, load the corresponding skill:
 
 - **DevContainer** → Read the skill file at `.claude/skills/devcontainer-setup/SKILL.md`
 - **Graphify** → Read the skill file at `.claude/skills/graphify-setup/SKILL.md`
+- **Implementation Plan** → Read the skill file at `.claude/skills/implementation-plan/SKILL.md`, then go to **Step 2I** below
 - **Fantastic 4** → Go to **Step 2F** below
 
 ### For DevContainer
@@ -41,6 +43,14 @@ Check whether graphify is already configured (look for `CLAUDE.md`, `AGENTS.md`,
 
 - If graphify is **not yet configured** → go to **Step 3C** (new graphify setup)
 - If graphify is **already configured** → go to **Step 3D** (audit graphify)
+
+### Step 2I — Detect existing Implementation Plan configuration
+
+Check whether the standalone planning skill is available:
+
+- Look for `.claude/skills/implementation-plan/SKILL.md`
+- If the skill file is **missing** → tell the user: "The Implementation Plan skill is not installed yet. Run `wizard install` first so the base skills are copied into this project." and stop.
+- If the skill file is **present** → go to **Step 3I**
 
 ### Step 2F — Detect existing Fantastic 4 configuration
 
@@ -99,6 +109,41 @@ After the command completes, verify key files exist:
 If any file is missing, report the issue.
 
 ### 3F.5 — Proceed to Step 5
+
+---
+
+## Step 3I — Register the Implementation Plan workflow
+
+### 3I.1 — Explain what is available
+
+Tell the user:
+
+```
+The Implementation Plan skill is already installed as part of the base wizard setup.
+
+It is used to create the planning artifact that execution will follow later:
+- What We Are Doing
+- How We Are Doing It / What Is Out of Scope
+- Tracking List
+
+This skill is for creating the plan, not for executing the work.
+```
+
+### 3I.2 — Confirm before proceeding
+
+Ask: "Shall I register the Implementation Plan workflow for this project and show you how to use it?"
+
+### 3I.3 — Verify installation
+
+Confirm that `.claude/skills/implementation-plan/SKILL.md` exists.
+
+If it does not exist, report the issue and stop.
+
+### 3I.4 — Provide usage guidance
+
+Tell the user to use `/implementation-plan` in their IDE chat when they want to generate a plan document before implementation begins.
+
+### 3I.5 — Proceed to Step 5
 
 ---
 
@@ -330,6 +375,7 @@ After successful validation, update `.wizard.json` to mark the completed step:
 
 - After devcontainer setup: add `"devcontainer"` to `completedSteps`
 - After graphify setup: add `"graphify"` to `completedSteps`
+- After implementation-plan registration: add `"implementation-plan"` to `completedSteps`
 - After Fantastic 4 setup: `"fantastic4"` is already added by `wizard install fantastic4`
 
 Example after all steps are done:
@@ -337,10 +383,11 @@ Example after all steps are done:
 ```json
 {
   "version": "<wizard-version>",
-  "completedSteps": ["devcontainer", "graphify", "fantastic4"]
+  "completedSteps": ["devcontainer", "graphify", "implementation-plan", "fantastic4"]
 }
 ```
 
 Report success to the user and suggest next steps.
 
 For Fantastic 4, tell the user: "Use `/start-task` in your IDE chat (Copilot or Claude) to begin a new task with Captain orchestrating the team."
+For Implementation Plan, tell the user: "Use `/implementation-plan` in your IDE chat when you want to create a structured implementation plan before coding."
