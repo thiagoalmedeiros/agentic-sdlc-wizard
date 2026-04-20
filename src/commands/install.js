@@ -144,6 +144,7 @@ function promptScope() {
   return new Promise((resolve) => {
     // Non-interactive environment (e.g. CI, pipes, tests via stdin) — use default
     if (!process.stdin.isTTY || !process.stdout.isTTY) {
+      console.log("Non-interactive environment detected, defaulting to project scope.");
       resolve("project");
       return;
     }
@@ -179,8 +180,9 @@ function promptScope() {
     }
 
     function clearRender() {
-      // Lines printed: 1 blank + 1 header + 1 blank + options.length + 1 blank + 1 hint
-      const lines = options.length + 5;
+      // Lines printed: 1 blank + 1 header + 1 blank + options.length items + 1 blank + 1 hint = options.length + 5
+      const FIXED_LINES = 5;
+      const lines = options.length + FIXED_LINES;
       for (let i = 0; i < lines; i++) {
         readline.moveCursor(process.stdout, 0, -1);
         readline.clearLine(process.stdout, 0);
@@ -194,11 +196,11 @@ function promptScope() {
     process.stdin.setEncoding("utf8");
 
     function onData(key) {
-      // Ctrl+C → abort
+      // Ctrl+C → reset terminal and abort
       if (key === "\u0003") {
         process.stdin.setRawMode(false);
         process.stdin.pause();
-        process.exit();
+        process.exit(1);
       }
 
       // Up arrow
