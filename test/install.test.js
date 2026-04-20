@@ -179,15 +179,25 @@ describe("installSkills", () => {
   });
 
   test("installs skills to global path when scope is global", () => {
-    const globalDir = fs.mkdtempSync(path.join(os.tmpdir(), "wizard-global-"));
+    // When scope is global, skills go to ~/.claude/skills/ via resolvePaths()
+    const home = os.homedir();
+    const globalSkillsDir = path.join(home, ".claude", "skills");
+    const hadGlobalSkills = fs.existsSync(globalSkillsDir);
+
     try {
-      const installed = installSkills(globalDir, "global");
+      const installed = installSkills(testDir, "global");
       expect(installed.length).toBeGreaterThan(0);
-      // For global scope, skills go to ~/.claude/skills/ (homedir-based)
-      // We verify the function uses resolvePaths correctly by checking the
-      // projectBase still works - the actual global path uses os.homedir()
+
+      // Verify skills were installed to the global path
+      for (const skill of installed) {
+        const skillFile = path.join(globalSkillsDir, skill, "SKILL.md");
+        expect(fs.existsSync(skillFile)).toBe(true);
+      }
     } finally {
-      fs.rmSync(globalDir, { recursive: true, force: true });
+      // Clean up global skills we created during the test
+      if (!hadGlobalSkills && fs.existsSync(globalSkillsDir)) {
+        fs.rmSync(globalSkillsDir, { recursive: true, force: true });
+      }
     }
   });
 });
