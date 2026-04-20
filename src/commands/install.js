@@ -135,23 +135,100 @@ function installFantastic4(cwd, scope) {
 }
 
 /**
- * Prompt the user for install scope using readline.
+ * Show an interactive arrow-key menu to select the install scope.
+ * Uses up/down arrows to navigate, Space or Enter to confirm.
+ * Falls back to "project" scope when not running in an interactive terminal.
  * @returns {Promise<"project"|"global">}
  */
 function promptScope() {
-  const readline = require("readline");
   return new Promise((resolve) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    console.log("\nWhere would you like to install?");
-    console.log("  1. Project level (.github and .claude in current directory)");
-    console.log("  2. Global level (~/.claude and ~/copilot for all projects)");
-    rl.question("\nEnter your choice (1 or 2): ", (answer) => {
-      rl.close();
-      resolve(answer.trim() === "2" ? "global" : "project");
-    });
+    // Non-interactive environment (e.g. CI, pipes, tests via stdin) — use default
+    if (!process.stdin.isTTY || !process.stdout.isTTY) {
+      resolve("project");
+      return;
+    }
+
+    const readline = require("readline");
+
+    const options = [
+      {
+        value: "project",
+        label: "Project level  (.github and .claude in current directory)",
+      },
+      {
+        value: "global",
+        label: "Global level   (~/.claude and ~/copilot for all projects)",
+      },
+    ];
+
+    let cursor = 0;
+
+    function render() {
+      process.stdout.write("\n");
+      process.stdout.write("  Where would you like to install?\n");
+      process.stdout.write("\n");
+      for (let i = 0; i < options.length; i++) {
+        if (i === cursor) {
+          process.stdout.write(`  \x1b[36m❯\x1b[0m ${options[i].label}\n`);
+        } else {
+          process.stdout.write(`    ${options[i].label}\n`);
+        }
+      }
+      process.stdout.write("\n");
+      process.stdout.write("  (Use \u2191 \u2193 to move, Space or Enter to select)\n");
+    }
+
+    function clearRender() {
+      // Lines printed: 1 blank + 1 header + 1 blank + options.length + 1 blank + 1 hint
+      const lines = options.length + 5;
+      for (let i = 0; i < lines; i++) {
+        readline.moveCursor(process.stdout, 0, -1);
+        readline.clearLine(process.stdout, 0);
+      }
+    }
+
+    render();
+
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.setEncoding("utf8");
+
+    function onData(key) {
+      // Ctrl+C → abort
+      if (key === "\u0003") {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        process.exit();
+      }
+
+      // Up arrow
+      if (key === "\x1b[A") {
+        cursor = (cursor - 1 + options.length) % options.length;
+        clearRender();
+        render();
+        return;
+      }
+
+      // Down arrow
+      if (key === "\x1b[B") {
+        cursor = (cursor + 1) % options.length;
+        clearRender();
+        render();
+        return;
+      }
+
+      // Enter (\r or \n) or Space → confirm selection
+      if (key === "\r" || key === "\n" || key === " ") {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        process.stdin.removeListener("data", onData);
+        clearRender();
+        process.stdout.write(`\n  \u2714 ${options[cursor].label}\n\n`);
+        resolve(options[cursor].value);
+      }
+    }
+
+    process.stdin.on("data", onData);
   });
 }
 

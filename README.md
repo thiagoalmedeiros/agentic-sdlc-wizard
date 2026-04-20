@@ -19,17 +19,10 @@ npm link
 
 ### 1. Install the wizard
 
-Run `wizard install` in your project folder. The installer will ask whether to install at **project level** (`.github/` and `.claude/` in the current directory) or **global level** (`~/.claude/` and `~/copilot/` for all projects).
+Run `wizard install` in your project folder. An interactive menu will ask whether to install at **project level** (`.github/` and `.claude/` in the current directory) or **global level** (`~/.claude/` and `~/copilot/` for all projects). Use the up/down arrow keys to move between options and press **Space** or **Enter** to confirm.
 
 ```bash
 wizard install
-```
-
-You can also skip the prompt with a flag:
-
-```bash
-wizard install --project   # project-level install
-wizard install --global    # global-level install
 ```
 
 The install command will:
@@ -56,12 +49,10 @@ After the base install, you can also use `/implementation-plan` in your IDE chat
 
 ### 3. Install the Fantastic 4 agent orchestra
 
-You can install the Fantastic 4 directly via CLI or through the wizard. The same scope prompt (or flag) applies:
+You can install the Fantastic 4 directly via CLI or through the wizard. The interactive scope menu will appear here too:
 
 ```bash
 wizard install fantastic4
-wizard install fantastic4 --project
-wizard install fantastic4 --global
 ```
 
 This installs:
