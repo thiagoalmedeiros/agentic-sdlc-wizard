@@ -20,6 +20,10 @@ Load and follow the full behavior definition from the orchestrator skill:
 
 [Orchestrator Skill](../../.claude/skills/orchestrator/SKILL.md)
 
+When starting a new task, follow the start-task skill procedure:
+
+[Start Task Skill](../../.claude/skills/start-task/SKILL.md)
+
 ## Agent Dispatch Protocol
 
 You coordinate your team by dispatching tasks to subagents using `@agent` mentions and the `/fleet` command for parallel execution.

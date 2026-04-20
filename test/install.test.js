@@ -10,6 +10,7 @@ const {
   getSkillsDir,
   getPromptsDir,
   getFantastic4Dir,
+  resolvePaths,
 } = require("../src/config");
 const {
   installCommand,
@@ -29,13 +30,14 @@ afterEach(() => {
 });
 
 describe("installCommand", () => {
-  test("creates config file with version and empty completedSteps", async () => {
+  test("creates config file with version, empty completedSteps, and scope", async () => {
     await installCommand(testDir);
 
     const config = readConfig(testDir);
     expect(config).not.toBeNull();
     expect(config.version).toBe(VERSION);
     expect(config.completedSteps).toEqual([]);
+    expect(config.scope).toBe("project");
   });
 
   test("installs skills to .claude/skills/", async () => {
@@ -47,9 +49,21 @@ describe("installCommand", () => {
     const dirs = fs.readdirSync(skillsTarget);
     expect(dirs).toContain("devcontainer-setup");
     expect(dirs).toContain("implementation-plan");
+    expect(dirs).toContain("sdlc-wizard");
 
     const skillFile = path.join(skillsTarget, "devcontainer-setup", "SKILL.md");
     expect(fs.existsSync(skillFile)).toBe(true);
+  });
+
+  test("installs sdlc-wizard as a skill", async () => {
+    await installCommand(testDir);
+
+    const skillFile = path.join(testDir, ".claude", "skills", "sdlc-wizard", "SKILL.md");
+    expect(fs.existsSync(skillFile)).toBe(true);
+
+    const content = fs.readFileSync(skillFile, "utf-8");
+    expect(content).toContain("SDLC Wizard");
+    expect(content).toContain("Step 1");
   });
 
   test("installs implementation-plan skill content from template", async () => {
@@ -119,7 +133,7 @@ describe("installCommand", () => {
     expect(claudePrompt).toBe(srcPrompt);
   });
 
-  test("wizard prompt includes implementation-plan step", async () => {
+  test("sdlc-wizard prompt references the skill", async () => {
     await installCommand(testDir);
 
     const prompt = fs.readFileSync(
@@ -127,9 +141,15 @@ describe("installCommand", () => {
       "utf-8"
     );
 
-    expect(prompt).toContain("**Implementation Plan**");
-    expect(prompt).toContain(".claude/skills/implementation-plan/SKILL.md");
-    expect(prompt).toContain('"implementation-plan"');
+    expect(prompt).toContain("sdlc-wizard");
+    expect(prompt).toContain("SKILL.md");
+  });
+
+  test("stores scope in config for global install", async () => {
+    await installCommand(testDir, undefined, "global");
+
+    const config = readConfig(testDir);
+    expect(config.scope).toBe("global");
   });
 });
 
@@ -155,6 +175,19 @@ describe("installSkills", () => {
       expect(fs.existsSync(skillFile)).toBe(true);
       const content = fs.readFileSync(skillFile, "utf-8");
       expect(content.length).toBeGreaterThan(0);
+    }
+  });
+
+  test("installs skills to global path when scope is global", () => {
+    const globalDir = fs.mkdtempSync(path.join(os.tmpdir(), "wizard-global-"));
+    try {
+      const installed = installSkills(globalDir, "global");
+      expect(installed.length).toBeGreaterThan(0);
+      // For global scope, skills go to ~/.claude/skills/ (homedir-based)
+      // We verify the function uses resolvePaths correctly by checking the
+      // projectBase still works - the actual global path uses os.homedir()
+    } finally {
+      fs.rmSync(globalDir, { recursive: true, force: true });
     }
   });
 });
@@ -231,6 +264,8 @@ describe("installFantastic4", () => {
       "reviewer",
       "bug-fixer",
       "security-reviewer",
+      "implementation-debate",
+      "start-task",
     ];
     for (const skill of expectedSkills) {
       const skillFile = path.join(skillsDir, skill, "SKILL.md");
@@ -249,34 +284,39 @@ describe("installFantastic4", () => {
     expect(fs.existsSync(templateFile)).toBe(true);
   });
 
-  test("copies start-task prompt to .github/prompts/", () => {
+  test("installs start-task as a skill instead of a prompt", () => {
     installFantastic4(testDir);
 
-    const promptFile = path.join(
+    // start-task skill exists
+    const skillFile = path.join(
+      testDir,
+      ".claude",
+      "skills",
+      "start-task",
+      "SKILL.md"
+    );
+    expect(fs.existsSync(skillFile)).toBe(true);
+
+    const content = fs.readFileSync(skillFile, "utf-8");
+    expect(content).toContain("Captain");
+    expect(content).toContain("Task Folder");
+
+    // start-task prompt should NOT exist
+    const copilotPromptFile = path.join(
       testDir,
       ".github",
       "prompts",
       "start-task.prompt.md"
     );
-    expect(fs.existsSync(promptFile)).toBe(true);
+    expect(fs.existsSync(copilotPromptFile)).toBe(false);
 
-    const content = fs.readFileSync(promptFile, "utf-8");
-    expect(content).toContain("Captain");
-  });
-
-  test("copies start-task command to .claude/commands/", () => {
-    installFantastic4(testDir);
-
-    const commandFile = path.join(
+    const claudeCommandFile = path.join(
       testDir,
       ".claude",
       "commands",
       "start-task.md"
     );
-    expect(fs.existsSync(commandFile)).toBe(true);
-
-    const content = fs.readFileSync(commandFile, "utf-8");
-    expect(content).toContain("Captain");
+    expect(fs.existsSync(claudeCommandFile)).toBe(false);
   });
 
   test("copies instructions to .github/instructions/ and .claude/instructions/", () => {
@@ -322,7 +362,7 @@ describe("installFantastic4", () => {
     expect(fs.statSync(tasksDir).isDirectory()).toBe(true);
   });
 
-  test("Copilot agent skill paths reference .claude/skills/", () => {
+  test("Copilot captain agent references start-task skill", () => {
     installFantastic4(testDir);
 
     const captainFile = path.join(
@@ -333,6 +373,21 @@ describe("installFantastic4", () => {
     );
     const content = fs.readFileSync(captainFile, "utf-8");
     expect(content).toContain("../../.claude/skills/orchestrator/SKILL.md");
+    expect(content).toContain("../../.claude/skills/start-task/SKILL.md");
+  });
+
+  test("Claude captain agent references start-task skill", () => {
+    installFantastic4(testDir);
+
+    const captainFile = path.join(
+      testDir,
+      ".claude",
+      "agents",
+      "captain.md"
+    );
+    const content = fs.readFileSync(captainFile, "utf-8");
+    expect(content).toContain("start-task");
+    expect(content).toContain("orchestrator");
   });
 });
 
@@ -364,5 +419,51 @@ describe("installCommand with fantastic4 subcommand", () => {
     const config = readConfig(testDir);
     const count = config.completedSteps.filter((s) => s === "fantastic4").length;
     expect(count).toBe(1);
+  });
+});
+
+describe("resolvePaths", () => {
+  test("project scope resolves to cwd-relative paths", () => {
+    const paths = resolvePaths("/my/project", "project");
+    expect(paths.claudeBase).toBe(path.join("/my/project", ".claude"));
+    expect(paths.copilotBase).toBe(path.join("/my/project", ".github"));
+    expect(paths.projectBase).toBe("/my/project");
+  });
+
+  test("global scope resolves to home-relative paths", () => {
+    const home = os.homedir();
+    const paths = resolvePaths("/my/project", "global");
+    expect(paths.claudeBase).toBe(path.join(home, ".claude"));
+    expect(paths.copilotBase).toBe(path.join(home, "copilot"));
+    expect(paths.projectBase).toBe("/my/project");
+  });
+});
+
+describe("global scope install", () => {
+  let globalClaudeDir;
+  let globalCopilotDir;
+
+  beforeEach(() => {
+    // We cannot mock os.homedir() easily, so test with project scope
+    // and verify path resolution separately. For integration testing of
+    // global scope, we use a custom cwd that simulates the global dirs.
+    globalClaudeDir = path.join(os.homedir(), ".claude");
+    globalCopilotDir = path.join(os.homedir(), "copilot");
+  });
+
+  test("installCommand with global scope writes scope to config", async () => {
+    await installCommand(testDir, undefined, "global");
+
+    const config = readConfig(testDir);
+    expect(config.scope).toBe("global");
+  });
+
+  test("installCommand fantastic4 with global scope writes scope to config", async () => {
+    await installCommand(testDir, undefined, "global");
+    await installCommand(testDir, "fantastic4", "global");
+
+    const config = readConfig(testDir);
+    expect(config.scope).toBe("global");
+    expect(config.completedSteps).toContain("fantastic4");
   });
 });

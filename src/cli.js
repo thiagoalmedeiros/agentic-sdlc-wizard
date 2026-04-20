@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-const { installCommand } = require("./commands/install");
+const { installCommand, promptScope } = require("./commands/install");
 const { VERSION } = require("./config");
 
 function printHelp() {
@@ -15,9 +15,17 @@ function printHelp() {
       "  install fantastic4    Install the Fantastic 4 multi-agent orchestra\n" +
       "\n" +
       "Options:\n" +
+      "  --project        Install at project level (.github and .claude)\n" +
+      "  --global         Install at global level (~/.claude and ~/copilot)\n" +
       "  --version        Show version number\n" +
       "  -h, --help       Show this help message"
   );
+}
+
+function parseScope(args) {
+  if (args.includes("--global")) return "global";
+  if (args.includes("--project")) return "project";
+  return undefined;
 }
 
 async function main() {
@@ -38,7 +46,17 @@ async function main() {
       printHelp();
       return;
     }
-    await installCommand(undefined, args[1]);
+
+    // Extract scope from flags, or prompt interactively
+    let scope = parseScope(args);
+    if (!scope) {
+      scope = await promptScope();
+    }
+
+    // Extract subcommand (first non-flag argument after "install")
+    const subcommand = args.slice(1).find((a) => !a.startsWith("-"));
+
+    await installCommand(undefined, subcommand, scope);
   } else {
     console.log(`Unknown command: ${args[0]}`);
     printHelp();

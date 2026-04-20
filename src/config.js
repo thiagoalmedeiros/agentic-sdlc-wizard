@@ -1,6 +1,7 @@
 "use strict";
 
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 
 const CONFIG_FILE = ".wizard.json";
@@ -60,6 +61,28 @@ function updateGitignore(cwd, entries) {
   fs.writeFileSync(gitignorePath, existing + prefix + toAdd.join("\n") + "\n");
 }
 
+/**
+ * Resolve target directories based on install scope.
+ * @param {string} cwd - Current working directory
+ * @param {"project"|"global"} scope - Install scope
+ * @returns {{ claudeBase: string, copilotBase: string, projectBase: string }}
+ */
+function resolvePaths(cwd, scope) {
+  if (scope === "global") {
+    const home = os.homedir();
+    return {
+      claudeBase: path.join(home, ".claude"),
+      copilotBase: path.join(home, "copilot"),
+      projectBase: cwd,
+    };
+  }
+  return {
+    claudeBase: path.join(cwd, ".claude"),
+    copilotBase: path.join(cwd, ".github"),
+    projectBase: cwd,
+  };
+}
+
 module.exports = {
   CONFIG_FILE,
   VERSION,
@@ -73,4 +96,5 @@ module.exports = {
   getFantastic4Dir,
   getGitignorePath,
   updateGitignore,
+  resolvePaths,
 };
