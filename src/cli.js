@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-const { installCommand } = require("./commands/install");
+const { installCommand, promptScope } = require("./commands/install");
 const { VERSION } = require("./config");
 
 function printHelp() {
@@ -38,7 +38,14 @@ async function main() {
       printHelp();
       return;
     }
-    await installCommand(undefined, args[1]);
+
+    // Always show the interactive scope menu
+    const scope = await promptScope();
+
+    // Extract subcommand (first non-flag argument after "install")
+    const subcommand = args.slice(1).find((a) => !a.startsWith("-"));
+
+    await installCommand(undefined, subcommand, scope);
   } else {
     console.log(`Unknown command: ${args[0]}`);
     printHelp();

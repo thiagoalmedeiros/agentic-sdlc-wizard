@@ -14,6 +14,7 @@ const {
   getFantastic4Dir,
   getGitignorePath,
   updateGitignore,
+  resolvePaths,
 } = require("../src/config");
 
 let testDir;
@@ -93,4 +94,19 @@ test("updateGitignore adds multiple entries at once", () => {
   const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
   expect(content).toContain(".github/prompts/");
   expect(content).toContain(".claude/commands/");
+});
+
+test("resolvePaths returns project-level paths by default", () => {
+  const paths = resolvePaths("/my/project", "project");
+  expect(paths.claudeBase).toBe(path.join("/my/project", ".claude"));
+  expect(paths.copilotBase).toBe(path.join("/my/project", ".github"));
+  expect(paths.projectBase).toBe("/my/project");
+});
+
+test("resolvePaths returns global-level paths", () => {
+  const home = os.homedir();
+  const paths = resolvePaths("/my/project", "global");
+  expect(paths.claudeBase).toBe(path.join(home, ".claude"));
+  expect(paths.copilotBase).toBe(path.join(home, "copilot"));
+  expect(paths.projectBase).toBe("/my/project");
 });
