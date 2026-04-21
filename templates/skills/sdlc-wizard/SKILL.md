@@ -65,7 +65,7 @@ Check whether the standalone planning skill is available:
 
 Check whether the Fantastic 4 agent orchestra is already installed:
 
-- Look for `.github/agents/captain.agent.md` (Copilot) or `.claude/agents/captain.md` (Claude Code)
+- Look for `.claude/agents/captain.md`
 - If **already installed** → tell the user: "The Fantastic 4 agent orchestra is already configured. Would you like to re-install it? (yes/no)". If "no", return to Step 1. If "yes", proceed to Step 3F.
 - If **not installed** → go to **Step 3F**
 
@@ -81,14 +81,15 @@ Tell the user:
 The Fantastic 4 installation will set up:
 
 **Agents (5):** Captain (orchestrator), Harper (planner), Benjamin (coder), Lucas (reviewer), Bug-Fixer (debugger)
-  - Copilot agents → .github/agents/
-  - Claude Code agents → .claude/agents/
+  - Installed to .claude/agents/ (VS Code Copilot reads .claude/ natively, so the same definitions serve both platforms — each skill describes how the active harness dispatches agents)
 
 **Skills (8):** orchestrator, planner, coder, reviewer, bug-fixer, security-reviewer, implementation-debate, start-task
-  - Installed to .claude/skills/ (readable by both Copilot and Claude)
+  - Installed to .claude/skills/
 
-**Instructions:** Global coding standards for both platforms
-**Support files:** lessons.md (at project root) and tasks/ directory
+**Instructions:** Global coding standards → .claude/instructions/
+**Support files:** tasks/ directory at project root
+
+Note: `lessons.md` is NOT created at the project root. Lessons now live inside each plan folder (`plans/<topic>/lessons.md`) and are owned by the `implementation-plan` skill.
 ```
 
 ### 3F.2 — Confirm before proceeding
@@ -106,11 +107,10 @@ wizard install fantastic4
 ### 3F.4 — Verify installation
 
 After the command completes, verify key files exist:
-- `.github/agents/captain.agent.md`
 - `.claude/agents/captain.md`
 - `.claude/skills/orchestrator/SKILL.md`
 - `.claude/skills/start-task/SKILL.md`
-- `lessons.md`
+- `.claude/instructions/global-coding.instructions.md`
 - `tasks/` directory
 
 If any file is missing, report the issue.
@@ -148,7 +148,7 @@ If it does not exist, report the issue and stop.
 
 ### 3I.4 — Provide usage guidance
 
-Tell the user to use `/implementation-plan` in their IDE chat when they want to generate a plan document before implementation begins.
+Tell the user: "Ask your IDE chat (Copilot or Claude Code) to run the `implementation-plan` skill when you want to generate a plan document before implementation begins."
 
 ### 3I.5 — Proceed to Step 5
 
@@ -276,7 +276,7 @@ If the user selected "none", skip directly to **Step 4** (validate devcontainer)
 ### 3C.1 — Analyze the project context
 
 Scan the project to determine:
-- Which AI coding assistant(s) are configured (look for `.claude/`, `AGENTS.md`, `.codex/`, `.github/prompts/`)
+- Which AI coding assistant(s) are configured (look for `.claude/`, `AGENTS.md`, `.codex/`)
 - Whether a `.devcontainer/` directory exists (graphify will need to be added to the Dockerfile if so)
 - The primary language/framework so the `.graphifyignore` can be tailored appropriately
 
@@ -397,4 +397,4 @@ Example after all steps are done:
 Report success to the user and suggest next steps.
 
 For Fantastic 4, tell the user: "Use `@captain` in your IDE chat (Copilot or Claude) to begin a new task with Captain orchestrating the team."
-For Implementation Plan, tell the user: "Use `/implementation-plan` in your IDE chat when you want to create a structured implementation plan before coding."
+For Implementation Plan, tell the user: "Ask your IDE chat to run the `implementation-plan` skill when you want to create a structured implementation plan before coding."

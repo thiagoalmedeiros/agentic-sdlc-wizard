@@ -34,10 +34,6 @@ function getSkillsDir() {
   return path.join(TEMPLATES_DIR, "skills");
 }
 
-function getPromptsDir() {
-  return path.join(TEMPLATES_DIR, "prompts");
-}
-
 function getFantastic4Dir() {
   return path.join(TEMPLATES_DIR, "fantastic4");
 }
@@ -63,22 +59,25 @@ function updateGitignore(cwd, entries) {
 
 /**
  * Resolve target directories based on install scope.
+ *
+ * The wizard installs a single `.claude/` tree. VS Code Copilot reads
+ * `.claude/` natively, so there is no separate Copilot-specific target
+ * directory.
+ *
  * @param {string} cwd - Current working directory
  * @param {"project"|"global"} scope - Install scope
- * @returns {{ claudeBase: string, copilotBase: string, projectBase: string }}
+ * @returns {{ claudeBase: string, projectBase: string }}
  */
 function resolvePaths(cwd, scope) {
   if (scope === "global") {
     const home = os.homedir();
     return {
       claudeBase: path.join(home, ".claude"),
-      copilotBase: path.join(home, "copilot"),
       projectBase: cwd,
     };
   }
   return {
     claudeBase: path.join(cwd, ".claude"),
-    copilotBase: path.join(cwd, ".github"),
     projectBase: cwd,
   };
 }
@@ -92,7 +91,6 @@ module.exports = {
   writeConfig,
   getTemplatesDir,
   getSkillsDir,
-  getPromptsDir,
   getFantastic4Dir,
   getGitignorePath,
   updateGitignore,

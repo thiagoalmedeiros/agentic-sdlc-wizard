@@ -62,7 +62,7 @@ _Use this section as the starting prompt for a new AI chat session. It contains 
 
 - **Plan first:** Enter plan mode for any non-trivial task (see `skills/planner/SKILL.md`)
 - **Subagent strategy:** Use subagents to keep main context clean; one task per subagent
-- **Self-improvement loop:** After any user correction, update `lessons.md` (see `skills/orchestrator/SKILL.md`)
+- **Self-improvement loop:** After any user correction, update the active plan's `plans/<topic>/lessons.md` (see `skills/orchestrator/SKILL.md`)
 - **Verify before done:** Never mark complete without proof — tests, logs, correctness (see `skills/reviewer/SKILL.md`)
 - **Demand elegance (balanced):** For non-trivial changes, pause and ask "is there a more elegant way?" Skip for simple fixes
 - **Autonomous bug fixing:** Diagnose and resolve without hand-holding (see `skills/bug-fixer/SKILL.md`)
@@ -136,4 +136,4 @@ _Use this section as the starting prompt for a new AI chat session. It contains 
 
 ---
 
-_This document is the single source of truth for this task. Captain updates it as work progresses. See `lessons.md` for cross-task learnings._
+_This document is the single source of truth for this task. Captain updates it as work progresses. See the active plan's `plans/<topic>/lessons.md` for per-plan execution learnings._

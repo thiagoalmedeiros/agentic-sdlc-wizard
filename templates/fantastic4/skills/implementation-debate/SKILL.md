@@ -49,7 +49,7 @@ active harness. Do not attempt cross-harness fan-out.
 ## Inputs
 
 - `$ARGUMENTS` — the user's implementation prompt
-- `lessons.md` — prior corrections relevant to this team
+- `plans/<topic>/lessons.md` (prior plans) — corrections relevant to this team
 - Current codebase (for Harper's exploration step)
 
 ## Roles

@@ -21,7 +21,7 @@ From the Orchestrator (Captain):
 - The filled Section 1 (Prompt/Intent) of the task-implementation doc
 - Any existing codebase context (file tree, key files)
 - Constraints and decisions already made
-- Lessons from `lessons.md` relevant to this type of work
+- Lessons from the active plan's `plans/<topic>/lessons.md` relevant to this type of work
 
 ## What You Produce
 

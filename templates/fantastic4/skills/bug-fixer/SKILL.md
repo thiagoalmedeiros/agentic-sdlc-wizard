@@ -36,7 +36,7 @@ When you receive a bug or failure:
 - Trace from the error to the root cause
 - Read the relevant source files
 - Check recent changes — what was modified in this batch?
-- Check `lessons.md` — have we seen this pattern before?
+- Check the active plan's `plans/<topic>/lessons.md` (if any) — have we seen this pattern before?
 - If the failure involves third-party libraries, CI tooling, platform behavior, or framework semantics, verify likely causes with web research and primary documentation.
 
 ### Step 3: Understand
@@ -57,7 +57,7 @@ When you receive a bug or failure:
 ### Step 5: Document
 
 - Update the session log: what broke, why, and how you fixed it
-- If this is a pattern that could recur, add it to `lessons.md`
+- If this is a pattern that could recur, append it to the active plan's `plans/<topic>/lessons.md`
 - Update file tracking status
 
 ## What You Fix

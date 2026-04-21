@@ -51,7 +51,7 @@ Determine which AI coding assistant(s) are active in this project. Check for:
 |--------|----------|
 | `.claude/` directory or `CLAUDE.md` exists | **Claude Code** |
 | `.codex/` directory or `AGENTS.md` exists | **Codex** |
-| `.github/copilot-instructions.md` or `.github/prompts/` exists | **GitHub Copilot** |
+| Copilot is the active IDE and `.claude/` exists | **GitHub Copilot** |
 
 If multiple platforms are detected, configure all of them.
 
@@ -74,11 +74,14 @@ graphify codex install               # writes AGENTS.md section + PreToolUse hoo
 > **Note:** Codex also requires `multi_agent = true` under `[features]` in `~/.codex/config.toml` for parallel extraction. Inform the user to add this if it is not already present.
 
 #### GitHub Copilot
-```bash
-graphify copilot install               # writes project-level always-on instructions to .github/copilot-instructions.md
-```
 
-> **Note:** Do **not** use `graphify install --platform copilot` — it installs to the user-level `~/.copilot/skills/` directory. Instead, Copilot can read the `/graphify` skill from `.claude/skills/graphify/` (installed by the Claude command above). Install Claude first if both platforms are detected.
+Copilot reads the `/graphify` skill directly from `.claude/skills/graphify/`
+(installed by the Claude Code command above — run it first if both
+platforms are detected). No separate Copilot install step is required.
+
+> **Note:** Do **not** run `graphify install --platform copilot` — it
+> targets the legacy user-level `~/.copilot/skills/` directory, which is
+> not how this wizard sets Copilot up.
 
 ### Step 4 — Install git hooks
 

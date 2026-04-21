@@ -7,7 +7,6 @@ const {
   readConfig,
   writeConfig,
   getSkillsDir,
-  getPromptsDir,
   getFantastic4Dir,
   resolvePaths,
 } = require("../config");
@@ -31,13 +30,19 @@ function copyDirRecursive(srcDir, destDir) {
   }
 }
 
+/**
+ * Install base skills into `<scope>/.claude/skills/`.
+ *
+ * The sdlc-wizard skill is part of this bundle, so after `wizard install`
+ * the wizard is available to any agent (Claude Code or Copilot) that reads
+ * `.claude/skills/`.
+ */
 function installSkills(cwd, scope) {
   scope = scope || "project";
   const paths = resolvePaths(cwd, scope);
   const skillsDir = getSkillsDir();
   const targetDir = path.join(paths.claudeBase, "skills");
 
-  // Copy each skill directory (preserving <name>/SKILL.md structure)
   const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
   const skillNames = [];
   for (const entry of entries) {
@@ -50,53 +55,31 @@ function installSkills(cwd, scope) {
   return skillNames;
 }
 
-function installPrompts(cwd, scope) {
-  scope = scope || "project";
-  const paths = resolvePaths(cwd, scope);
-  const promptsDir = getPromptsDir();
-  const promptFiles = fs
-    .readdirSync(promptsDir)
-    .filter((f) => f.endsWith(".md"));
-
-  // Install for Copilot — keep .prompt.md extension as-is
-  const copilotDir = path.join(paths.copilotBase, "prompts");
-  for (const file of promptFiles) {
-    copyFileSync(path.join(promptsDir, file), copilotDir, file);
-  }
-
-  // Install for Claude — strip .prompt from extension
-  const claudeDir = path.join(paths.claudeBase, "commands");
-  for (const file of promptFiles) {
-    const claudeName = file.replace(/\.prompt\.md$/, ".md");
-    copyFileSync(path.join(promptsDir, file), claudeDir, claudeName);
-  }
-
-  return promptFiles;
-}
-
+/**
+ * Install the Fantastic 4 agent orchestra into `<scope>/.claude/`.
+ *
+ * - Agent definitions → `.claude/agents/` (single set; skills describe how
+ *   each platform dispatches them).
+ * - Skills → `.claude/skills/` (readable by Claude Code and Copilot).
+ * - Global coding instructions → `.claude/instructions/`.
+ * - `tasks/` directory → project root (always project-level).
+ *
+ * Note: no `lessons.md` is written at project root. Lessons live inside
+ * individual plan folders as defined by the `implementation-plan` skill.
+ */
 function installFantastic4(cwd, scope) {
   scope = scope || "project";
   const paths = resolvePaths(cwd, scope);
   const f4Dir = getFantastic4Dir();
 
-  // Copilot agents
-  const copilotAgentsDir = path.join(f4Dir, "agents", "copilot");
-  const copilotAgentsTarget = path.join(paths.copilotBase, "agents");
-  const copilotAgents = fs
-    .readdirSync(copilotAgentsDir)
+  // Agents
+  const agentsSrc = path.join(f4Dir, "agents");
+  const agentsTarget = path.join(paths.claudeBase, "agents");
+  const agentFiles = fs
+    .readdirSync(agentsSrc)
     .filter((f) => f.endsWith(".md"));
-  for (const file of copilotAgents) {
-    copyFileSync(path.join(copilotAgentsDir, file), copilotAgentsTarget, file);
-  }
-
-  // Claude Code agents
-  const claudeAgentsDir = path.join(f4Dir, "agents", "claude-code");
-  const claudeAgentsTarget = path.join(paths.claudeBase, "agents");
-  const claudeAgents = fs
-    .readdirSync(claudeAgentsDir)
-    .filter((f) => f.endsWith(".md"));
-  for (const file of claudeAgents) {
-    copyFileSync(path.join(claudeAgentsDir, file), claudeAgentsTarget, file);
+  for (const file of agentFiles) {
+    copyFileSync(path.join(agentsSrc, file), agentsTarget, file);
   }
 
   // Skills (recursive copy preserving subdirectory structure)
@@ -104,15 +87,10 @@ function installFantastic4(cwd, scope) {
   const skillsTarget = path.join(paths.claudeBase, "skills");
   copyDirRecursive(skillsSrc, skillsTarget);
 
-  // Global coding instructions
+  // Global coding instructions (Claude only)
   const instructionsSrc = path.join(
     f4Dir,
     "instructions",
-    "global-coding.instructions.md"
-  );
-  copyFileSync(
-    instructionsSrc,
-    path.join(paths.copilotBase, "instructions"),
     "global-coding.instructions.md"
   );
   copyFileSync(
@@ -121,17 +99,10 @@ function installFantastic4(cwd, scope) {
     "global-coding.instructions.md"
   );
 
-  // lessons.md → project root (always project-level)
-  const lessonsSrc = path.join(f4Dir, "lessons.md");
-  fs.copyFileSync(lessonsSrc, path.join(paths.projectBase, "lessons.md"));
-
   // tasks/ directory → project root (always project-level)
   fs.mkdirSync(path.join(paths.projectBase, "tasks"), { recursive: true });
 
-  return {
-    copilotAgents,
-    claudeAgents,
-  };
+  return { agents: agentFiles };
 }
 
 /**
@@ -142,7 +113,6 @@ function installFantastic4(cwd, scope) {
  */
 function promptScope() {
   return new Promise((resolve) => {
-    // Non-interactive environment (e.g. CI, pipes, tests via stdin) — use default
     if (!process.stdin.isTTY || !process.stdout.isTTY) {
       console.log("Non-interactive environment detected, defaulting to project scope.");
       resolve("project");
@@ -154,11 +124,11 @@ function promptScope() {
     const options = [
       {
         value: "project",
-        label: "Project level  (.github and .claude in current directory)",
+        label: "Project level  (.claude in current directory)",
       },
       {
         value: "global",
-        label: "Global level   (~/.claude and ~/copilot for all projects)",
+        label: "Global level   (~/.claude for all projects)",
       },
     ];
 
@@ -180,7 +150,6 @@ function promptScope() {
     }
 
     function clearRender() {
-      // Lines printed: 1 blank + 1 header + 1 blank + options.length items + 1 blank + 1 hint = options.length + 5
       const FIXED_LINES = 5;
       const lines = options.length + FIXED_LINES;
       for (let i = 0; i < lines; i++) {
@@ -196,14 +165,12 @@ function promptScope() {
     process.stdin.setEncoding("utf8");
 
     function onData(key) {
-      // Ctrl+C → reset terminal and abort
       if (key === "\u0003") {
         process.stdin.setRawMode(false);
         process.stdin.pause();
         process.exit(1);
       }
 
-      // Up arrow
       if (key === "\x1b[A") {
         cursor = (cursor - 1 + options.length) % options.length;
         clearRender();
@@ -211,7 +178,6 @@ function promptScope() {
         return;
       }
 
-      // Down arrow
       if (key === "\x1b[B") {
         cursor = (cursor + 1) % options.length;
         clearRender();
@@ -219,7 +185,6 @@ function promptScope() {
         return;
       }
 
-      // Enter (\r or \n) or Space → confirm selection
       if (key === "\r" || key === "\n" || key === " ") {
         process.stdin.setRawMode(false);
         process.stdin.pause();
@@ -235,7 +200,7 @@ function promptScope() {
 }
 
 function scopeLabel(scope) {
-  return scope === "global" ? "global (~/.claude, ~/copilot)" : "project (.github, .claude)";
+  return scope === "global" ? "global (~/.claude)" : "project (.claude)";
 }
 
 async function installCommand(cwd, subcommand, scope) {
@@ -248,7 +213,6 @@ async function installCommand(cwd, subcommand, scope) {
     scope,
   };
 
-  // Read existing config if present, to preserve completedSteps on subcommand installs
   const existing = readConfig(cwd);
   if (subcommand && existing) {
     config.version = existing.version || VERSION;
@@ -256,22 +220,18 @@ async function installCommand(cwd, subcommand, scope) {
   }
 
   if (!subcommand) {
-    // Base install
     writeConfig(cwd, config);
 
     const skills = installSkills(cwd, scope);
-    const prompts = installPrompts(cwd, scope);
 
     console.log(`\nSDLC Wizard v${VERSION} installed successfully (${scopeLabel(scope)}).`);
-    console.log(`\nSkills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`);
     console.log(
-      `Prompts installed to ${scope === "global" ? "~/copilot/prompts/ and ~/.claude/commands/" : ".github/prompts/ and .claude/commands/"}`
+      `\nSkills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
     );
     console.log(`\nInstalled skills: ${skills.join(", ")}`);
-    console.log(`Installed prompts: ${prompts.map(f => f.replace(/\.prompt\.md$/, "").replace(/\.md$/, "")).join(", ")}`);
     console.log(`\nNext steps:`);
     console.log(
-      `  Open your IDE chat (Copilot, Codex, or Claude) and use /sdlc-wizard`
+      `  Ask your IDE chat (Copilot or Claude Code) to run the "sdlc-wizard" skill.`
     );
   } else if (subcommand === "fantastic4") {
     const result = installFantastic4(cwd, scope);
@@ -282,13 +242,17 @@ async function installCommand(cwd, subcommand, scope) {
     writeConfig(cwd, config);
 
     console.log(`\nFantastic 4 agent orchestra installed successfully (${scopeLabel(scope)}).`);
-    console.log(`\nCopilot agents installed to ${scope === "global" ? "~/copilot/agents/" : ".github/agents/"}`);
-    console.log(`  ${result.copilotAgents.join(", ")}`);
-    console.log(`Claude Code agents installed to ${scope === "global" ? "~/.claude/agents/" : ".claude/agents/"}`);
-    console.log(`  ${result.claudeAgents.join(", ")}`);
-    console.log(`Skills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`);
-    console.log(`Instructions installed to ${scope === "global" ? "~/copilot/instructions/ and ~/.claude/instructions/" : ".github/instructions/ and .claude/instructions/"}`);
-    console.log(`Created lessons.md and tasks/ directory`);
+    console.log(
+      `\nAgents installed to ${scope === "global" ? "~/.claude/agents/" : ".claude/agents/"}`
+    );
+    console.log(`  ${result.agents.join(", ")}`);
+    console.log(
+      `Skills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
+    );
+    console.log(
+      `Instructions installed to ${scope === "global" ? "~/.claude/instructions/" : ".claude/instructions/"}`
+    );
+    console.log(`Created tasks/ directory`);
     console.log(`\nNext steps:`);
     console.log(`  Use @captain in your IDE chat to begin a task with Captain`);
   } else {
@@ -297,4 +261,9 @@ async function installCommand(cwd, subcommand, scope) {
   }
 }
 
-module.exports = { installCommand, installSkills, installPrompts, installFantastic4, promptScope };
+module.exports = {
+  installCommand,
+  installSkills,
+  installFantastic4,
+  promptScope,
+};

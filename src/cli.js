@@ -11,7 +11,7 @@ function printHelp() {
       "SDLC Wizard - Configure your development environment with AI agents\n" +
       "\n" +
       "Commands:\n" +
-      "  install               Install wizard configuration, prompts, and skills\n" +
+      "  install               Install wizard configuration and skills\n" +
       "  install fantastic4    Install the Fantastic 4 multi-agent orchestra\n" +
       "\n" +
       "Options:\n" +
