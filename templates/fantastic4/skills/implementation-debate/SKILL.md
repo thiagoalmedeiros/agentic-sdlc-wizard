@@ -30,7 +30,8 @@ committed — not to replace planning.
 
 - The task is a mechanical fix with an obvious path — go straight to
   `implementation-plan`.
-- The user asks for execution, not planning — skip to `start-task`.
+- The user asks for execution, not planning — Captain's orchestrator skill
+  handles the batch loop directly.
 - An approved plan already exists — update it, don't re-debate it.
 
 ## Harness Note — One or the Other
@@ -193,8 +194,8 @@ Present two things to the user:
    open questions from Stage 4.
 2. The plan artifact produced by `implementation-plan`.
 
-Do not proceed to execution. This skill ends at the handoff — the execution
-phase is a separate flow (`start-task` / batch loop).
+Do not proceed to execution. This skill ends at the handoff — execution
+is driven by the `orchestrator` skill's batch loop.
 
 ---
 

@@ -73,15 +73,15 @@ This installs:
   `.claude/agents/`. A single agent definition per role — each skill
   describes how the active harness (Claude Code or Copilot) dispatches
   them.
-- **8 skills** (orchestrator, planner, coder, reviewer, bug-fixer,
-  security-reviewer, implementation-debate, start-task) to
-  `.claude/skills/`.
+- **6 skills** (orchestrator, planner, coder, reviewer, bug-fixer,
+  implementation-debate) to `.claude/skills/`.
 - **Global coding instructions** to `.claude/instructions/`.
-- **`tasks/`** directory at project root for task implementation documents.
 
-Note: no `lessons.md` is created at the project root. Execution lessons
-live inside each plan folder (`plans/<topic>/lessons.md`) and are owned by
-the `implementation-plan` skill.
+The Fantastic 4 team produces the **same plan artifact** as running the
+`implementation-plan` skill directly — `plans/<topic>/plan.md` +
+`lessons.md`. The team path only goes deeper, because Harper's draft is
+shaped by Benjamin and Lucas before the user sees it. No project-root
+`lessons.md` or `tasks/` directory is created.
 
 After installation, use `@captain` in your IDE chat to begin a new task
 with Captain orchestrating the team.
@@ -99,18 +99,22 @@ with Captain orchestrating the team.
 
 ### Fantastic 4 workflow
 
-When using `@captain`, Captain orchestrates a structured workflow using the
-`start-task` skill:
+When using `@captain`, Captain orchestrates a structured workflow defined
+by the `orchestrator` skill:
 
-1. **Clarify** — Captain asks focused questions until the task is
-   unambiguous.
-2. **Plan** — Harper decomposes the task into actionable specs and batch
-   plans.
-3. **Execute** — Benjamin implements the code following the spec precisely.
+1. **Init** — Captain derives a kebab-case topic and runs the
+   clarification loop until the task is unambiguous.
+2. **Plan** — Harper runs the `implementation-plan` skill, producing
+   `plans/<topic>/plan.md` + `lessons.md`. For non-trivial work, the
+   `implementation-debate` skill feeds a team-critiqued brief into the
+   plan first.
+3. **Execute** — Benjamin implements each batch following `plan.md`.
 4. **Review** — Lucas validates against the spec and challenges
    assumptions.
 5. **Fix** — Bug-Fixer handles any test failures or issues.
-6. **Confirm** — Results are presented to the user for approval.
+6. **Debate Gate** — Before every user-facing result, Captain dispatches
+   Benjamin, Lucas, and Harper in parallel for a consensus check.
+7. **Confirm** — Results are presented to the user for approval.
 
 ### Agent dispatch (platform-aware)
 

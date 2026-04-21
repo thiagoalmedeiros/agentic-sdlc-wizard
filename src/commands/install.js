@@ -62,10 +62,10 @@ function installSkills(cwd, scope) {
  *   each platform dispatches them).
  * - Skills → `.claude/skills/` (readable by Claude Code and Copilot).
  * - Global coding instructions → `.claude/instructions/`.
- * - `tasks/` directory → project root (always project-level).
  *
- * Note: no `lessons.md` is written at project root. Lessons live inside
- * individual plan folders as defined by the `implementation-plan` skill.
+ * No project-root artifacts are created. The Fantastic 4 flow produces
+ * plan folders on demand at `plans/<topic>/` via the `implementation-plan`
+ * skill — the same artifact shape produced by running that skill directly.
  */
 function installFantastic4(cwd, scope) {
   scope = scope || "project";
@@ -98,9 +98,6 @@ function installFantastic4(cwd, scope) {
     path.join(paths.claudeBase, "instructions"),
     "global-coding.instructions.md"
   );
-
-  // tasks/ directory → project root (always project-level)
-  fs.mkdirSync(path.join(paths.projectBase, "tasks"), { recursive: true });
 
   return { agents: agentFiles };
 }
@@ -252,7 +249,6 @@ async function installCommand(cwd, subcommand, scope) {
     console.log(
       `Instructions installed to ${scope === "global" ? "~/.claude/instructions/" : ".claude/instructions/"}`
     );
-    console.log(`Created tasks/ directory`);
     console.log(`\nNext steps:`);
     console.log(`  Use @captain in your IDE chat to begin a task with Captain`);
   } else {

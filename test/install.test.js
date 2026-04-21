@@ -190,9 +190,7 @@ describe("installFantastic4", () => {
       "coder",
       "reviewer",
       "bug-fixer",
-      "security-reviewer",
       "implementation-debate",
-      "start-task",
     ];
     for (const skill of expected) {
       const skillFile = path.join(skillsDir, skill, "SKILL.md");
@@ -200,16 +198,18 @@ describe("installFantastic4", () => {
       expect(fs.readFileSync(skillFile, "utf-8").length).toBeGreaterThan(0);
     }
 
+    // Deprecated skills must not appear
+    for (const removed of ["start-task", "security-reviewer"]) {
+      expect(
+        fs.existsSync(path.join(skillsDir, removed))
+      ).toBe(false);
+    }
+
+    // The legacy planner template is gone — plan.md is now produced by
+    // the implementation-plan skill, not from a template.
     expect(
-      fs.existsSync(
-        path.join(
-          skillsDir,
-          "planner",
-          "templates",
-          "task-implementation.md"
-        )
-      )
-    ).toBe(true);
+      fs.existsSync(path.join(skillsDir, "planner", "templates"))
+    ).toBe(false);
   });
 
   test("installs instructions only to .claude/instructions/", () => {
@@ -235,15 +235,13 @@ describe("installFantastic4", () => {
     expect(fs.existsSync(path.join(testDir, "lessons.md"))).toBe(false);
   });
 
-  test("creates the tasks/ directory at project root", () => {
+  test("does NOT create a tasks/ directory at project root", () => {
     installFantastic4(testDir);
 
-    const tasksDir = path.join(testDir, "tasks");
-    expect(fs.existsSync(tasksDir)).toBe(true);
-    expect(fs.statSync(tasksDir).isDirectory()).toBe(true);
+    expect(fs.existsSync(path.join(testDir, "tasks"))).toBe(false);
   });
 
-  test("captain agent references orchestrator and start-task skills", () => {
+  test("captain agent references the orchestrator skill (and no longer start-task)", () => {
     installFantastic4(testDir);
 
     const captain = fs.readFileSync(
@@ -251,7 +249,7 @@ describe("installFantastic4", () => {
       "utf-8"
     );
     expect(captain).toContain("orchestrator");
-    expect(captain).toContain("start-task");
+    expect(captain).not.toContain("start-task");
   });
 
   test("orchestrator skill documents dispatch for both Claude Code and Copilot", () => {
@@ -372,6 +370,28 @@ describe("repository contract", () => {
   test("no templates/fantastic4/lessons.md exists", () => {
     expect(
       fs.existsSync(path.join(repoRoot, "templates", "fantastic4", "lessons.md"))
+    ).toBe(false);
+  });
+
+  test("deprecated fantastic4 skill folders are removed", () => {
+    const skillsRoot = path.join(repoRoot, "templates", "fantastic4", "skills");
+    for (const removed of ["start-task", "security-reviewer"]) {
+      expect(fs.existsSync(path.join(skillsRoot, removed))).toBe(false);
+    }
+  });
+
+  test("planner no longer ships a task-implementation template", () => {
+    expect(
+      fs.existsSync(
+        path.join(
+          repoRoot,
+          "templates",
+          "fantastic4",
+          "skills",
+          "planner",
+          "templates"
+        )
+      )
     ).toBe(false);
   });
 

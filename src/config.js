@@ -26,10 +26,6 @@ function writeConfig(cwd, config) {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 }
 
-function getTemplatesDir() {
-  return TEMPLATES_DIR;
-}
-
 function getSkillsDir() {
   return path.join(TEMPLATES_DIR, "skills");
 }
@@ -89,7 +85,6 @@ module.exports = {
   getConfigPath,
   readConfig,
   writeConfig,
-  getTemplatesDir,
   getSkillsDir,
   getFantastic4Dir,
   getGitignorePath,
