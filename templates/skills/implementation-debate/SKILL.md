@@ -1,14 +1,12 @@
 ---
 name: implementation-debate
 description: >
-  Pre-implementation multi-skill debate. The `wizard` skill runs a
-  council-style discussion of a proposed implementation by dispatching the
-  `planner`, `coder`, and `reviewer` skills in parallel before any code is
-  written, then hands the synthesized brief to the `implementation-plan`
-  skill to produce the final plan artifact. USE FOR: non-trivial features,
-  refactors, migrations, or architecture decisions where parallel critique
-  is worthwhile before planning. DO NOT USE FOR: bug fixes, one-line edits,
-  or tasks already covered by an existing plan.
+  Pre-implementation multi-skill debate. Dispatches `planner`, `coder`,
+  and `reviewer` in parallel to critique a proposal, then hands the
+  synthesized brief to `implementation-plan`. USE FOR: planning non-trivial
+  features, refactors, migrations, or architecture decisions. DO NOT USE
+  FOR: bug fixes, one-line edits, or work already covered by an approved
+  plan.
 argument-hint: 'The user prompt describing the feature or implementation to debate'
 ---
 
@@ -19,8 +17,53 @@ then produce the plan through the `implementation-plan` skill. The debate
 exists to surface disagreements, blind spots, and alternatives **before** a
 plan is committed — not to replace planning.
 
+## Execution Protocol
+
+This skill has a fixed execution contract. Every run follows it without
+shortcuts:
+
+1. **Always run through `wizard`.** When `wizard` asks for a plan, this
+   skill is invoked first. There is no "small task" bypass from `wizard`.
+2. **Stage 1 — Decompose (caller, serial).** The caller restates the
+   proposal in one sentence, derives `<topic-kebab-case>`, creates the
+   plan folder, and writes 3–5 debate angles into `debate.md`.
+3. **Stage 2 — Parallel fan-out as subagents.** Dispatch the `planner`,
+   `coder`, and `reviewer` skills **in parallel, one subagent per skill**,
+   using the active harness's fan-out mechanism. Never collapse the three
+   roles into a single call. Each subagent loads its own skill file, sees
+   only its own role-specific deliverable, and must not see the others'
+   output during this stage.
+4. **Stage 3 — Parallel cross-critique as subagents.** Dispatch the same
+   three skills again in parallel, each receiving the other two's Stage 2
+   output verbatim. Fan-out is mandatory for this stage too — no serial
+   shortcut.
+5. **Stage 4 — Synthesis (caller, serial).** The caller merges Stage 2 +
+   Stage 3 into the implementation brief and resolves disputes using the
+   `wizard` skill's conflict-resolution rules.
+6. **Stage 5 — Handoff to `implementation-plan`.** Invoke
+   `implementation-plan` sequentially with the Stage 4 brief and the
+   existing plan folder so `plan.md` and `lessons.md` land next to
+   `debate.md`.
+7. **Stage 6 — Present to user.** Return the chosen approach, rejected
+   alternatives, and any open questions along with the plan artifact.
+   Do not proceed to execution — the `wizard` skill owns the batch loop.
+
+Hard rules that apply to the whole run:
+
+- **Subagent dispatch is required** for Stages 2 and 3. If the harness
+  cannot dispatch subagents, stop and surface the limitation to the user
+  instead of simulating the debate in a single context.
+- **One harness only.** Use Claude Code's or GitHub Copilot's fan-out
+  mechanism — never mix them in the same run.
+- **Do not write `plan.md`.** Only `implementation-plan` writes the plan
+  artifact. This skill owns `debate.md` only.
+- **Stop at handoff.** This skill ends after Stage 6. It never implements
+  code, runs tests, or opens review.
+
 ## When to Use
 
+- **Always**, when invoked through the `wizard` skill — every plan goes
+  through this debate, regardless of task size.
 - The user asks to plan or design a non-trivial implementation.
 - The work spans multiple files, modules, or architectural concerns.
 - There are plausible alternative approaches worth weighing.
@@ -28,8 +71,8 @@ plan is committed — not to replace planning.
 
 ## When NOT to Use
 
-- The task is a mechanical fix with an obvious path — go straight to
-  `implementation-plan`.
+- The task is a mechanical fix with an obvious path **and** the caller is
+  not the `wizard` skill — go straight to `implementation-plan`.
 - The user asks for execution, not planning — the `wizard` skill handles
   the batch loop directly.
 - An approved plan already exists — update it, don't re-debate it.
@@ -89,10 +132,13 @@ if the executed plan produces failures.
 
 ### Stage 2 — Parallel Thinking (fan-out, no cross-talk)
 
-Dispatch the `planner`, `coder`, and `reviewer` skills **in parallel**
-using the active harness's mechanism. Each subagent receives the **same**
-decomposed angles but a **role-specific deliverable**. They must not see
-each other's output in this stage.
+Dispatch the `planner`, `coder`, and `reviewer` skills **in parallel as
+subagents** using the active harness's mechanism. This step is **not
+optional** and must not be collapsed into a single call that tries to
+play all three roles — the whole point of the debate is three
+independent contexts. Each subagent receives the **same** decomposed
+angles but a **role-specific deliverable**. They must not see each
+other's output in this stage.
 
 Dispatch contract — every call includes:
 
@@ -126,9 +172,11 @@ Collect all three outputs into `plans/<topic-kebab-case>/debate.md` under a
 
 ### Stage 3 — Debate Round (parallel cross-critique)
 
-Dispatch the same three skills **in parallel again**. This time each
-receives the **other two** skills' Stage 2 output and must either concede,
-refine, or escalate each point.
+Dispatch the same three skills **in parallel as subagents again**. Like
+Stage 2, this fan-out is mandatory — do not fold the cross-critique into
+a single call. This time each subagent receives the **other two**
+skills' Stage 2 output and must either concede, refine, or escalate each
+point.
 
 Dispatch contract:
 

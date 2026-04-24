@@ -40,13 +40,15 @@ documentation.
 | `coder` | Implementation, code, logic verification |
 | `reviewer` | Review, contrarian thinking, quality gates |
 | `bug-fixer` | Autonomous debugging (invoked when needed) |
-| `implementation-debate` | Pre-plan multi-skill critique (optional) |
+| `implementation-debate` | Pre-plan multi-skill critique (**mandatory for every plan**) |
 
 ## Core Loop
 
 ```
 0. INIT      → Clarify intent, derive topic, prepare to plan
-1. PLAN      → Delegate to the implementation-plan skill
+1. DEBATE    → Always dispatch planner + coder + reviewer as parallel
+               subagents via the implementation-debate skill, then hand
+               the brief to the implementation-plan skill
 2. EXECUTE   → Delegate batches to the coder skill
 3. REVIEW    → Delegate to the reviewer skill
 4. FIX       → Delegate to the bug-fixer skill if issues found
@@ -70,9 +72,13 @@ Run this stage once at the start of every new task.
      confirms it.
    - If the user says "just do it" or "you decide" — make the call, record
      the decision in `plan.md` later, and proceed.
-3. **Delegate plan creation** by invoking the `implementation-plan` skill
-   (see Stage 1). That skill owns the plan folder and initializes both
-   `plan.md` and `lessons.md` inside `plans/<topic>/`.
+3. **Delegate plan creation** by invoking the `implementation-debate`
+   skill (see Stage 1). The debate skill dispatches the `planner`,
+   `coder`, and `reviewer` skills as parallel subagents, then hands the
+   synthesized brief to the `implementation-plan` skill, which owns the
+   plan folder and initializes both `plan.md` and `lessons.md` inside
+   `plans/<topic>/`. The debate is **not optional** — every plan produced
+   by this skill goes through it, regardless of task size.
 4. **Do not start implementation** until the user explicitly approves the
    plan produced in Stage 1.
 
@@ -81,33 +87,48 @@ exist and the user has approved the plan.
 
 > The plan artifact is identical in shape to what the user would get by
 > running `implementation-plan` directly — a `plan.md` + `lessons.md` pair
-> inside `plans/<topic>/`. This workflow produces a richer plan because
-> the draft is shaped by the `coder` skill's correctness pass and the
-> `reviewer` skill's contrarian pass before it is presented. Use
-> `implementation-debate` for that critique when the work warrants it;
-> otherwise let `implementation-plan` produce the plan directly.
+> inside `plans/<topic>/`. This workflow always produces a richer plan
+> because the draft is shaped by the `planner` skill's architecture pass,
+> the `coder` skill's correctness pass, and the `reviewer` skill's
+> contrarian pass — all dispatched as parallel subagents by the
+> `implementation-debate` skill — before `implementation-plan` writes the
+> final artifact. Never bypass the debate when invoked through `wizard`,
+> even for small tasks; if the user wants a plan without debate, they
+> should invoke `implementation-plan` directly.
 
 ---
 
-## Stage 1 — Plan Delegation
+## Stage 1 — Plan Delegation (Debate-First, Always)
 
-This skill does **not** write the plan directly. The plan artifact is
-always produced by the `implementation-plan` skill so the output is
-consistent regardless of which path the user took.
+This skill does **not** write the plan directly. Every plan produced
+through `wizard` goes through the full debate flow — there is no
+"lightweight" path that skips it.
 
-Delegate planning:
+Mandatory sequence:
 
-- **Skill to run:** `implementation-plan`
-- **Artifact location:** `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`
-- **Inputs passed through:**
+1. **Dispatch `implementation-debate`** as the single entry point for
+   planning. That skill is responsible for fanning out the `planner`,
+   `coder`, and `reviewer` skills as **parallel subagents** (one subagent
+   per skill, in a single dispatch message for the active harness). Each
+   subagent loads its own skill file and returns its role-specific
+   deliverable. The caller must not collapse the three roles into one
+   request.
+2. **`implementation-debate` synthesizes the brief** (Stages 1–4 of its
+   procedure) and hands it to `implementation-plan`.
+3. **`implementation-plan` writes the artifact** at
+   `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`.
+
+- **Skill to run first:** `implementation-debate` (never
+  `implementation-plan` on its own from this skill)
+- **Artifact location:** `plans/<topic>/debate.md` +
+  `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`
+- **Inputs passed through to the debate:**
   - The clarified task description from Stage 0
   - Relevant codebase context (file tree, key files)
   - Any constraints or decisions the user made during clarification
   - Prior lessons from `plans/<topic>/lessons.md` if it already exists
 
-If the task warrants debate before committing to an approach (multi-file,
-architectural, or forking alternatives), run the `implementation-debate`
-skill first. It feeds its synthesized brief into `implementation-plan` so
+The debate feeds its synthesized brief into `implementation-plan` so
 the final artifact still lives at `plans/<topic>/plan.md`.
 
 ---
@@ -220,8 +241,8 @@ Skill names are identical on both harnesses: `implementation-plan`,
 
 | Phase | Skill | Method | Notes |
 |-------|-------|--------|-------|
-| **Plan** | `implementation-plan` | Sequential | Produces `plan.md` + `lessons.md` |
-| **Debate (pre-plan)** | `implementation-debate` | Sequential (runs its own fan-out internally) | Used for non-trivial work |
+| **Debate (pre-plan)** | `implementation-debate` | Sequential entry, **mandatory** parallel fan-out of `planner` + `coder` + `reviewer` subagents internally | Runs on **every** plan created through `wizard`. Never skipped. |
+| **Plan** | `implementation-plan` | Sequential, invoked by `implementation-debate` at handoff | Produces `plan.md` + `lessons.md`. Not called directly by `wizard`. |
 | **Execute** | `coder` | Sequential | Implements one batch per `plan.md` |
 | **Review** | `reviewer` | Sequential | Validates batch against `plan.md` |
 | **Fix** | `bug-fixer` | Sequential | Handles failing tests / issues |
