@@ -6,7 +6,7 @@ name: 'Global Coding Standards'
 
 # Global Coding Standards
 
-These are the universal rules that all agents MUST follow when generating or modifying code in this workspace:
+These are the universal rules that all skills MUST follow when generating or modifying code in this workspace:
 
 1. **Self-Documenting Code over Comments:** 
    - Write clear variable and function names.
