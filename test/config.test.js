@@ -10,7 +10,7 @@ const {
   readConfig,
   writeConfig,
   getSkillsDir,
-  getFantastic4Dir,
+  getInstructionsDir,
   getGitignorePath,
   updateGitignore,
   resolvePaths,
@@ -50,8 +50,13 @@ describe("config paths and round-trip", () => {
     expect(getSkillsDir()).toMatch(/templates[/\\]skills$/);
   });
 
-  test("getFantastic4Dir ends with templates/fantastic4", () => {
-    expect(getFantastic4Dir()).toMatch(/templates[/\\]fantastic4$/);
+  test("getInstructionsDir ends with templates/instructions", () => {
+    expect(getInstructionsDir()).toMatch(/templates[/\\]instructions$/);
+  });
+
+  test("no getFantastic4Dir is exported (fantastic4 dropped)", () => {
+    const config = require("../src/config");
+    expect(config.getFantastic4Dir).toBeUndefined();
   });
 
   test("no getPromptsDir is exported (prompts dropped)", () => {
@@ -90,10 +95,10 @@ describe("gitignore helpers", () => {
   });
 
   test("updateGitignore adds multiple entries at once", () => {
-    updateGitignore(testDir, [".claude/skills/", ".claude/agents/"]);
+    updateGitignore(testDir, [".claude/skills/", ".claude/instructions/"]);
     const content = fs.readFileSync(path.join(testDir, ".gitignore"), "utf-8");
     expect(content).toContain(".claude/skills/");
-    expect(content).toContain(".claude/agents/");
+    expect(content).toContain(".claude/instructions/");
   });
 });
 

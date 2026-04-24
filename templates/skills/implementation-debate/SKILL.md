@@ -1,23 +1,23 @@
 ---
 name: implementation-debate
 description: >
-  Pre-implementation 4-agent debate — Captain runs a Grok-council-style
-  discussion of a proposed implementation with Harper, Benjamin, and Lucas
-  before any code is written, then hands the synthesized brief to the
-  `implementation-plan` skill to produce the final plan artifact.
-  USE FOR: non-trivial features, refactors, migrations, or architecture
-  decisions where the team benefits from parallel critique before planning.
-  DO NOT USE FOR: bug fixes, one-line edits, or tasks already covered by an
-  existing plan.
+  Pre-implementation multi-skill debate. The `wizard` skill runs a
+  council-style discussion of a proposed implementation by dispatching the
+  `planner`, `coder`, and `reviewer` skills in parallel before any code is
+  written, then hands the synthesized brief to the `implementation-plan`
+  skill to produce the final plan artifact. USE FOR: non-trivial features,
+  refactors, migrations, or architecture decisions where parallel critique
+  is worthwhile before planning. DO NOT USE FOR: bug fixes, one-line edits,
+  or tasks already covered by an existing plan.
 argument-hint: 'The user prompt describing the feature or implementation to debate'
 ---
 
 # Implementation Debate
 
-Run a structured four-agent debate on the user's proposed implementation, then
-produce the plan through the `implementation-plan` skill. The debate exists to
-surface disagreements, blind spots, and alternatives **before** a plan is
-committed — not to replace planning.
+Run a structured multi-skill debate on the user's proposed implementation,
+then produce the plan through the `implementation-plan` skill. The debate
+exists to surface disagreements, blind spots, and alternatives **before** a
+plan is committed — not to replace planning.
 
 ## When to Use
 
@@ -30,8 +30,8 @@ committed — not to replace planning.
 
 - The task is a mechanical fix with an obvious path — go straight to
   `implementation-plan`.
-- The user asks for execution, not planning — Captain's orchestrator skill
-  handles the batch loop directly.
+- The user asks for execution, not planning — the `wizard` skill handles
+  the batch loop directly.
 - An approved plan already exists — update it, don't re-debate it.
 
 ## Harness Note — One or the Other
@@ -39,40 +39,41 @@ committed — not to replace planning.
 This project runs as **either** Claude Code **or** GitHub Copilot, never both
 at once. Use the dispatch primitive of whichever harness is active:
 
-| Harness | Parallel dispatch | Agent reference |
+| Harness | Parallel dispatch | Skill reference |
 |---------|-------------------|-----------------|
-| Claude Code | multiple `Agent(subagent_type=...)` calls in a single message | `harper`, `benjamin`, `lucas` |
-| GitHub Copilot | `/fleet` with `@agent` mentions | `@harper`, `@benjamin`, `@lucas` |
+| Claude Code | Multiple subagent calls in a single message, each loading a skill | `planner`, `coder`, `reviewer` |
+| GitHub Copilot | A single message that dispatches multiple subagents, each referencing a skill by name | `planner`, `coder`, `reviewer` |
 
-Wherever this skill says **"dispatch in parallel"**, use the mechanism of the
-active harness. Do not attempt cross-harness fan-out.
+Wherever this skill says **"dispatch in parallel"**, use the mechanism of
+the active harness. Do not attempt cross-harness fan-out.
 
 ## Inputs
 
 - `$ARGUMENTS` — the user's implementation prompt
-- `plans/<topic>/lessons.md` (prior plans) — corrections relevant to this team
-- Current codebase (for Harper's exploration step)
+- `plans/<topic>/lessons.md` (prior plans) — corrections relevant to this
+  workflow
+- Current codebase (for the `planner` skill's exploration step)
 
-## Roles
+## Skills Involved
 
-| Agent | Debate role |
+| Skill | Debate role |
 |-------|-------------|
-| **Captain (you)** | Decomposes, dispatches, synthesizes, resolves conflicts, invokes `implementation-plan` |
-| **Harper** | Architecture fit, external-fact grounding, existing patterns |
-| **Benjamin** | Correctness, edge cases, data/state invariants, logic walkthrough |
-| **Lucas** | Contrarian, alternative designs, failure modes, blind spots |
+| **`wizard` (caller)** | Decomposes, dispatches, synthesizes, resolves conflicts, invokes `implementation-plan` |
+| **`planner`** | Architecture fit, external-fact grounding, existing patterns |
+| **`coder`** | Correctness, edge cases, data/state invariants, logic walkthrough |
+| **`reviewer`** | Contrarian, alternative designs, failure modes, blind spots |
 
-Bug-Fixer is **not** part of the debate — it is invoked later if the executed
-plan produces failures.
+The `bug-fixer` skill is **not** part of the debate — it is invoked later
+if the executed plan produces failures.
 
 ---
 
 ## Procedure
 
-### Stage 1 — Decompose (Captain, serial)
+### Stage 1 — Decompose (caller, serial)
 
 1. Read `$ARGUMENTS` and restate the implementation in one sentence.
-2. If intent is ambiguous, run the orchestrator's clarification loop first.
+2. If intent is ambiguous, run the `wizard` skill's clarification loop first.
 3. Break the proposal into 3–5 **debate angles**. Good angles include:
    - Architecture fit with the existing codebase
    - Data/state model and invariants
@@ -88,10 +89,10 @@ plan produces failures.
 
 ### Stage 2 — Parallel Thinking (fan-out, no cross-talk)
 
-Dispatch Harper, Benjamin, and Lucas **in parallel** using the active
-harness's mechanism. Each agent receives the **same** decomposed angles but a
-**role-specific deliverable**. They must not see each other's output in this
-stage.
+Dispatch the `planner`, `coder`, and `reviewer` skills **in parallel**
+using the active harness's mechanism. Each subagent receives the **same**
+decomposed angles but a **role-specific deliverable**. They must not see
+each other's output in this stage.
 
 Dispatch contract — every call includes:
 
@@ -99,37 +100,39 @@ Dispatch contract — every call includes:
 2. Role-specific deliverable (see below)
 3. Scope boundary — "Do not propose a full plan. Critique and reason only."
 
-**Harper deliverable:**
+**`planner` deliverable:**
 
-> "Architecture & research pass on <proposal>. For each debate angle: does the
-> existing codebase already have a pattern? What external facts (framework,
-> API, security) must be verified? Cite sources. Flag drift risks. Return:
-> findings, verified facts, open questions."
+> "Architecture & research pass on <proposal>. For each debate angle: does
+> the existing codebase already have a pattern? What external facts
+> (framework, API, security) must be verified? Cite sources. Flag drift
+> risks. Return: findings, verified facts, open questions."
 
-**Benjamin deliverable:**
+**`coder` deliverable:**
 
-> "Correctness pass on <proposal>. For each debate angle: walk the data flow
-> and state transitions. List invariants. Enumerate edge cases and off-by-one
-> risks. Return: invariants, edge cases, concrete failure scenarios."
+> "Correctness pass on <proposal>. For each debate angle: walk the data
+> flow and state transitions. List invariants. Enumerate edge cases and
+> off-by-one risks. Return: invariants, edge cases, concrete failure
+> scenarios."
 
-**Lucas deliverable:**
+**`reviewer` deliverable:**
 
 > "Contrarian pass on <proposal>. Propose at least 2 alternative designs.
-> Identify blind spots the other agents will miss. List the top failure modes
-> in production. Return: alternatives, blind spots, failure-mode ranking."
+> Identify blind spots the other skills will miss. List the top failure
+> modes in production. Return: alternatives, blind spots, failure-mode
+> ranking."
 
 Collect all three outputs into `plans/<topic-kebab-case>/debate.md` under a
 **Stage 2 — Independent Takes** heading.
 
 ### Stage 3 — Debate Round (parallel cross-critique)
 
-Dispatch the same three agents **in parallel again**. This time each agent
-receives the **other two** agents' Stage 2 output and must either concede,
+Dispatch the same three skills **in parallel again**. This time each
+receives the **other two** skills' Stage 2 output and must either concede,
 refine, or escalate each point.
 
 Dispatch contract:
 
-- Include the other two agents' full Stage 2 output verbatim.
+- Include the other two skills' full Stage 2 output verbatim.
 - Specific deliverable: "For each point raised by the others: concede,
   refine (with evidence), or escalate (with reason). Add any new blind spots
   this cross-reading exposed."
@@ -137,19 +140,20 @@ Dispatch contract:
 
 Collect responses under **Stage 3 — Cross-Critique** in `debate.md`.
 
-### Stage 4 — Synthesis (Captain, serial)
+### Stage 4 — Synthesis (caller, serial)
 
-Captain produces the **implementation brief** by merging Stage 2 + Stage 3:
+The caller produces the **implementation brief** by merging Stage 2 +
+Stage 3:
 
-1. **Consensus items** — agreed by all three agents, or unchallenged in
+1. **Consensus items** — agreed by all three skills, or unchallenged in
    Stage 3.
 2. **Disputed items** — where Stage 3 responses did not converge.
-3. **Resolution** — for each disputed item, apply the orchestrator's
+3. **Resolution** — for each disputed item, apply the `wizard` skill's
    conflict-resolution rules:
-   - Spec / architecture question → Harper's position wins, unless Lucas
-     provides evidence
-   - Code quality / correctness → Lucas's position wins if the risk is
-     concrete
+   - Spec / architecture question → the `planner` skill's position wins,
+     unless the `reviewer` skill provides evidence
+   - Code quality / correctness → the `reviewer` skill's position wins if
+     the risk is concrete
    - Unverified external fact → require web-backed verification before
      deciding
    - True architecture fork → escalate to the user with both positions
@@ -195,15 +199,15 @@ Present two things to the user:
 2. The plan artifact produced by `implementation-plan`.
 
 Do not proceed to execution. This skill ends at the handoff — execution
-is driven by the `orchestrator` skill's batch loop.
+is driven by the `wizard` skill's batch loop.
 
 ---
 
 ## Quality Bar
 
-- Stage 2 outputs are **independent** — if any agent references another's
-  output, the fan-out was not parallel and the debate is compromised. Redo
-  the stage.
+- Stage 2 outputs are **independent** — if any subagent references
+  another's output, the fan-out was not parallel and the debate is
+  compromised. Redo the stage.
 - Stage 3 critiques cite **specific points** from Stage 2. Generic agreement
   ("looks good") is not an acceptable response.
 - Stage 4 brief explicitly lists which alternatives were rejected and why.
@@ -216,15 +220,16 @@ is driven by the `orchestrator` skill's batch loop.
 
 ## Failure Modes to Avoid
 
-- **Debate theater** — three agents agreeing to save time. If Lucas finds
-  nothing, push harder; if he still finds nothing, note it explicitly.
+- **Debate theater** — three subagents agreeing to save time. If the
+  `reviewer` skill finds nothing, push harder; if it still finds nothing,
+  note it explicitly.
 - **Cross-harness dispatch** — this project is Claude OR Copilot, not both.
 - **Skipping the plan skill** — `implementation-debate` produces a brief,
   not a plan. The plan must come from `implementation-plan` so the tracking
   list, batch structure, and validation rules are consistent with the rest
   of the project.
 - **Debating during execution** — if an implementation is already underway
-  and disagreement emerges, use the post-hoc Debate Gate in the orchestrator
+  and disagreement emerges, use the post-hoc Debate Gate in the `wizard`
   skill, not this one.
 
 ## Output Summary

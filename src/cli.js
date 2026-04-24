@@ -8,11 +8,10 @@ function printHelp() {
   console.log(
     "Usage: wizard [command]\n" +
       "\n" +
-      "SDLC Wizard - Configure your development environment with AI agents\n" +
+      "SDLC Wizard - Configure your development environment with skills\n" +
       "\n" +
       "Commands:\n" +
-      "  install               Install wizard configuration and skills\n" +
-      "  install fantastic4    Install the Fantastic 4 multi-agent orchestra\n" +
+      "  install          Install wizard configuration and all skills\n" +
       "\n" +
       "Options:\n" +
       "  --version        Show version number\n" +
@@ -42,10 +41,7 @@ async function main() {
     // Always show the interactive scope menu
     const scope = await promptScope();
 
-    // Extract subcommand (first non-flag argument after "install")
-    const subcommand = args.slice(1).find((a) => !a.startsWith("-"));
-
-    await installCommand(undefined, subcommand, scope);
+    await installCommand(undefined, scope);
   } else {
     console.log(`Unknown command: ${args[0]}`);
     printHelp();

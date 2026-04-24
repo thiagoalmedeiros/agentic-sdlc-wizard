@@ -3,19 +3,19 @@ name: sdlc-wizard
 description: >
   Interactive configuration wizard for your development environment.
   Dispatches to the matching setup skill (DevContainer, Graphify,
-  Implementation Plan, Fantastic 4) and tracks progress in `.wizard.json`.
-  USE FOR: initial project setup, adding new SDLC capabilities, auditing
-  existing configuration. DO NOT USE FOR: direct code changes, task
-  execution, or planning.
+  Implementation Plan) and tracks progress in `.wizard.json`. USE FOR:
+  initial project setup, adding new SDLC capabilities, auditing existing
+  configuration. DO NOT USE FOR: direct code changes, task execution, or
+  planning.
 argument-hint: 'Optional: specify a step number to jump directly to that configuration'
 ---
 
 # SDLC Wizard
 
-You are the SDLC Wizard. Your job is to present the available SDLC setup
-steps, dispatch the relevant sub-skill, and update `.wizard.json` once the
-sub-skill reports success. You do **not** re-implement the sub-skills'
-logic — each one already handles its own "new setup vs. audit" mode.
+This skill presents the available SDLC setup steps, dispatches the
+relevant sub-skill, and updates `.wizard.json` once the sub-skill reports
+success. It does **not** re-implement the sub-skills' logic — each one
+already handles its own "new setup vs. audit" mode.
 
 ## Step 1 — Choose a step
 
@@ -28,7 +28,6 @@ as a numbered list:
 | 1 | **DevContainer** | Set up or audit a `.devcontainer/` environment (Docker Compose + Dockerfile + `devcontainer.json`) |
 | 2 | **Graphify** | Install and configure the graphify knowledge-graph skill |
 | 3 | **Implementation Plan** | Confirm the standalone planning skill is available and explain its usage |
-| 4 | **Fantastic 4** | Install the multi-agent orchestra (Captain, Harper, Benjamin, Lucas, Bug-Fixer) |
 
 If `completedSteps` already contains every step, tell the user: "All SDLC
 Wizard steps are already configured. Nothing left to set up!" and stop.
@@ -46,7 +45,6 @@ user's confirmations; do not paraphrase the skill's rules.
 | DevContainer | `devcontainer-setup` | `.claude/skills/devcontainer-setup/SKILL.md` |
 | Graphify | `graphify-setup` | `.claude/skills/graphify-setup/SKILL.md` |
 | Implementation Plan | `implementation-plan` | `.claude/skills/implementation-plan/SKILL.md` |
-| Fantastic 4 | — (run `wizard install fantastic4`) | See Step 3 below |
 
 For DevContainer and Graphify, the sub-skill detects whether the component
 is already configured and runs either its new-setup flow or its audit flow
@@ -58,57 +56,12 @@ exists, then tell the user:
 
 > "The `implementation-plan` skill is ready. Ask your IDE chat to run it
 > whenever you want to produce a `plans/<topic>/plan.md` + `lessons.md`
-> pair before implementation starts. The Fantastic 4 team produces the
-> same artifact shape — it only goes deeper because Harper's draft is
-> shaped by Benjamin and Lucas."
+> pair before implementation starts. For a richer, multi-skill workflow
+> (orchestrated planning, coding, review, and debate), run the `wizard`
+> skill instead — it produces the same artifact shape, only shaped by the
+> `planner`, `coder`, and `reviewer` skills in combination."
 
-For Fantastic 4, go to Step 3.
-
-## Step 3 — Fantastic 4 installation
-
-### 3.1 — Explain what will be installed
-
-Tell the user:
-
-```
-The Fantastic 4 installation will set up:
-
-Agents (5): Captain, Harper, Benjamin, Lucas, Bug-Fixer
-  → .claude/agents/
-
-Skills (5): orchestrator, planner, coder, reviewer, bug-fixer
-            plus implementation-debate for pre-plan team critique
-  → .claude/skills/
-
-Instructions: Global coding standards → .claude/instructions/
-
-The team produces the same artifact as running the `implementation-plan`
-skill directly — `plans/<topic>/plan.md` + `lessons.md` — only richer,
-because Harper's draft is reviewed by the team before the user sees it.
-```
-
-### 3.2 — Confirm, then install
-
-Ask: "Shall I proceed with the Fantastic 4 installation?"
-
-Once confirmed, run:
-
-```bash
-wizard install fantastic4
-```
-
-### 3.3 — Verify installation
-
-Check that these files exist:
-
-- `.claude/agents/captain.md`
-- `.claude/skills/orchestrator/SKILL.md`
-- `.claude/skills/implementation-debate/SKILL.md`
-- `.claude/instructions/global-coding.instructions.md`
-
-If any file is missing, report the issue. Otherwise proceed to Step 4.
-
-## Step 4 — Update `.wizard.json`
+## Step 3 — Update `.wizard.json`
 
 After the sub-skill reports success, append the step key to
 `completedSteps` in `.wizard.json`:
@@ -116,9 +69,9 @@ After the sub-skill reports success, append the step key to
 - DevContainer → `"devcontainer"`
 - Graphify → `"graphify"`
 - Implementation Plan → `"implementation-plan"`
-- Fantastic 4 → already added by `wizard install fantastic4`
 
-Report success to the user and, for Fantastic 4, tell them:
+Report success to the user and, when relevant, point them at the `wizard`
+skill for end-to-end task orchestration:
 
-> "Use `@captain` in your IDE chat (Copilot or Claude Code) to begin a new
-> task with the team orchestrating planning, coding, and review."
+> "Run the `wizard` skill in your IDE chat (Copilot or Claude Code) to
+> begin a new task with orchestrated planning, coding, and review."
