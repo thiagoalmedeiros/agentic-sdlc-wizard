@@ -1,115 +1,79 @@
-# Test Input — `wizard update` Command
+# Complex Task Prompt — Wizard Lifecycle Management
 
-> **Purpose:** Use this file as the task description when comparing the
-> `implementation-plan` skill (solo planner) against the **Fantastic 4**
-> captain approach. Feed the same _Task Description_ section to both, then
-> compare the resulting `plans/wizard-update-command/plan.md` artifacts.
+Use this as a standalone prompt for a planning or implementation task.
 
----
+Add installation lifecycle management to the `agentic-sdlc-wizard` project.
 
-## How to Use This File
-
-### Path A — Solo `implementation-plan` skill
-
-Invoke the skill with the task description below. Example invocations:
-
-**Claude Code**
-```
-/implementation-plan [paste the Task Description section below]
-```
-
-**VS Code Copilot**
-```
-@workspace /implementation-plan [paste the Task Description section below]
-```
-
-The skill will explore the codebase, produce
-`plans/wizard-update-command/plan.md`, and initialize
-`plans/wizard-update-command/lessons.md`.
-
----
-
-### Path B — Fantastic 4 captain
-
-Invoke the captain agent with the same task description. Example
-invocations:
-
-**Claude Code**
-```
-Agent(captain, "[paste the Task Description section below]")
-```
-
-**VS Code Copilot**
-```
-@captain [paste the Task Description section below]
-```
-
-The captain will run the clarification loop, delegate planning to Harper,
-run the implementation-debate if the task warrants it, and produce the
-same `plans/wizard-update-command/plan.md` + `lessons.md` — but shaped
-by Benjamin's correctness pass and Lucas's contrarian review before it is
-presented to you.
-
----
-
-## What to Compare
-
-Once both runs are complete, diff or read the two `plan.md` files side by
-side and look for:
-
-| Dimension | What to look for |
-|-----------|-----------------|
-| **Scope completeness** | Did one plan catch workstreams the other missed? |
-| **Risk coverage** | Did Lucas's contrarian pass surface failure modes the solo planner skipped? |
-| **Batch quality** | Are the batches independently validatable, or do they blur? |
-| **Validation commands** | Are the `Verify:` lines concrete and project-specific? |
-| **Out-of-scope list** | Did one plan define clearer non-goals? |
-| **Architecture decisions** | Did Harper's "Why" section add insight beyond the solo plan? |
-
----
-
-## Task Description
-
-> Copy everything below this line and paste it as the input to either skill.
-
----
-
-Add a `wizard update` CLI command to the `agentic-sdlc-wizard` project.
-
-**Goal:** When a user runs `wizard update` in a project that already has the
-wizard installed (a `.wizard.json` exists), the command should detect which
-skills and agent files were originally installed, compare them against the
-current versions bundled in the CLI package, and overwrite any file that
-differs. Files that the user has locally modified since install should be
-flagged with a warning but not overwritten without confirmation.
+**Goal:** The CLI currently installs files but does not track them as a
+managed set. Expand it so an existing installation can be inspected,
+updated, and safely removed over time. The new design should introduce a
+manifest-backed model for installed files, automatically migrate existing
+`.wizard.json` files created by the current release, and expose user-facing
+commands that make lifecycle operations safe by default.
 
 **Acceptance criteria:**
 
-1. `wizard update` exits with a clear error if `.wizard.json` does not exist
-   in the current directory (i.e. `wizard install` has not been run yet).
-2. The command reads `.wizard.json` to determine the install scope
-   (`project` vs `global`) and the list of completed install steps.
-3. For each step listed in `completedSteps`, the command re-copies the
-   corresponding template files from the CLI package to their install
-   destination (`.claude/` for project scope, `~/.claude/` for global scope).
-4. Before overwriting a file that differs from the packaged version, the
-   command checks whether the destination file has been locally modified
-   (heuristic: compare content hash against the version that would have been
-   written at install time by re-running the same copy logic). If modified,
-   print a warning and skip unless `--force` is passed.
-5. After the update, `.wizard.json` is updated with the new `version` field
-   matching the current CLI package version.
-6. The command must be registered in `src/cli.js` under the verb `update` and
-   follow the same patterns as the existing `install` command.
-7. All new helper logic must be covered by unit tests in `test/` following the
-   existing Jest conventions.
+1. Introduce a manifest-oriented config model in `.wizard.json` that retains
+   the current fields (`version`, `scope`, `completedSteps`) and adds enough
+   data to track every managed file written by the wizard. At minimum, the
+   manifest must capture step ownership, destination path, template source,
+   and the content hash that was written at install/update time.
+2. Existing `.wizard.json` files from the current release must continue to
+   work. If the new manifest data is missing, the CLI should reconstruct it
+   from the installed steps and current templates, then persist the upgraded
+   config without requiring the user to reinstall.
+3. Refactor the current install flow so there is one reusable source of truth
+   for "which files belong to which step and where they should be installed."
+   `wizard install`, `wizard install fantastic4`, the new status/update/
+   uninstall commands, and manifest reconstruction must all rely on that same
+   inventory logic instead of duplicating copy rules.
+4. Add a `wizard status` command that exits with a clear error when
+   `.wizard.json` is missing, reads the install scope and completed steps,
+   and reports a human-readable summary of managed files grouped into useful
+   states such as unchanged, missing, modified locally, and out of date with
+   the packaged template version. Add a machine-readable `--json` mode for
+   the same information.
+5. Add a `wizard update` command that can refresh all installed steps or a
+   single step (for example `wizard update fantastic4`). It must support
+   `--dry-run` and `--force`. By default it should warn and skip locally
+   modified files; with `--force` it may overwrite them. After a successful
+   update, the manifest hashes and the top-level config version must reflect
+   the current CLI package version.
+6. Add a `wizard uninstall` command that can remove one installed step or the
+   entire wizard footprint. It must remove only wizard-managed files, prune
+   empty directories created by the wizard when safe, respect `--dry-run`,
+   and avoid deleting locally modified files unless the user explicitly
+   confirms or passes `--force`.
+7. Any interactive confirmation used by `update` or `uninstall` must follow
+   the same TTY-detection pattern used by `promptScope()` in
+   `src/commands/install.js`. In non-interactive environments, the safe
+   default is to warn and skip. In interactive TTY mode, the prompt should be
+   explicit about what will be overwritten or removed.
+8. Register the new commands in `src/cli.js`, update CLI help text, and keep
+   the command style consistent with the existing `install` flow.
+9. Preserve the repository's current install contract: the wizard still
+   installs a single `.claude/` tree, does not create `.github/` artifacts,
+   and does not remove files it does not own.
+10. Add thorough unit test coverage in `test/` for the new manifest helpers,
+    config migration, status reporting, update behavior, uninstall behavior,
+    CLI argument routing, dry-run semantics, force semantics, and TTY/non-TTY
+    safety behavior. Existing tests should keep passing unless they need an
+    intentional update to reflect documented new behavior.
+11. Update the README so the new lifecycle commands, safety guarantees, and
+    `.wizard.json` manifest behavior are documented for both project and
+    global installs.
 
 **Constraints:**
 
 - Do not introduce new runtime npm dependencies; use only Node.js built-ins
   (`fs`, `crypto`, `path`, `readline`) and what is already in `package.json`.
-- The existing `installCommand` function in `src/commands/install.js` must not
-  be modified in ways that break the 42 existing tests.
-- The `--force` flag must be opt-in; the default behavior is safe (warn, skip).
-- Interactive confirmation prompts (if any) must follow the same TTY-detection
-  pattern used in `promptScope()` in `src/commands/install.js`.
+- Keep the implementation compatible with the current repository layout and
+  template directory structure under `templates/`.
+- The `--force` flag must remain opt-in; the default behavior is conservative
+  and should prefer warning/skipping over destructive changes.
+- Do not rely on git metadata to determine whether a file was locally modified;
+  use the manifest and current file contents only.
+- The manifest should track only files the wizard manages. Unknown user files
+  under `.claude/` or `~/.claude/` must be left untouched.
+- The solution should be structured so future install steps can register their
+  owned files without rewriting each lifecycle command.
