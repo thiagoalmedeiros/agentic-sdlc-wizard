@@ -30,8 +30,8 @@ function getSkillsDir() {
   return path.join(TEMPLATES_DIR, "skills");
 }
 
-function getFantastic4Dir() {
-  return path.join(TEMPLATES_DIR, "fantastic4");
+function getInstructionsDir() {
+  return path.join(TEMPLATES_DIR, "instructions");
 }
 
 function getGitignorePath(cwd) {
@@ -86,7 +86,7 @@ module.exports = {
   readConfig,
   writeConfig,
   getSkillsDir,
-  getFantastic4Dir,
+  getInstructionsDir,
   getGitignorePath,
   updateGitignore,
   resolvePaths,

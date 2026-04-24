@@ -7,7 +7,7 @@ const {
   readConfig,
   writeConfig,
   getSkillsDir,
-  getFantastic4Dir,
+  getInstructionsDir,
   resolvePaths,
 } = require("../config");
 
@@ -31,11 +31,15 @@ function copyDirRecursive(srcDir, destDir) {
 }
 
 /**
- * Install base skills into `<scope>/.claude/skills/`.
+ * Install all skills into `<scope>/.claude/skills/`.
  *
- * The sdlc-wizard skill is part of this bundle, so after `wizard install`
- * the wizard is available to any agent (Claude Code or Copilot) that reads
- * `.claude/skills/`.
+ * Every template skill is installed by this function — there are no
+ * optional skill bundles and no agents. Skills drive the entire workflow:
+ * initial setup (`sdlc-wizard`), task orchestration (`wizard`), planning
+ * (`implementation-plan`, `planner`), coding (`coder`), review
+ * (`reviewer`), debugging (`bug-fixer`), pre-plan critique
+ * (`implementation-debate`), and per-step setup (`devcontainer-setup`,
+ * `graphify-setup`).
  */
 function installSkills(cwd, scope) {
   scope = scope || "project";
@@ -47,7 +51,10 @@ function installSkills(cwd, scope) {
   const skillNames = [];
   for (const entry of entries) {
     if (entry.isDirectory()) {
-      copyDirRecursive(path.join(skillsDir, entry.name), path.join(targetDir, entry.name));
+      copyDirRecursive(
+        path.join(skillsDir, entry.name),
+        path.join(targetDir, entry.name)
+      );
       skillNames.push(entry.name);
     }
   }
@@ -56,50 +63,31 @@ function installSkills(cwd, scope) {
 }
 
 /**
- * Install the Fantastic 4 agent orchestra into `<scope>/.claude/`.
+ * Install global coding instructions into `<scope>/.claude/instructions/`.
  *
- * - Agent definitions → `.claude/agents/` (single set; skills describe how
- *   each platform dispatches them).
- * - Skills → `.claude/skills/` (readable by Claude Code and Copilot).
- * - Global coding instructions → `.claude/instructions/`.
- *
- * No project-root artifacts are created. The Fantastic 4 flow produces
- * plan folders on demand at `plans/<topic>/` via the `implementation-plan`
- * skill — the same artifact shape produced by running that skill directly.
+ * The instructions are shared coding standards applied to all generated
+ * code — not tied to any single skill.
  */
-function installFantastic4(cwd, scope) {
+function installInstructions(cwd, scope) {
   scope = scope || "project";
   const paths = resolvePaths(cwd, scope);
-  const f4Dir = getFantastic4Dir();
+  const instructionsDir = getInstructionsDir();
+  const targetDir = path.join(paths.claudeBase, "instructions");
 
-  // Agents
-  const agentsSrc = path.join(f4Dir, "agents");
-  const agentsTarget = path.join(paths.claudeBase, "agents");
-  const agentFiles = fs
-    .readdirSync(agentsSrc)
-    .filter((f) => f.endsWith(".md"));
-  for (const file of agentFiles) {
-    copyFileSync(path.join(agentsSrc, file), agentsTarget, file);
+  if (!fs.existsSync(instructionsDir)) {
+    return [];
   }
 
-  // Skills (recursive copy preserving subdirectory structure)
-  const skillsSrc = path.join(f4Dir, "skills");
-  const skillsTarget = path.join(paths.claudeBase, "skills");
-  copyDirRecursive(skillsSrc, skillsTarget);
+  const files = fs
+    .readdirSync(instructionsDir, { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.endsWith(".md"))
+    .map((e) => e.name);
 
-  // Global coding instructions (Claude only)
-  const instructionsSrc = path.join(
-    f4Dir,
-    "instructions",
-    "global-coding.instructions.md"
-  );
-  copyFileSync(
-    instructionsSrc,
-    path.join(paths.claudeBase, "instructions"),
-    "global-coding.instructions.md"
-  );
+  for (const file of files) {
+    copyFileSync(path.join(instructionsDir, file), targetDir, file);
+  }
 
-  return { agents: agentFiles };
+  return files;
 }
 
 /**
@@ -200,66 +188,46 @@ function scopeLabel(scope) {
   return scope === "global" ? "global (~/.claude)" : "project (.claude)";
 }
 
-async function installCommand(cwd, subcommand, scope) {
+async function installCommand(cwd, scope) {
   cwd = cwd || process.cwd();
   scope = scope || "project";
 
+  const existing = readConfig(cwd);
   const config = {
     version: VERSION,
-    completedSteps: [],
+    completedSteps: (existing && existing.completedSteps) || [],
     scope,
   };
 
-  const existing = readConfig(cwd);
-  if (subcommand && existing) {
-    config.version = existing.version || VERSION;
-    config.completedSteps = existing.completedSteps || [];
+  writeConfig(cwd, config);
+
+  const skills = installSkills(cwd, scope);
+  const instructions = installInstructions(cwd, scope);
+
+  console.log(`\nSDLC Wizard v${VERSION} installed successfully (${scopeLabel(scope)}).`);
+  console.log(
+    `\nSkills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
+  );
+  console.log(`\nInstalled skills: ${skills.join(", ")}`);
+  if (instructions.length > 0) {
+    console.log(
+      `\nInstructions installed to ${scope === "global" ? "~/.claude/instructions/" : ".claude/instructions/"}`
+    );
+    console.log(`  ${instructions.join(", ")}`);
   }
-
-  if (!subcommand) {
-    writeConfig(cwd, config);
-
-    const skills = installSkills(cwd, scope);
-
-    console.log(`\nSDLC Wizard v${VERSION} installed successfully (${scopeLabel(scope)}).`);
-    console.log(
-      `\nSkills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
-    );
-    console.log(`\nInstalled skills: ${skills.join(", ")}`);
-    console.log(`\nNext steps:`);
-    console.log(
-      `  Ask your IDE chat (Copilot or Claude Code) to run the "sdlc-wizard" skill.`
-    );
-  } else if (subcommand === "fantastic4") {
-    const result = installFantastic4(cwd, scope);
-
-    if (!config.completedSteps.includes("fantastic4")) {
-      config.completedSteps.push("fantastic4");
-    }
-    writeConfig(cwd, config);
-
-    console.log(`\nFantastic 4 agent orchestra installed successfully (${scopeLabel(scope)}).`);
-    console.log(
-      `\nAgents installed to ${scope === "global" ? "~/.claude/agents/" : ".claude/agents/"}`
-    );
-    console.log(`  ${result.agents.join(", ")}`);
-    console.log(
-      `Skills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
-    );
-    console.log(
-      `Instructions installed to ${scope === "global" ? "~/.claude/instructions/" : ".claude/instructions/"}`
-    );
-    console.log(`\nNext steps:`);
-    console.log(`  Use @captain in your IDE chat to begin a task with Captain`);
-  } else {
-    console.log(`Unknown subcommand: ${subcommand}`);
-    process.exit(1);
-  }
+  console.log(`\nNext steps:`);
+  console.log(
+    `  Ask your IDE chat (Copilot or Claude Code) to run the "sdlc-wizard" skill`
+  );
+  console.log(
+    `  for initial configuration, or the "wizard" skill to begin an`
+  );
+  console.log(`  orchestrated task with planning, coding, and review.`);
 }
 
 module.exports = {
   installCommand,
   installSkills,
-  installFantastic4,
+  installInstructions,
   promptScope,
 };
