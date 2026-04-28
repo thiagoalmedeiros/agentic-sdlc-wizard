@@ -64,8 +64,9 @@ Installed skills:
 |-------|---------|
 | `sdlc-wizard` | Interactive initial configuration (DevContainer, Graphify, Implementation Plan) |
 | `sdlc-wizard-orchestrator` | Multi-skill task orchestrator (plan → code → review → fix) |
-| `sdlc-wizard-implementation-plan` | Produce a `plans/<topic>/plan.md` + `lessons.md` planning artifact |
+| `sdlc-wizard-implementation-plan` | Produce a `plans/<topic>/plan.md` planning artifact (delegates `lessons.md` init to `sdlc-wizard-lessons-learned`) |
 | `sdlc-wizard-implementation-debate` | Pre-plan multi-skill critique that feeds `sdlc-wizard-implementation-plan` |
+| `sdlc-wizard-lessons-learned` | Owns the per-plan `plans/<topic>/lessons.md` lifecycle (init / read / append) |
 | `sdlc-wizard-planner` | Architecture and specification skill used during orchestrated tasks |
 | `sdlc-wizard-coder` | Implementation skill used during orchestrated tasks |
 | `sdlc-wizard-reviewer` | Code review and contrarian skill used during orchestrated tasks |

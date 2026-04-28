@@ -25,15 +25,17 @@ From the `sdlc-wizard-orchestrator` skill:
 - The clarified task description (one-sentence intent + acceptance criteria)
 - Any existing codebase context (file tree, key files)
 - Constraints and decisions already made
-- Prior lessons from `plans/<topic>/lessons.md` if the folder already exists
+- Prior lessons obtained by dispatching the
+  `sdlc-wizard-lessons-learned` skill in `read <topic>` mode (when the
+  plan folder already exists)
 
 ## What You Produce
 
 Produce the plan artifact by running the `sdlc-wizard-implementation-plan` skill.
-The output is always `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`
-— the same shape the user would get by running `sdlc-wizard-implementation-plan`
-directly. This skill's job is to make that plan deeply researched and
-batch-ready.
+The output is always `plans/<topic>/plan.md` plus a `plans/<topic>/lessons.md`
+initialized by the `sdlc-wizard-lessons-learned` skill — the same shape
+the user would get by running `sdlc-wizard-implementation-plan` directly.
+This skill's job is to make that plan deeply researched and batch-ready.
 
 The sections below describe the content that goes **into** `plan.md`'s
 "How We Are Doing It" section and batch plan.

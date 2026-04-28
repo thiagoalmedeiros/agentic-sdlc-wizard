@@ -61,30 +61,35 @@ Rules:
 - `plans/` is the default parent directory. If the project already organizes
   planning artifacts under a different root (e.g. `tasks/`, `docs/plans/`),
   use the existing convention and note the choice in the plan.
-- If the folder does not exist, create both files:
-  - `plan.md` — populated immediately using the Output Structure below.
-  - `lessons.md` — initialized with the header shown in the "Lessons File"
-    section; left otherwise empty for the execution phase to append to.
+- If the folder does not exist:
+  - Create `plan.md` and populate it immediately using the Output
+    Structure below.
+  - Dispatch the `sdlc-wizard-lessons-learned` skill in `init <topic>`
+    mode to create `lessons.md`. This skill does **not** write
+    `lessons.md` directly — `sdlc-wizard-lessons-learned` owns that
+    file's lifecycle.
 - If the folder already exists, read `plan.md` first, preserve completed
-  status items, and update it in place. Do **not** overwrite `lessons.md` —
-  it belongs to the execution phase.
+  status items, and update it in place. Do **not** touch `lessons.md` —
+  it belongs to `sdlc-wizard-lessons-learned` and the execution phase.
 
 Always use the exact section structure defined in the Output Structure
 section below for `plan.md`.
 
 ### Phase 4 - Handoff
 
-Stop after `plan.md` is complete and `lessons.md` is initialized. Do not
-execute the plan.
+Stop after `plan.md` is complete and `sdlc-wizard-lessons-learned` has
+initialized `lessons.md`. Do not execute the plan.
 
 If execution is requested later, the plan folder becomes the source of truth
 for that work:
 
 - The executor updates status values in `plan.md` as batches land.
-- The executor appends to `lessons.md` whenever the user corrects an
-  approach, a batch fails review, or a non-obvious pattern is discovered.
-- This skill is responsible for defining plan content and initializing the
-  lessons file; it is not responsible for appending execution lessons.
+- The executor invokes the `sdlc-wizard-lessons-learned` skill in
+  `append` mode whenever the user corrects an approach, a batch fails
+  review, or a non-obvious pattern is discovered.
+- This skill is responsible for defining plan content and triggering
+  initialization of the lessons file; it is not responsible for writing
+  the lessons template or appending execution lessons.
 
 ---
 
@@ -168,43 +173,25 @@ When creating the plan, default new items to `⬜` unless preserving status from
 
 ## Lessons File
 
-Every plan folder contains a `lessons.md` sibling of `plan.md`. This skill
-**initializes** it; the execution phase **appends** to it.
-
-Initialize `lessons.md` with exactly this header and nothing else:
-
-```markdown
-# Lessons — <Topic Title>
-
-_Per-plan execution lessons. Append an entry whenever the user corrects an
-approach, a batch fails review, or a non-obvious pattern is discovered
-during implementation of this plan. Read this file at the start of every
-execution session._
-
-## Format
-
-Each lesson follows this structure:
-
-### [YYYY-MM-DD] — [Short Title]
-**Context:** What was happening when this was discovered
-**Mistake:** What went wrong (or what was nearly missed)
-**Rule:** The rule to prevent recurrence
-**Applies to:** [batch name or file/area]
-
----
-
-_No lessons recorded yet. This file will grow as the plan is executed._
-```
+Every plan folder contains a `lessons.md` sibling of `plan.md`, but this
+skill does **not** own it. The `sdlc-wizard-lessons-learned` skill owns
+the full lifecycle of `lessons.md` — its template, initialization, reads,
+and appends.
 
 Rules for this skill:
 
-- Create `lessons.md` alongside `plan.md`. Do not skip it even if the plan
-  is small — the file is the execution phase's memory.
-- Do not pre-populate lesson entries. Lessons are earned during execution,
-  not predicted during planning.
+- Always dispatch `sdlc-wizard-lessons-learned` in `init <topic>` mode
+  when creating a new plan folder. Do not skip it even if the plan is
+  small — the file is the execution phase's memory.
+- Never write or overwrite `lessons.md` from this skill. If the
+  `sdlc-wizard-lessons-learned` skill is not available, surface the
+  missing dependency to the user instead of inlining a template.
+- Do not pre-populate lesson entries. Lessons are earned during
+  execution, not predicted during planning.
 - If the project also maintains a team-level or cross-plan lessons file,
-  this per-plan file does **not** replace it. This one is scoped to the
-  plan's execution; the team-level one persists across plans.
+  the per-plan file owned by `sdlc-wizard-lessons-learned` does **not**
+  replace it. This one is scoped to the plan's execution; the team-level
+  one persists across plans.
 
 ---
 
@@ -215,7 +202,8 @@ Follow this flow every time the skill is used:
 1. Research the current state.
 2. Design the execution approach and batch structure.
 3. Create or update the plan folder: write `plan.md` using the 3-section
-   structure and initialize `lessons.md` with the template header.
+   structure, then dispatch `sdlc-wizard-lessons-learned` in
+   `init <topic>` mode to initialize `lessons.md`.
 4. Stop once the plan folder is complete, unless the user explicitly asks
    to transition into a separate execution workflow.
 
@@ -223,8 +211,9 @@ If the user asked only for planning, the completed plan folder is the final
 output.
 
 If the user asked to continue an existing plan, update `plan.md` from the
-first incomplete or outdated batch, leave `lessons.md` untouched, and do
-not execute as part of this skill.
+first incomplete or outdated batch, leave `lessons.md` untouched (it is
+owned by `sdlc-wizard-lessons-learned`), and do not execute as part of
+this skill.
 
 ---
 
@@ -284,7 +273,7 @@ If the user also wants implementation, finish the plan first and then transition
 - Each batch must have a clear validation path.
 - The tracking list must be usable as a working checklist during implementation.
 - The final output must clearly distinguish in-scope work, out-of-scope work, assumptions, and deferred items.
-- The output is a **folder** (`plans/<topic>/`) containing `plan.md` and an
-  initialized `lessons.md`. A single loose `.md` file at project root is no
-  longer acceptable unless the user explicitly requested an in-chat-only
-  plan.
+- The output is a **folder** (`plans/<topic>/`) containing `plan.md` and a
+  `lessons.md` initialized through the `sdlc-wizard-lessons-learned`
+  skill. A single loose `.md` file at project root is no longer acceptable
+  unless the user explicitly requested an in-chat-only plan.

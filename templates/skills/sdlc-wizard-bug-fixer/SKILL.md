@@ -38,7 +38,9 @@ When a bug or failure is received:
 - Trace from the error to the root cause
 - Read the relevant source files
 - Check recent changes — what was modified in this batch?
-- Check the active plan's `plans/<topic>/lessons.md` (if any) — has this pattern been seen before?
+- Dispatch the `sdlc-wizard-lessons-learned` skill in `read <topic>`
+  mode — has this pattern been seen before? Do not read `lessons.md`
+  directly.
 - If the failure involves third-party libraries, CI tooling, platform behavior, or framework semantics, verify likely causes with web research and primary documentation.
 
 ### Step 3: Understand
@@ -59,7 +61,9 @@ When a bug or failure is received:
 ### Step 5: Document
 
 - Update the session log: what broke, why, and how it was fixed
-- If this is a pattern that could recur, append it to the active plan's `plans/<topic>/lessons.md`
+- If this is a pattern that could recur, dispatch the
+  `sdlc-wizard-lessons-learned` skill in `append <topic>` mode to record
+  it. Do not edit `lessons.md` directly.
 - Update file tracking status
 
 ## What To Fix

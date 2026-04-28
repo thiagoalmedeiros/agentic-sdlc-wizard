@@ -41,6 +41,7 @@ documentation.
 | `sdlc-wizard-reviewer` | Review, contrarian thinking, quality gates |
 | `sdlc-wizard-bug-fixer` | Autonomous debugging (invoked when needed) |
 | `sdlc-wizard-implementation-debate` | Pre-plan multi-skill critique (**mandatory for every plan**) |
+| `sdlc-wizard-lessons-learned` | Owns `plans/<topic>/lessons.md` lifecycle (init/read/append) |
 
 ## Core Loop
 
@@ -76,9 +77,11 @@ Run this stage once at the start of every new task.
    skill (see Stage 1). The debate skill dispatches the `sdlc-wizard-planner`,
    `sdlc-wizard-coder`, and `sdlc-wizard-reviewer` skills as parallel subagents, then hands the
    synthesized brief to the `sdlc-wizard-implementation-plan` skill, which owns the
-   plan folder and initializes both `plan.md` and `lessons.md` inside
-   `plans/<topic>/`. The debate is **not optional** — every plan produced
-   by this skill goes through it, regardless of task size.
+   plan folder and writes `plan.md` inside `plans/<topic>/`. The
+   `sdlc-wizard-implementation-plan` skill then dispatches the
+   `sdlc-wizard-lessons-learned` skill to initialize `lessons.md` next to
+   `plan.md`. The debate is **not optional** — every plan produced by
+   this skill goes through it, regardless of task size.
 4. **Do not start implementation** until the user explicitly approves the
    plan produced in Stage 1.
 
@@ -174,7 +177,8 @@ Update `plan.md` status cells (`⬜` → `🔄` → `✅`) as batches progress.
 When skill outputs disagree (for example, the `sdlc-wizard-reviewer` skill flags an
 issue the `sdlc-wizard-coder` skill dismisses):
 
-- Document both positions in `plans/<topic>/lessons.md` under the current date.
+- Document both positions by dispatching the `sdlc-wizard-lessons-learned`
+  skill in `append <topic>` mode under the current date.
 - If it's a spec question → the `sdlc-wizard-implementation-plan` skill decides.
 - If it's a code-quality question → the `sdlc-wizard-reviewer` skill decides.
 - If it's an architecture question → escalate to the user.
@@ -186,17 +190,22 @@ issue the `sdlc-wizard-coder` skill dismisses):
 
 ## Lessons Integration
 
-Lessons are per-plan, owned by the `sdlc-wizard-implementation-plan` skill. They live at
-`plans/<topic>/lessons.md`. There is no global project-root `lessons.md`.
+Lessons are per-plan and live at `plans/<topic>/lessons.md`. Their
+lifecycle is owned by the `sdlc-wizard-lessons-learned` skill — this
+skill never edits `lessons.md` directly. There is no global project-root
+`lessons.md`.
 
 At the start of every execution session:
 
-1. Read `plans/<topic>/lessons.md` to pick up prior corrections.
-2. Apply relevant rules before dispatching the `sdlc-wizard-coder` or `sdlc-wizard-reviewer` skill.
+1. Dispatch `sdlc-wizard-lessons-learned` in `read <topic>` mode to pick
+   up prior corrections.
+2. Apply relevant rules before dispatching the `sdlc-wizard-coder` or
+   `sdlc-wizard-reviewer` skill.
 
 At the end of each task, or whenever the user corrects you mid-task:
 
-1. Append the new lesson with date, context, mistake, rule, and scope.
+1. Dispatch `sdlc-wizard-lessons-learned` in `append <topic>` mode with
+   the date, context, mistake, rule, and scope.
 2. Keep entries short — one lesson, one rule.
 
 ---
@@ -208,7 +217,8 @@ If a skill's output is rejected by the `sdlc-wizard-reviewer` skill or the user:
 - Do NOT retry the same approach.
 - Re-enter planning with the `sdlc-wizard-implementation-plan` skill (update mode).
 - Consider whether the approach needs revision.
-- Record what went wrong in `plans/<topic>/lessons.md`.
+- Record what went wrong by dispatching `sdlc-wizard-lessons-learned` in
+  `append <topic>` mode.
 
 ---
 
@@ -232,7 +242,8 @@ Skill names are identical on both harnesses: `sdlc-wizard-implementation-plan`,
 ### What every dispatch must include
 
 1. **Task context** — relevant spec sections from `plan.md`, file paths,
-   constraints, and any applicable lessons from `lessons.md`.
+   constraints, and any applicable lessons obtained by dispatching the
+   `sdlc-wizard-lessons-learned` skill in `read <topic>` mode.
 2. **Specific deliverable** — what you expect back (a plan, code changes,
    review findings, a fix).
 3. **Scope boundary** — what the subagent should NOT do.
@@ -242,7 +253,8 @@ Skill names are identical on both harnesses: `sdlc-wizard-implementation-plan`,
 | Phase | Skill | Method | Notes |
 |-------|-------|--------|-------|
 | **Debate (pre-plan)** | `sdlc-wizard-implementation-debate` | Sequential entry, **mandatory** parallel fan-out of `sdlc-wizard-planner` + `sdlc-wizard-coder` + `sdlc-wizard-reviewer` subagents internally | Runs on **every** plan created through `sdlc-wizard-orchestrator`. Never skipped. |
-| **Plan** | `sdlc-wizard-implementation-plan` | Sequential, invoked by `sdlc-wizard-implementation-debate` at handoff | Produces `plan.md` + `lessons.md`. Not called directly by `sdlc-wizard-orchestrator`. |
+| **Plan** | `sdlc-wizard-implementation-plan` | Sequential, invoked by `sdlc-wizard-implementation-debate` at handoff | Produces `plan.md`; dispatches `sdlc-wizard-lessons-learned` to init `lessons.md`. Not called directly by `sdlc-wizard-orchestrator`. |
+| **Lessons** | `sdlc-wizard-lessons-learned` | Sequential | Owns `lessons.md` init/read/append. Invoked by every other skill that touches lessons. |
 | **Execute** | `sdlc-wizard-coder` | Sequential | Implements one batch per `plan.md` |
 | **Review** | `sdlc-wizard-reviewer` | Sequential | Validates batch against `plan.md` |
 | **Fix** | `sdlc-wizard-bug-fixer` | Sequential | Handles failing tests / issues |
@@ -264,7 +276,8 @@ looping until consensus:
 2. Collect all three responses.
 3. **If all agree** → synthesize and present to user.
 4. **If disagreement exists:**
-   - Document the disagreement in `lessons.md`.
+   - Document the disagreement by dispatching
+     `sdlc-wizard-lessons-learned` in `append <topic>` mode.
    - Resolve it (re-plan with `sdlc-wizard-implementation-plan`, re-implement with
      `sdlc-wizard-coder`, or re-review with `sdlc-wizard-reviewer`).
    - **Re-run the debate gate** — dispatch all three again in parallel.

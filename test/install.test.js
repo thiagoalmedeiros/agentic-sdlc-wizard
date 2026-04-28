@@ -74,6 +74,7 @@ describe("installCommand", () => {
       "sdlc-wizard-graphify-setup",
       "sdlc-wizard-implementation-debate",
       "sdlc-wizard-implementation-plan",
+      "sdlc-wizard-lessons-learned",
       "sdlc-wizard-openspec-feature",
       "sdlc-wizard-planner",
       "sdlc-wizard-reviewer",

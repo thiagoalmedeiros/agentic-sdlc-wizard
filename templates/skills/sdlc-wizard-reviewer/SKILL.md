@@ -24,7 +24,10 @@ and ensure the final output meets a staff-engineer quality bar.
 - The current batch and its file list
 - The actual code changes made by the `sdlc-wizard-coder` skill
 - Any relevant test results or logs
-- `plans/<topic>/lessons.md` — known patterns and past mistakes to watch for
+- Prior lessons obtained by dispatching the
+  `sdlc-wizard-lessons-learned` skill in `read <topic>` mode — known
+  patterns and past mistakes to watch for. Do not read `lessons.md`
+  directly.
 
 ## Review Process
 

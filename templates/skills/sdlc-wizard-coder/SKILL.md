@@ -30,7 +30,9 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 1. Read `plans/<topic>/plan.md`, focusing on the current batch
 2. Read every file you're about to modify — understand the current state
-3. Read the active plan's `plans/<topic>/lessons.md` (if any) — avoid repeating past mistakes
+3. Dispatch the `sdlc-wizard-lessons-learned` skill in `read <topic>`
+   mode to load prior lessons (if any) — avoid repeating past mistakes.
+   Do not read or edit `lessons.md` directly.
 4. Identify dependencies — what must exist before your changes work?
 5. When your implementation depends on framework behavior, library APIs, platform details, or security guidance, verify those facts with web research or official documentation instead of trusting memory or second-hand summaries from other skills.
 

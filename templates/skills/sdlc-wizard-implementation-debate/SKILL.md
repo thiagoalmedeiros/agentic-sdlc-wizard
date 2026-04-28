@@ -42,8 +42,9 @@ shortcuts:
    `sdlc-wizard-orchestrator` skill's conflict-resolution rules.
 6. **Stage 5 — Handoff to `sdlc-wizard-implementation-plan`.** Invoke
    `sdlc-wizard-implementation-plan` sequentially with the Stage 4 brief and the
-   existing plan folder so `plan.md` and `lessons.md` land next to
-   `debate.md`.
+   existing plan folder. The plan skill writes `plan.md` and dispatches
+   `sdlc-wizard-lessons-learned` to initialize `lessons.md`, both landing
+   next to `debate.md`.
 7. **Stage 6 — Present to user.** Return the chosen approach, rejected
    alternatives, and any open questions along with the plan artifact.
    Do not proceed to execution — the `sdlc-wizard-orchestrator` skill owns the batch loop.
@@ -93,8 +94,9 @@ the active harness. Do not attempt cross-harness fan-out.
 ## Inputs
 
 - `$ARGUMENTS` — the user's implementation prompt
-- `plans/<topic>/lessons.md` (prior plans) — corrections relevant to this
-  workflow
+- Prior lessons obtained by dispatching the
+  `sdlc-wizard-lessons-learned` skill in `read <topic>` mode (when the
+  plan folder already exists)
 - Current codebase (for the `sdlc-wizard-planner` skill's exploration step)
 
 ## Skills Involved
@@ -127,7 +129,8 @@ if the executed plan produces failures.
 4. Derive `<topic-kebab-case>` from the prompt and create the plan folder:
    `plans/<topic-kebab-case>/`. Inside it, create `debate.md` with the
    angles listed. The folder is shared with the `sdlc-wizard-implementation-plan` skill
-   (Stage 5) — `plan.md` and `lessons.md` will land here next to
+   (Stage 5) — `plan.md` will be written there, and
+   `sdlc-wizard-lessons-learned` will initialize `lessons.md` next to
    `debate.md`.
 
 ### Stage 2 — Parallel Thinking (fan-out, no cross-talk)
@@ -218,7 +221,8 @@ Append the brief to `plans/<topic-kebab-case>/debate.md` under **Stage 4 — Bri
 
 Invoke the `sdlc-wizard-implementation-plan` skill with the Stage 4 brief as input, and
 tell it to use the **existing** plan folder created in Stage 1 (so `plan.md`
-and `lessons.md` land next to `debate.md`). Pass:
+is written there and `sdlc-wizard-lessons-learned` initializes
+`lessons.md` next to `debate.md`). Pass:
 
 - The plan folder path — `plans/<topic-kebab-case>/`
 - The one-sentence restatement from Stage 1
@@ -227,9 +231,10 @@ and `lessons.md` land next to `debate.md`). Pass:
 - The **Rejected alternatives** list (to populate "out of scope")
 - Any **Open questions** still outstanding
 
-The `sdlc-wizard-implementation-plan` skill owns `plan.md` and initializes `lessons.md`.
-Do not duplicate its output in `debate.md`; the three documents are linked
-but distinct and all live in the same folder:
+The `sdlc-wizard-implementation-plan` skill owns `plan.md` and dispatches
+`sdlc-wizard-lessons-learned` to initialize `lessons.md`. Do not duplicate
+their output in `debate.md`; the three documents are linked but distinct
+and all live in the same folder:
 
 ```
 plans/<topic-kebab-case>/
@@ -289,8 +294,10 @@ containing three files:
   takes, cross-critique, synthesized brief (this skill)
 - `plans/<topic-kebab-case>/plan.md` — the 3-section plan artifact (created
   by the `sdlc-wizard-implementation-plan` skill from the Stage 4 brief)
-- `plans/<topic-kebab-case>/lessons.md` — initialized empty by
-  `sdlc-wizard-implementation-plan`, appended to during execution
+- `plans/<topic-kebab-case>/lessons.md` — initialized by
+  `sdlc-wizard-lessons-learned` (dispatched by
+  `sdlc-wizard-implementation-plan`); appended to during execution by the
+  same skill
 
 Plus a user-facing summary with chosen approach, rejected alternatives, and
 any open questions.
