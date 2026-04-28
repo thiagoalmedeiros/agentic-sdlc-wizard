@@ -51,7 +51,7 @@ Determine which AI coding assistant(s) are active in this project. Check for:
 |--------|----------|
 | `.claude/` directory or `CLAUDE.md` exists | **Claude Code** |
 | `.codex/` directory or `AGENTS.md` exists | **Codex** |
-| Copilot is the active IDE and `.claude/` exists | **GitHub Copilot** |
+| `.github/copilot-instructions.md` exists, or Copilot is the active IDE | **GitHub Copilot** |
 
 If multiple platforms are detected, configure all of them.
 
@@ -75,9 +75,35 @@ graphify codex install               # writes AGENTS.md section + PreToolUse hoo
 
 #### GitHub Copilot
 
-Copilot reads the `/graphify` skill directly from `.claude/skills/graphify/`
-(installed by the Claude Code command above — run it first if both
-platforms are detected). No separate Copilot install step is required.
+Two things must be configured for Copilot:
+
+**1. Install the graphify skill into `.claude/`:**
+
+```bash
+graphify install              # installs /graphify skill under .claude/skills/graphify/
+```
+
+This is required even when Claude Code is not in use — Copilot reads the skill from `.claude/skills/graphify/SKILL.md` in the project.
+
+**2. Write the graphify section to `.github/copilot-instructions.md`:**
+
+This file is loaded automatically by Copilot in every chat session.
+
+- Create `.github/` if it does not exist.
+- If `.github/copilot-instructions.md` **already exists**, **append** the block below to the end of the file. Do **not** overwrite or delete any existing content.
+- If the file does **not** exist, create it containing only the block below.
+- Skip if a `## graphify` section is already present.
+
+```markdown
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current
+```
 
 > **Note:** Do **not** run `graphify install --platform copilot` — it
 > targets the legacy user-level `~/.copilot/skills/` directory, which is
@@ -175,6 +201,7 @@ When graphify is already partially configured, check each component against the 
 Check for the presence and content of:
 - `CLAUDE.md` — should contain a graphify section
 - `AGENTS.md` — should contain a graphify section
+- `.github/copilot-instructions.md` — should contain a graphify section if Copilot is in use
 - `.graphifyignore` — should exist with relevant exclusions
 - `.git/hooks/post-commit` — should call `graphify hook`
 - `.devcontainer/Dockerfile` — should install `graphifyy` if devcontainer is in use
