@@ -1,23 +1,23 @@
 ---
-name: wizard
+name: sdlc-wizard-orchestrator
 description: >
   Multi-skill workflow orchestrator. Runs the full task loop: initialize the
-  task, clarify intent, delegate planning via the `implementation-plan`
-  skill, execute batches via the `coder` skill, review via the `reviewer`
-  skill, fix via the `bug-fixer` skill, and gate every user-facing result
-  through a parallel debate that combines the `planner`, `coder`, and
-  `reviewer` skills. The plan artifact produced by the workflow is the same
+  task, clarify intent, delegate planning via the `sdlc-wizard-implementation-plan`
+  skill, execute batches via the `sdlc-wizard-coder` skill, review via the `sdlc-wizard-reviewer`
+  skill, fix via the `sdlc-wizard-bug-fixer` skill, and gate every user-facing result
+  through a parallel debate that combines the `sdlc-wizard-planner`, `sdlc-wizard-coder`, and
+  `sdlc-wizard-reviewer` skills. The plan artifact produced by the workflow is the same
   `plans/<topic>/plan.md` + `lessons.md` pair produced by running
-  `implementation-plan` alone — only richer, because it is shaped by
+  `sdlc-wizard-implementation-plan` alone — only richer, because it is shaped by
   multi-skill critique. USE FOR: starting any new task, managing batches,
   running the clarification loop, coordinating subagents that run each
   skill, synthesizing multi-skill output. DO NOT USE FOR: direct code
   execution without planning, or standalone planning without the workflow
-  (use `implementation-plan` directly for that).
+  (use `sdlc-wizard-implementation-plan` directly for that).
 argument-hint: 'Optional: the task description when starting a new task'
 ---
 
-# Wizard — The Orchestrator Skill
+# Orchestrator — The Orchestrator Skill
 
 ## Purpose
 
@@ -35,12 +35,12 @@ documentation.
 
 | Skill | Role |
 |-------|------|
-| `wizard` (this skill) | Coordination, flow control, user communication |
-| `implementation-plan` | Research, architecture, specification |
-| `coder` | Implementation, code, logic verification |
-| `reviewer` | Review, contrarian thinking, quality gates |
-| `bug-fixer` | Autonomous debugging (invoked when needed) |
-| `implementation-debate` | Pre-plan multi-skill critique (**mandatory for every plan**) |
+| `sdlc-wizard-orchestrator` (this skill) | Coordination, flow control, user communication |
+| `sdlc-wizard-implementation-plan` | Research, architecture, specification |
+| `sdlc-wizard-coder` | Implementation, code, logic verification |
+| `sdlc-wizard-reviewer` | Review, contrarian thinking, quality gates |
+| `sdlc-wizard-bug-fixer` | Autonomous debugging (invoked when needed) |
+| `sdlc-wizard-implementation-debate` | Pre-plan multi-skill critique (**mandatory for every plan**) |
 
 ## Core Loop
 
@@ -72,10 +72,10 @@ Run this stage once at the start of every new task.
      confirms it.
    - If the user says "just do it" or "you decide" — make the call, record
      the decision in `plan.md` later, and proceed.
-3. **Delegate plan creation** by invoking the `implementation-debate`
-   skill (see Stage 1). The debate skill dispatches the `planner`,
-   `coder`, and `reviewer` skills as parallel subagents, then hands the
-   synthesized brief to the `implementation-plan` skill, which owns the
+3. **Delegate plan creation** by invoking the `sdlc-wizard-implementation-debate`
+   skill (see Stage 1). The debate skill dispatches the `sdlc-wizard-planner`,
+   `sdlc-wizard-coder`, and `sdlc-wizard-reviewer` skills as parallel subagents, then hands the
+   synthesized brief to the `sdlc-wizard-implementation-plan` skill, which owns the
    plan folder and initializes both `plan.md` and `lessons.md` inside
    `plans/<topic>/`. The debate is **not optional** — every plan produced
    by this skill goes through it, regardless of task size.
@@ -86,40 +86,40 @@ Run this stage once at the start of every new task.
 exist and the user has approved the plan.
 
 > The plan artifact is identical in shape to what the user would get by
-> running `implementation-plan` directly — a `plan.md` + `lessons.md` pair
+> running `sdlc-wizard-implementation-plan` directly — a `plan.md` + `lessons.md` pair
 > inside `plans/<topic>/`. This workflow always produces a richer plan
-> because the draft is shaped by the `planner` skill's architecture pass,
-> the `coder` skill's correctness pass, and the `reviewer` skill's
+> because the draft is shaped by the `sdlc-wizard-planner` skill's architecture pass,
+> the `sdlc-wizard-coder` skill's correctness pass, and the `sdlc-wizard-reviewer` skill's
 > contrarian pass — all dispatched as parallel subagents by the
-> `implementation-debate` skill — before `implementation-plan` writes the
-> final artifact. Never bypass the debate when invoked through `wizard`,
+> `sdlc-wizard-implementation-debate` skill — before `sdlc-wizard-implementation-plan` writes the
+> final artifact. Never bypass the debate when invoked through `sdlc-wizard-orchestrator`,
 > even for small tasks; if the user wants a plan without debate, they
-> should invoke `implementation-plan` directly.
+> should invoke `sdlc-wizard-implementation-plan` directly.
 
 ---
 
 ## Stage 1 — Plan Delegation (Debate-First, Always)
 
 This skill does **not** write the plan directly. Every plan produced
-through `wizard` goes through the full debate flow — there is no
+through `sdlc-wizard-orchestrator` goes through the full debate flow — there is no
 "lightweight" path that skips it.
 
 Mandatory sequence:
 
-1. **Dispatch `implementation-debate`** as the single entry point for
-   planning. That skill is responsible for fanning out the `planner`,
-   `coder`, and `reviewer` skills as **parallel subagents** (one subagent
+1. **Dispatch `sdlc-wizard-implementation-debate`** as the single entry point for
+   planning. That skill is responsible for fanning out the `sdlc-wizard-planner`,
+   `sdlc-wizard-coder`, and `sdlc-wizard-reviewer` skills as **parallel subagents** (one subagent
    per skill, in a single dispatch message for the active harness). Each
    subagent loads its own skill file and returns its role-specific
    deliverable. The caller must not collapse the three roles into one
    request.
-2. **`implementation-debate` synthesizes the brief** (Stages 1–4 of its
-   procedure) and hands it to `implementation-plan`.
-3. **`implementation-plan` writes the artifact** at
+2. **`sdlc-wizard-implementation-debate` synthesizes the brief** (Stages 1–4 of its
+   procedure) and hands it to `sdlc-wizard-implementation-plan`.
+3. **`sdlc-wizard-implementation-plan` writes the artifact** at
    `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`.
 
-- **Skill to run first:** `implementation-debate` (never
-  `implementation-plan` on its own from this skill)
+- **Skill to run first:** `sdlc-wizard-implementation-debate` (never
+  `sdlc-wizard-implementation-plan` on its own from this skill)
 - **Artifact location:** `plans/<topic>/debate.md` +
   `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`
 - **Inputs passed through to the debate:**
@@ -128,7 +128,7 @@ Mandatory sequence:
   - Any constraints or decisions the user made during clarification
   - Prior lessons from `plans/<topic>/lessons.md` if it already exists
 
-The debate feeds its synthesized brief into `implementation-plan` so
+The debate feeds its synthesized brief into `sdlc-wizard-implementation-plan` so
 the final artifact still lives at `plans/<topic>/plan.md`.
 
 ---
@@ -139,7 +139,7 @@ Work is organized into logical batches of 3–5 related files as defined in
 `plan.md`. Each batch follows this protocol:
 
 1. **Announce:** Tell the user what this batch will change and why.
-2. **Execute:** Dispatch the `coder` skill, then the `reviewer` skill.
+2. **Execute:** Dispatch the `sdlc-wizard-coder` skill, then the `sdlc-wizard-reviewer` skill.
 3. **Debate Gate:** Run the parallel consensus check (see below).
 4. **Present:** Summarize what changed, any issues, any decisions.
 5. **Wait:** Do NOT proceed until the user explicitly approves.
@@ -161,9 +161,9 @@ Update `plan.md` status cells (`⬜` → `🔄` → `✅`) as batches progress.
   third-party documentation.
 - Use code search, test evidence, and web research to confirm externally
   sourced facts before presenting them to the user as settled.
-- Require the `coder` and `bug-fixer` skills to show proof, not just
+- Require the `sdlc-wizard-coder` and `sdlc-wizard-bug-fixer` skills to show proof, not just
   confidence.
-- If the `implementation-plan` or `reviewer` skill challenges an
+- If the `sdlc-wizard-implementation-plan` or `sdlc-wizard-reviewer` skill challenges an
   implementation detail, resolve the disagreement with evidence rather
   than intuition.
 
@@ -171,12 +171,12 @@ Update `plan.md` status cells (`⬜` → `🔄` → `✅`) as batches progress.
 
 ## Conflict Resolution
 
-When skill outputs disagree (for example, the `reviewer` skill flags an
-issue the `coder` skill dismisses):
+When skill outputs disagree (for example, the `sdlc-wizard-reviewer` skill flags an
+issue the `sdlc-wizard-coder` skill dismisses):
 
 - Document both positions in `plans/<topic>/lessons.md` under the current date.
-- If it's a spec question → the `implementation-plan` skill decides.
-- If it's a code-quality question → the `reviewer` skill decides.
+- If it's a spec question → the `sdlc-wizard-implementation-plan` skill decides.
+- If it's a code-quality question → the `sdlc-wizard-reviewer` skill decides.
 - If it's an architecture question → escalate to the user.
 - Never silently ignore a disagreement.
 - If the disagreement depends on external facts, require a web-backed
@@ -186,13 +186,13 @@ issue the `coder` skill dismisses):
 
 ## Lessons Integration
 
-Lessons are per-plan, owned by the `implementation-plan` skill. They live at
+Lessons are per-plan, owned by the `sdlc-wizard-implementation-plan` skill. They live at
 `plans/<topic>/lessons.md`. There is no global project-root `lessons.md`.
 
 At the start of every execution session:
 
 1. Read `plans/<topic>/lessons.md` to pick up prior corrections.
-2. Apply relevant rules before dispatching the `coder` or `reviewer` skill.
+2. Apply relevant rules before dispatching the `sdlc-wizard-coder` or `sdlc-wizard-reviewer` skill.
 
 At the end of each task, or whenever the user corrects you mid-task:
 
@@ -203,10 +203,10 @@ At the end of each task, or whenever the user corrects you mid-task:
 
 ## When Things Go Wrong
 
-If a skill's output is rejected by the `reviewer` skill or the user:
+If a skill's output is rejected by the `sdlc-wizard-reviewer` skill or the user:
 
 - Do NOT retry the same approach.
-- Re-enter planning with the `implementation-plan` skill (update mode).
+- Re-enter planning with the `sdlc-wizard-implementation-plan` skill (update mode).
 - Consider whether the approach needs revision.
 - Record what went wrong in `plans/<topic>/lessons.md`.
 
@@ -226,8 +226,8 @@ use its dispatch primitive. Do **not** mix mechanisms across harnesses.
 | **Claude Code** | One subagent call that loads the skill, await result | Multiple subagent calls, each loading a skill, in a single message |
 | **GitHub Copilot** | One subagent message that references the skill by name | A single message that dispatches multiple subagents, each referencing a skill by name |
 
-Skill names are identical on both harnesses: `implementation-plan`,
-`coder`, `reviewer`, `bug-fixer`, `implementation-debate`.
+Skill names are identical on both harnesses: `sdlc-wizard-implementation-plan`,
+`sdlc-wizard-coder`, `sdlc-wizard-reviewer`, `sdlc-wizard-bug-fixer`, `sdlc-wizard-implementation-debate`.
 
 ### What every dispatch must include
 
@@ -241,12 +241,12 @@ Skill names are identical on both harnesses: `implementation-plan`,
 
 | Phase | Skill | Method | Notes |
 |-------|-------|--------|-------|
-| **Debate (pre-plan)** | `implementation-debate` | Sequential entry, **mandatory** parallel fan-out of `planner` + `coder` + `reviewer` subagents internally | Runs on **every** plan created through `wizard`. Never skipped. |
-| **Plan** | `implementation-plan` | Sequential, invoked by `implementation-debate` at handoff | Produces `plan.md` + `lessons.md`. Not called directly by `wizard`. |
-| **Execute** | `coder` | Sequential | Implements one batch per `plan.md` |
-| **Review** | `reviewer` | Sequential | Validates batch against `plan.md` |
-| **Fix** | `bug-fixer` | Sequential | Handles failing tests / issues |
-| **Debate Gate** | `coder`, `reviewer`, `implementation-plan` | Parallel | Run before presenting any batch |
+| **Debate (pre-plan)** | `sdlc-wizard-implementation-debate` | Sequential entry, **mandatory** parallel fan-out of `sdlc-wizard-planner` + `sdlc-wizard-coder` + `sdlc-wizard-reviewer` subagents internally | Runs on **every** plan created through `sdlc-wizard-orchestrator`. Never skipped. |
+| **Plan** | `sdlc-wizard-implementation-plan` | Sequential, invoked by `sdlc-wizard-implementation-debate` at handoff | Produces `plan.md` + `lessons.md`. Not called directly by `sdlc-wizard-orchestrator`. |
+| **Execute** | `sdlc-wizard-coder` | Sequential | Implements one batch per `plan.md` |
+| **Review** | `sdlc-wizard-reviewer` | Sequential | Validates batch against `plan.md` |
+| **Fix** | `sdlc-wizard-bug-fixer` | Sequential | Handles failing tests / issues |
+| **Debate Gate** | `sdlc-wizard-coder`, `sdlc-wizard-reviewer`, `sdlc-wizard-implementation-plan` | Parallel | Run before presenting any batch |
 
 ### Debate Gate Loop
 
@@ -255,18 +255,18 @@ looping until consensus:
 
 1. Dispatch all three subagents **in parallel**, each loading a different
    skill using the active harness's fan-out mechanism:
-   - `coder` skill: "Confirm the code works, tests pass, and implementation
+   - `sdlc-wizard-coder` skill: "Confirm the code works, tests pass, and implementation
      matches `plan.md`. Report any concerns."
-   - `reviewer` skill: "Challenge the implementation. What could go wrong?
+   - `sdlc-wizard-reviewer` skill: "Challenge the implementation. What could go wrong?
      What's missing? What assumptions are untested?"
-   - `implementation-plan` skill: "Verify the approach still aligns with
+   - `sdlc-wizard-implementation-plan` skill: "Verify the approach still aligns with
      `plan.md` Section 2. Flag any drift."
 2. Collect all three responses.
 3. **If all agree** → synthesize and present to user.
 4. **If disagreement exists:**
    - Document the disagreement in `lessons.md`.
-   - Resolve it (re-plan with `implementation-plan`, re-implement with
-     `coder`, or re-review with `reviewer`).
+   - Resolve it (re-plan with `sdlc-wizard-implementation-plan`, re-implement with
+     `sdlc-wizard-coder`, or re-review with `sdlc-wizard-reviewer`).
    - **Re-run the debate gate** — dispatch all three again in parallel.
 5. **Repeat until consensus** or until disagreements are documented and
    explicitly acknowledged.

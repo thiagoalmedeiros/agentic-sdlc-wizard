@@ -63,15 +63,15 @@ Installed skills:
 | Skill | Purpose |
 |-------|---------|
 | `sdlc-wizard` | Interactive initial configuration (DevContainer, Graphify, Implementation Plan) |
-| `wizard` | Multi-skill task orchestrator (plan → code → review → fix) |
-| `implementation-plan` | Produce a `plans/<topic>/plan.md` + `lessons.md` planning artifact |
-| `implementation-debate` | Pre-plan multi-skill critique that feeds `implementation-plan` |
-| `planner` | Architecture and specification skill used during orchestrated tasks |
-| `coder` | Implementation skill used during orchestrated tasks |
-| `reviewer` | Code review and contrarian skill used during orchestrated tasks |
-| `bug-fixer` | Autonomous debugging skill for failing tests and runtime errors |
-| `devcontainer-setup` | Set up or audit a `.devcontainer/` environment |
-| `graphify-setup` | Install and configure the graphify knowledge-graph skill |
+| `sdlc-wizard-orchestrator` | Multi-skill task orchestrator (plan → code → review → fix) |
+| `sdlc-wizard-implementation-plan` | Produce a `plans/<topic>/plan.md` + `lessons.md` planning artifact |
+| `sdlc-wizard-implementation-debate` | Pre-plan multi-skill critique that feeds `sdlc-wizard-implementation-plan` |
+| `sdlc-wizard-planner` | Architecture and specification skill used during orchestrated tasks |
+| `sdlc-wizard-coder` | Implementation skill used during orchestrated tasks |
+| `sdlc-wizard-reviewer` | Code review and contrarian skill used during orchestrated tasks |
+| `sdlc-wizard-bug-fixer` | Autonomous debugging skill for failing tests and runtime errors |
+| `sdlc-wizard-devcontainer-setup` | Set up or audit a `.devcontainer/` environment |
+| `sdlc-wizard-graphify-setup` | Install and configure the graphify knowledge-graph skill |
 
 ### 2. Use the wizard in your IDE
 
@@ -81,38 +81,38 @@ skill by name.
 - Ask for the `sdlc-wizard` skill to interactively configure
   **DevContainer**, **Graphify**, or **Implementation Plan**. It tracks
   completed steps in `.wizard.json`.
-- Ask for the `wizard` skill to begin an orchestrated task. It runs the
-  full loop: clarify intent → plan (`implementation-plan`) → code
-  (`coder`) → review (`reviewer`) → fix (`bug-fixer`) → debate gate
-  across `coder`/`reviewer`/`implementation-plan` → user confirmation.
-- Ask for the `implementation-plan` skill directly to create a planning
+- Ask for the `sdlc-wizard-orchestrator` skill to begin an orchestrated task. It runs the
+  full loop: clarify intent → plan (`sdlc-wizard-implementation-plan`) → code
+  (`sdlc-wizard-coder`) → review (`sdlc-wizard-reviewer`) → fix (`sdlc-wizard-bug-fixer`) → debate gate
+  across `sdlc-wizard-coder`/`sdlc-wizard-reviewer`/`sdlc-wizard-implementation-plan` → user confirmation.
+- Ask for the `sdlc-wizard-implementation-plan` skill directly to create a planning
   artifact for a feature or refactor without going through the
   orchestrator.
 
 ### 3. Orchestrated task workflow
 
-When you run the `wizard` skill, it orchestrates a structured workflow:
+When you run the `sdlc-wizard-orchestrator` skill, it orchestrates a structured workflow:
 
 1. **Init** — derive a kebab-case topic and run the clarification loop
    until the task is unambiguous.
-2. **Plan** — dispatch the `implementation-plan` skill, producing
+2. **Plan** — dispatch the `sdlc-wizard-implementation-plan` skill, producing
    `plans/<topic>/plan.md` + `lessons.md`. For non-trivial work, the
-   `implementation-debate` skill feeds a multi-skill-critiqued brief
+   `sdlc-wizard-implementation-debate` skill feeds a multi-skill-critiqued brief
    into the plan first.
-3. **Execute** — dispatch the `coder` skill for each batch following
+3. **Execute** — dispatch the `sdlc-wizard-coder` skill for each batch following
    `plan.md`.
-4. **Review** — dispatch the `reviewer` skill to validate against the
+4. **Review** — dispatch the `sdlc-wizard-reviewer` skill to validate against the
    spec and challenge assumptions.
-5. **Fix** — dispatch the `bug-fixer` skill if tests fail or issues
+5. **Fix** — dispatch the `sdlc-wizard-bug-fixer` skill if tests fail or issues
    surface.
 6. **Debate Gate** — before every user-facing result, dispatch the
-   `coder`, `reviewer`, and `implementation-plan` skills in parallel for
+   `sdlc-wizard-coder`, `sdlc-wizard-reviewer`, and `sdlc-wizard-implementation-plan` skills in parallel for
    a consensus check.
 7. **Confirm** — results are presented to the user for approval.
 
 ### Skill dispatch (platform-aware)
 
-The `wizard` skill dispatches subagents using the primitive of the active
+The `sdlc-wizard-orchestrator` skill dispatches subagents using the primitive of the active
 harness. Skill names are identical across harnesses.
 
 | Harness | Sequential | Parallel |
@@ -120,7 +120,7 @@ harness. Skill names are identical across harnesses.
 | Claude Code | One subagent call that loads the skill | Multiple subagent calls in a single message, each loading a skill |
 | GitHub Copilot | One subagent message referencing the skill by name | A single message dispatching multiple subagents, each referencing a skill by name |
 
-The `wizard` and `implementation-debate` skills document the full
+The `sdlc-wizard-orchestrator` and `sdlc-wizard-implementation-debate` skills document the full
 dispatch protocol. Cross-harness dispatch is not supported.
 
 ## Project Structure

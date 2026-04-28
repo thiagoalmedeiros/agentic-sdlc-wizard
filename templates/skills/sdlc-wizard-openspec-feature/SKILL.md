@@ -1,5 +1,5 @@
 ---
-name: openspec-feature
+name: sdlc-wizard-openspec-feature
 description: >
   Guided wizard for the full OpenSpec spec-driven development lifecycle.
   Asks the user, in plain language, what stage of the work they are at —

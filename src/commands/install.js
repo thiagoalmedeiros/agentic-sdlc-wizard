@@ -35,11 +35,11 @@ function copyDirRecursive(srcDir, destDir) {
  *
  * Every template skill is installed by this function — there are no
  * optional skill bundles and no agents. Skills drive the entire workflow:
- * initial setup (`sdlc-wizard`), task orchestration (`wizard`), planning
- * (`implementation-plan`, `planner`), coding (`coder`), review
- * (`reviewer`), debugging (`bug-fixer`), pre-plan critique
- * (`implementation-debate`), and per-step setup (`devcontainer-setup`,
- * `graphify-setup`).
+ * initial setup (`sdlc-wizard`), task orchestration (`sdlc-wizard-orchestrator`), planning
+ * (`sdlc-wizard-implementation-plan`, `sdlc-wizard-planner`), coding (`sdlc-wizard-coder`), review
+ * (`sdlc-wizard-reviewer`), debugging (`sdlc-wizard-bug-fixer`), pre-plan critique
+ * (`sdlc-wizard-implementation-debate`), and per-step setup (`sdlc-wizard-devcontainer-setup`,
+ * `sdlc-wizard-graphify-setup`).
  */
 function installSkills(cwd, scope) {
   scope = scope || "project";
@@ -220,7 +220,7 @@ async function installCommand(cwd, scope) {
     `  Ask your IDE chat (Copilot or Claude Code) to run the "sdlc-wizard" skill`
   );
   console.log(
-    `  for initial configuration, or the "wizard" skill to begin an`
+    `  for initial configuration, or the "sdlc-wizard-orchestrator" skill to begin an`
   );
   console.log(`  orchestrated task with planning, coding, and review.`);
 }

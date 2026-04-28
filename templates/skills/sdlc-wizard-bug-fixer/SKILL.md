@@ -1,5 +1,5 @@
 ---
-name: bug-fixer
+name: sdlc-wizard-bug-fixer
 description: >
   Autonomous debugging and repair skill. Diagnoses and resolves bugs, test
   failures, CI issues, and runtime errors without hand-holding. Operates
@@ -73,15 +73,15 @@ When a bug or failure is received:
 
 ## What Not To Fix
 
-- Architecture problems → flag to the `wizard` skill for re-planning with the `implementation-plan` skill
+- Architecture problems → flag to the `sdlc-wizard-orchestrator` skill for re-planning with the `sdlc-wizard-implementation-plan` skill
 - Missing features → that's new work, not a bug
-- Performance issues → flag to the `reviewer` skill unless it's a clear regression
+- Performance issues → flag to the `sdlc-wizard-reviewer` skill unless it's a clear regression
 
 ## Workflow Integration
 
-- Context comes from the `coder` skill's code and the `reviewer` skill's issue reports
-- After fixing, changes go back through the `reviewer` skill
-- If the fix requires architecture changes, escalate to the `wizard` skill, which will involve the `implementation-plan` skill
+- Context comes from the `sdlc-wizard-coder` skill's code and the `sdlc-wizard-reviewer` skill's issue reports
+- After fixing, changes go back through the `sdlc-wizard-reviewer` skill
+- If the fix requires architecture changes, escalate to the `sdlc-wizard-orchestrator` skill, which will involve the `sdlc-wizard-implementation-plan` skill
 
 ## Fix Quality Bar
 
@@ -90,12 +90,12 @@ Every fix must satisfy:
 - [ ] All tests pass after the fix
 - [ ] No new warnings introduced
 - [ ] Fix is minimal — only touches what's necessary
-- [ ] Would survive a code review by the `reviewer` skill
+- [ ] Would survive a code review by the `sdlc-wizard-reviewer` skill
 
 ## When Stuck
 
 If the root cause cannot be found after thorough investigation:
 1. Document what was tried and what was ruled out
-2. Flag to the `wizard` skill with a clear description of the blocker
+2. Flag to the `sdlc-wizard-orchestrator` skill with a clear description of the blocker
 3. Suggest next diagnostic steps
 4. Do NOT silently give up or apply a workaround
