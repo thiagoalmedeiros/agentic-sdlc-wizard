@@ -1,8 +1,8 @@
 ---
 name: sdlc-implementation-debate
 description: >
-  Pre-implementation multi-skill debate. Dispatches `sdlc-planner`, `sdlc-coder`,
-  and `sdlc-reviewer` in parallel to critique a proposal, then hands the
+  Pre-implementation multi-skill debate. Dispatches `sdlc-council-daedalus`, `sdlc-council-hephaestus`,
+  and `sdlc-council-thomas` in parallel to critique a proposal, then hands the
   synthesized brief to `sdlc-implementation-plan`. USE FOR: planning non-trivial
   features, refactors, migrations, or architecture decisions. DO NOT USE
   FOR: bug fixes, one-line edits, or work already covered by an approved
@@ -27,8 +27,8 @@ shortcuts:
 2. **Stage 1 — Decompose (caller, serial).** The caller restates the
    proposal in one sentence, derives `<topic-kebab-case>`, creates the
    plan folder, and writes 3–5 debate angles into `debate.md`.
-3. **Stage 2 — Parallel fan-out as subagents.** Dispatch the `sdlc-planner`,
-   `sdlc-coder`, and `sdlc-reviewer` skills **in parallel, one subagent per skill**,
+3. **Stage 2 — Parallel fan-out as subagents.** Dispatch the `sdlc-council-daedalus`,
+   `sdlc-council-hephaestus`, and `sdlc-council-thomas` skills **in parallel, one subagent per skill**,
    using the active harness's fan-out mechanism. Never collapse the three
    roles into a single call. Each subagent loads its own skill file, sees
    only its own role-specific deliverable, and must not see the others'
@@ -85,8 +85,8 @@ at once. Use the dispatch primitive of whichever harness is active:
 
 | Harness | Parallel dispatch | Skill reference |
 |---------|-------------------|-----------------|
-| Claude Code | Multiple subagent calls in a single message, each loading a skill | `sdlc-planner`, `sdlc-coder`, `sdlc-reviewer` |
-| GitHub Copilot | A single message that dispatches multiple subagents, each referencing a skill by name | `sdlc-planner`, `sdlc-coder`, `sdlc-reviewer` |
+| Claude Code | Multiple subagent calls in a single message, each loading a skill | `sdlc-council-daedalus`, `sdlc-council-hephaestus`, `sdlc-council-thomas` |
+| GitHub Copilot | A single message that dispatches multiple subagents, each referencing a skill by name | `sdlc-council-daedalus`, `sdlc-council-hephaestus`, `sdlc-council-thomas` |
 
 Wherever this skill says **"dispatch in parallel"**, use the mechanism of
 the active harness. Do not attempt cross-harness fan-out.
@@ -97,18 +97,18 @@ the active harness. Do not attempt cross-harness fan-out.
 - Prior lessons obtained by dispatching the
   `sdlc-lessons-learned` skill in `read <topic>` mode (when the
   plan folder already exists)
-- Current codebase (for the `sdlc-planner` skill's exploration step)
+- Current codebase (for the `sdlc-council-daedalus` skill's exploration step)
 
 ## Skills Involved
 
 | Skill | Debate role |
 |-------|-------------|
 | **`sdlc-council` (caller)** | Decomposes, dispatches, synthesizes, resolves conflicts, invokes `sdlc-implementation-plan` |
-| **`sdlc-planner`** | Architecture fit, external-fact grounding, existing patterns |
-| **`sdlc-coder`** | Correctness, edge cases, data/state invariants, logic walkthrough |
-| **`sdlc-reviewer`** | Contrarian, alternative designs, failure modes, blind spots |
+| **`sdlc-council-daedalus`** | Architecture fit, external-fact grounding, existing patterns |
+| **`sdlc-council-hephaestus`** | Correctness, edge cases, data/state invariants, logic walkthrough |
+| **`sdlc-council-thomas`** | Contrarian, alternative designs, failure modes, blind spots |
 
-The `sdlc-bug-fixer` skill is **not** part of the debate — it is invoked later
+The `sdlc-council-sherlock` skill is **not** part of the debate — it is invoked later
 if the executed plan produces failures.
 
 ---
@@ -135,7 +135,7 @@ if the executed plan produces failures.
 
 ### Stage 2 — Parallel Thinking (fan-out, no cross-talk)
 
-Dispatch the `sdlc-planner`, `sdlc-coder`, and `sdlc-reviewer` skills **in parallel as
+Dispatch the `sdlc-council-daedalus`, `sdlc-council-hephaestus`, and `sdlc-council-thomas` skills **in parallel as
 subagents** using the active harness's mechanism. This step is **not
 optional** and must not be collapsed into a single call that tries to
 play all three roles — the whole point of the debate is three
@@ -149,21 +149,21 @@ Dispatch contract — every call includes:
 2. Role-specific deliverable (see below)
 3. Scope boundary — "Do not propose a full plan. Critique and reason only."
 
-**`sdlc-planner` deliverable:**
+**`sdlc-council-daedalus` deliverable:**
 
 > "Architecture & research pass on <proposal>. For each debate angle: does
 > the existing codebase already have a pattern? What external facts
 > (framework, API, security) must be verified? Cite sources. Flag drift
 > risks. Return: findings, verified facts, open questions."
 
-**`sdlc-coder` deliverable:**
+**`sdlc-council-hephaestus` deliverable:**
 
 > "Correctness pass on <proposal>. For each debate angle: walk the data
 > flow and state transitions. List invariants. Enumerate edge cases and
 > off-by-one risks. Return: invariants, edge cases, concrete failure
 > scenarios."
 
-**`sdlc-reviewer` deliverable:**
+**`sdlc-council-thomas` deliverable:**
 
 > "Contrarian pass on <proposal>. Propose at least 2 alternative designs.
 > Identify blind spots the other skills will miss. List the top failure
@@ -201,9 +201,9 @@ Stage 3:
 2. **Disputed items** — where Stage 3 responses did not converge.
 3. **Resolution** — for each disputed item, apply the `sdlc-council` skill's
    conflict-resolution rules:
-   - Spec / architecture question → the `sdlc-planner` skill's position wins,
-     unless the `sdlc-reviewer` skill provides evidence
-   - Code quality / correctness → the `sdlc-reviewer` skill's position wins if
+   - Spec / architecture question → the `sdlc-council-daedalus` skill's position wins,
+     unless the `sdlc-council-thomas` skill provides evidence
+   - Code quality / correctness → the `sdlc-council-thomas` skill's position wins if
      the risk is concrete
    - Unverified external fact → require web-backed verification before
      deciding
@@ -274,7 +274,7 @@ is driven by the `sdlc-council` skill's batch loop.
 ## Failure Modes to Avoid
 
 - **Debate theater** — three subagents agreeing to save time. If the
-  `sdlc-reviewer` skill finds nothing, push harder; if it still finds nothing,
+  `sdlc-council-thomas` skill finds nothing, push harder; if it still finds nothing,
   note it explicitly.
 - **Cross-harness dispatch** — this project is Claude OR Copilot, not both.
 - **Skipping the plan skill** — `sdlc-implementation-debate` produces a brief,

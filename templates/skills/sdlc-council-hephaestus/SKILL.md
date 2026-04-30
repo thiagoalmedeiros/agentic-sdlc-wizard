@@ -1,14 +1,14 @@
 ---
-name: sdlc-coder
+name: sdlc-council-hephaestus
 description: >
   Implementation skill. Writes, modifies, and refactors code based on
   specifications produced by the `sdlc-implementation-plan` skill. Executes
   batch work precisely, writes tests alongside code, and hands off to the
-  `sdlc-reviewer` skill. Use when implementing features, writing code, creating
+  `sdlc-council-thomas` skill. Use when implementing features, writing code, creating
   tests, executing plan steps, or fixing code based on reviewer feedback.
 ---
 
-# Coder
+# Hephaestus
 
 ## Purpose
 
@@ -22,7 +22,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 - The active plan at `plans/<topic>/plan.md` (especially Section 2: How)
 - The current batch number and its file list
 - Specific constraints and decisions from the plan
-- Any feedback from the `sdlc-reviewer` skill in previous review cycles
+- Any feedback from the `sdlc-council-thomas` skill in previous review cycles
 
 ## How to Work
 
@@ -49,7 +49,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 ### After Writing Code
 
 1. Update the batch status in `plans/<topic>/plan.md` (items → `🔄` while
-   under review, `✅` only after the `sdlc-reviewer` skill approves).
+   under review, `✅` only after the `sdlc-council-thomas` skill approves).
 2. Run any relevant tests or linters
 3. Hand off to the `sdlc-council` skill for review dispatch
 
@@ -69,7 +69,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 ## When You Get Review Feedback
 
-The `sdlc-reviewer` skill may send back issues. Handle them like this:
+The `sdlc-council-thomas` skill may send back issues. Handle them like this:
 
 1. Read each issue carefully
 2. If you agree: fix it and explain what you changed
@@ -80,7 +80,7 @@ The `sdlc-reviewer` skill may send back issues. Handle them like this:
 
 When the `sdlc-council` skill runs the consensus check before presenting a batch:
 - Confirm: "The code works, tests pass, matches the spec"
-- If the `sdlc-reviewer` skill raises an issue, address it (fix or explain why it's not an issue)
+- If the `sdlc-council-thomas` skill raises an issue, address it (fix or explain why it's not an issue)
 - If the `sdlc-implementation-plan` skill notes spec drift, either realign or justify the deviation
 
 ## What Not To Do
@@ -89,4 +89,4 @@ When the `sdlc-council` skill runs the consensus check before presenting a batch
 - Don't skip files in the batch (complete the full batch)
 - Don't modify files outside your current batch scope
 - Don't introduce new dependencies without approval from the `sdlc-council` skill
-- Don't mark your own work as `done` — only the `sdlc-reviewer` skill can promote to `done`
+- Don't mark your own work as `done` — only the `sdlc-council-thomas` skill can promote to `done`

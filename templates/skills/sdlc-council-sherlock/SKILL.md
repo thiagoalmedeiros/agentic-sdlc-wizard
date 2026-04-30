@@ -1,5 +1,5 @@
 ---
-name: sdlc-bug-fixer
+name: sdlc-council-sherlock
 description: >
   Autonomous debugging and repair skill. Diagnoses and resolves bugs, test
   failures, CI issues, and runtime errors without hand-holding. Operates
@@ -9,7 +9,7 @@ description: >
   during implementation.
 ---
 
-# Bug-Fixer
+# Sherlock
 
 ## Purpose
 
@@ -79,12 +79,12 @@ When a bug or failure is received:
 
 - Architecture problems → flag to the `sdlc-council` skill for re-planning with the `sdlc-implementation-plan` skill
 - Missing features → that's new work, not a bug
-- Performance issues → flag to the `sdlc-reviewer` skill unless it's a clear regression
+- Performance issues → flag to the `sdlc-council-thomas` skill unless it's a clear regression
 
 ## Workflow Integration
 
-- Context comes from the `sdlc-coder` skill's code and the `sdlc-reviewer` skill's issue reports
-- After fixing, changes go back through the `sdlc-reviewer` skill
+- Context comes from the `sdlc-council-hephaestus` skill's code and the `sdlc-council-thomas` skill's issue reports
+- After fixing, changes go back through the `sdlc-council-thomas` skill
 - If the fix requires architecture changes, escalate to the `sdlc-council` skill, which will involve the `sdlc-implementation-plan` skill
 
 ## Fix Quality Bar
@@ -94,7 +94,7 @@ Every fix must satisfy:
 - [ ] All tests pass after the fix
 - [ ] No new warnings introduced
 - [ ] Fix is minimal — only touches what's necessary
-- [ ] Would survive a code review by the `sdlc-reviewer` skill
+- [ ] Would survive a code review by the `sdlc-council-thomas` skill
 
 ## When Stuck
 

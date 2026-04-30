@@ -78,10 +78,10 @@ Installed skills:
 | `sdlc-implementation-plan` | Produce a `plans/<topic>/plan.md` planning artifact (delegates `lessons.md` init to `sdlc-lessons-learned`) |
 | `sdlc-implementation-debate` | Pre-plan multi-skill critique that feeds `sdlc-implementation-plan` |
 | `sdlc-lessons-learned` | Owns the per-plan `plans/<topic>/lessons.md` lifecycle (init / read / append) |
-| `sdlc-planner` | Architecture and specification skill used during orchestrated tasks |
-| `sdlc-coder` | Implementation skill used during orchestrated tasks |
-| `sdlc-reviewer` | Code review and contrarian skill used during orchestrated tasks |
-| `sdlc-bug-fixer` | Autonomous debugging skill for failing tests and runtime errors |
+| `sdlc-council-daedalus` | Architecture and specification skill used during orchestrated tasks |
+| `sdlc-council-hephaestus` | Implementation skill used during orchestrated tasks |
+| `sdlc-council-thomas` | Code review and contrarian skill used during orchestrated tasks |
+| `sdlc-council-sherlock` | Autonomous debugging skill for failing tests and runtime errors |
 | `sdlc-devcontainer-setup` | Set up or audit a `.devcontainer/` environment |
 | `sdlc-graphify-setup` | Install and configure the graphify knowledge-graph skill |
 
@@ -95,8 +95,8 @@ skill by name.
   completed steps in `.wizard.json`.
 - Ask for the `sdlc-council` skill to begin an orchestrated task. It runs the
   full loop: clarify intent → plan (`sdlc-implementation-plan`) → code
-  (`sdlc-coder`) → review (`sdlc-reviewer`) → fix (`sdlc-bug-fixer`) → debate gate
-  across `sdlc-coder`/`sdlc-reviewer`/`sdlc-implementation-plan` → user confirmation.
+  (`sdlc-council-hephaestus`) → review (`sdlc-council-thomas`) → fix (`sdlc-council-sherlock`) → debate gate
+  across `sdlc-council-hephaestus`/`sdlc-council-thomas`/`sdlc-implementation-plan` → user confirmation.
 - Ask for the `sdlc-implementation-plan` skill directly to create a planning
   artifact for a feature or refactor without going through the
   orchestrator.
@@ -111,14 +111,14 @@ When you run the `sdlc-council` skill, it orchestrates a structured workflow:
    `plans/<topic>/plan.md` + `lessons.md`. For non-trivial work, the
    `sdlc-implementation-debate` skill feeds a multi-skill-critiqued brief
    into the plan first.
-3. **Execute** — dispatch the `sdlc-coder` skill for each batch following
+3. **Execute** — dispatch the `sdlc-council-hephaestus` skill for each batch following
    `plan.md`.
-4. **Review** — dispatch the `sdlc-reviewer` skill to validate against the
+4. **Review** — dispatch the `sdlc-council-thomas` skill to validate against the
    spec and challenge assumptions.
-5. **Fix** — dispatch the `sdlc-bug-fixer` skill if tests fail or issues
+5. **Fix** — dispatch the `sdlc-council-sherlock` skill if tests fail or issues
    surface.
 6. **Debate Gate** — before every user-facing result, dispatch the
-   `sdlc-coder`, `sdlc-reviewer`, and `sdlc-implementation-plan` skills in parallel for
+   `sdlc-council-hephaestus`, `sdlc-council-thomas`, and `sdlc-implementation-plan` skills in parallel for
    a consensus check.
 7. **Confirm** — results are presented to the user for approval.
 
@@ -149,10 +149,10 @@ templates/
     sdlc-council/                - Multi-skill task orchestrator
     sdlc-implementation-plan/    - Standalone planning skill
     sdlc-implementation-debate/  - Pre-plan multi-skill critique
-    sdlc-planner/                - Architecture / specification skill
-    sdlc-coder/                  - Implementation skill
-    sdlc-reviewer/               - Code review skill
-    sdlc-bug-fixer/              - Autonomous debugging skill
+    sdlc-council-daedalus/                - Architecture / specification skill
+    sdlc-council-hephaestus/                  - Implementation skill
+    sdlc-council-thomas/               - Code review skill
+    sdlc-council-sherlock/              - Autonomous debugging skill
     sdlc-lessons-learned/        - Per-plan lessons.md lifecycle
     sdlc-devcontainer-setup/     - DevContainer setup skill
     sdlc-graphify-setup/         - Graphify setup skill

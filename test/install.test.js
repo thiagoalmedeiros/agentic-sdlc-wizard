@@ -68,15 +68,15 @@ describe("installCommand", () => {
 
     const expected = [
       "sdlc-wizard",
-      "sdlc-bug-fixer",
-      "sdlc-coder",
+      "sdlc-council-sherlock",
+      "sdlc-council-hephaestus",
       "sdlc-devcontainer-setup",
       "sdlc-graphify-setup",
       "sdlc-implementation-debate",
       "sdlc-implementation-plan",
       "sdlc-lessons-learned",
-      "sdlc-planner",
-      "sdlc-reviewer",
+      "sdlc-council-daedalus",
+      "sdlc-council-thomas",
       "sdlc-council",
     ].sort();
 

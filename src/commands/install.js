@@ -36,8 +36,8 @@ function copyDirRecursive(srcDir, destDir) {
  * Every template skill is installed by this function — there are no
  * optional skill bundles and no agents. Skills drive the entire workflow:
  * initial setup (`sdlc-wizard`), task orchestration (`sdlc-council`), planning
- * (`sdlc-implementation-plan`, `sdlc-planner`), coding (`sdlc-coder`), review
- * (`sdlc-reviewer`), debugging (`sdlc-bug-fixer`), pre-plan critique
+ * (`sdlc-implementation-plan`, `sdlc-council-daedalus`), coding (`sdlc-council-hephaestus`), review
+ * (`sdlc-council-thomas`), debugging (`sdlc-council-sherlock`), pre-plan critique
  * (`sdlc-implementation-debate`), and per-step setup (`sdlc-devcontainer-setup`,
  * `sdlc-graphify-setup`).
  *
@@ -229,10 +229,10 @@ function getSkillBundles() {
         "Orchestrator + planner, reviewer, coder, bug-fixer, implementation-plan, implementation-debate, lessons-learned",
       skills: [
         "sdlc-council",
-        "sdlc-planner",
-        "sdlc-reviewer",
-        "sdlc-coder",
-        "sdlc-bug-fixer",
+        "sdlc-council-daedalus",
+        "sdlc-council-thomas",
+        "sdlc-council-hephaestus",
+        "sdlc-council-sherlock",
         "sdlc-implementation-plan",
         "sdlc-implementation-debate",
         "sdlc-lessons-learned",
