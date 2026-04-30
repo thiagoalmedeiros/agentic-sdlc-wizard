@@ -204,35 +204,89 @@ function listAvailableSkills() {
 }
 
 /**
- * Show an interactive multi-select menu for choosing skills to install.
- * Up/Down arrows to move the cursor, Space to toggle, Enter to confirm.
- * Falls back to selecting all skills in non-interactive environments.
- * @param {string[]} skills - All available skill names
- * @returns {Promise<string[]>} Selected skill names
+ * Skill bundles surfaced in `wizard install skills`.
+ *
+ * Some skills only make sense together. `sdlc-council` is the
+ * orchestrator and depends on the planner, reviewer, coder, bug-fixer,
+ * implementation-plan, implementation-debate, and lessons-learned
+ * skills — selecting it installs the whole orchestration stack as a
+ * single unit. Standalone skills are presented as their own bundles.
+ *
+ * @returns {{id: string, label: string, description: string, skills: string[]}[]}
  */
-function promptSkillsSelection(skills) {
+function getSkillBundles() {
+  return [
+    {
+      id: "sdlc-wizard",
+      label: "sdlc-wizard",
+      description: "Interactive initial configuration",
+      skills: ["sdlc-wizard"],
+    },
+    {
+      id: "sdlc-council",
+      label: "sdlc-council",
+      description:
+        "Orchestrator + planner, reviewer, coder, bug-fixer, implementation-plan, implementation-debate, lessons-learned",
+      skills: [
+        "sdlc-council",
+        "sdlc-planner",
+        "sdlc-reviewer",
+        "sdlc-coder",
+        "sdlc-bug-fixer",
+        "sdlc-implementation-plan",
+        "sdlc-implementation-debate",
+        "sdlc-lessons-learned",
+      ],
+    },
+    {
+      id: "sdlc-devcontainer-setup",
+      label: "sdlc-devcontainer-setup",
+      description: "DevContainer setup skill",
+      skills: ["sdlc-devcontainer-setup"],
+    },
+    {
+      id: "sdlc-graphify-setup",
+      label: "sdlc-graphify-setup",
+      description: "Graphify knowledge-graph setup skill",
+      skills: ["sdlc-graphify-setup"],
+    },
+  ];
+}
+
+/**
+ * Show an interactive multi-select menu for choosing skill bundles to
+ * install. Up/Down arrows to move the cursor, Space to toggle, Enter to
+ * confirm. Falls back to selecting all bundles in non-interactive
+ * environments.
+ * @param {{id: string, label: string, description: string, skills: string[]}[]} bundles
+ * @returns {Promise<{id: string, label: string, description: string, skills: string[]}[]>} Selected bundles
+ */
+function promptSkillsSelection(bundles) {
   return new Promise((resolve) => {
     if (!process.stdin.isTTY || !process.stdout.isTTY) {
-      console.log("Non-interactive environment detected, selecting all skills.");
-      resolve(skills.slice());
+      console.log(
+        "Non-interactive environment detected, selecting all skill bundles."
+      );
+      resolve(bundles.slice());
       return;
     }
 
     const readline = require("readline");
 
     let cursor = 0;
-    const checked = new Array(skills.length).fill(false);
+    const checked = new Array(bundles.length).fill(false);
 
     function render() {
       process.stdout.write("\n");
       process.stdout.write("  Select skills to install\n");
       process.stdout.write("\n");
-      for (let i = 0; i < skills.length; i++) {
+      for (let i = 0; i < bundles.length; i++) {
         const box = checked[i] ? "[\x1b[32mx\x1b[0m]" : "[ ]";
+        const line = `${box} ${bundles[i].label}  \x1b[2m— ${bundles[i].description}\x1b[0m`;
         if (i === cursor) {
-          process.stdout.write(`  \x1b[36m❯\x1b[0m ${box} ${skills[i]}\n`);
+          process.stdout.write(`  \x1b[36m❯\x1b[0m ${line}\n`);
         } else {
-          process.stdout.write(`    ${box} ${skills[i]}\n`);
+          process.stdout.write(`    ${line}\n`);
         }
       }
       process.stdout.write("\n");
@@ -243,7 +297,7 @@ function promptSkillsSelection(skills) {
 
     function clearRender() {
       const FIXED_LINES = 5;
-      const lines = skills.length + FIXED_LINES;
+      const lines = bundles.length + FIXED_LINES;
       for (let i = 0; i < lines; i++) {
         readline.moveCursor(process.stdout, 0, -1);
         readline.clearLine(process.stdout, 0);
@@ -264,14 +318,14 @@ function promptSkillsSelection(skills) {
       }
 
       if (key === "\x1b[A") {
-        cursor = (cursor - 1 + skills.length) % skills.length;
+        cursor = (cursor - 1 + bundles.length) % bundles.length;
         clearRender();
         render();
         return;
       }
 
       if (key === "\x1b[B") {
-        cursor = (cursor + 1) % skills.length;
+        cursor = (cursor + 1) % bundles.length;
         clearRender();
         render();
         return;
@@ -285,7 +339,7 @@ function promptSkillsSelection(skills) {
       }
 
       if (key === "\r" || key === "\n") {
-        const selected = skills.filter((_, i) => checked[i]);
+        const selected = bundles.filter((_, i) => checked[i]);
         process.stdin.setRawMode(false);
         process.stdin.pause();
         process.stdin.removeListener("data", onData);
@@ -294,7 +348,7 @@ function promptSkillsSelection(skills) {
           process.stdout.write(`\n  No skills selected. Aborting.\n\n`);
         } else {
           process.stdout.write(
-            `\n  \u2714 Selected: ${selected.join(", ")}\n\n`
+            `\n  \u2714 Selected: ${selected.map((b) => b.label).join(", ")}\n\n`
           );
         }
         resolve(selected);
@@ -343,10 +397,11 @@ async function installCommand(cwd, scope) {
 }
 
 /**
- * Install only a user-selected subset of skills.
+ * Install only a user-selected subset of skill bundles.
  *
- * Shows an interactive multi-select prompt (space-toggle), then copies
- * the selected skills into `<scope>/.claude/skills/`. Does not touch
+ * Shows an interactive multi-select prompt (space-toggle) over the
+ * curated bundle list, then copies all skills belonging to the
+ * selected bundles into `<scope>/.claude/skills/`. Does not touch
  * instructions and does not overwrite `.wizard.json` — but it does
  * record the install scope so subsequent runs are consistent.
  */
@@ -360,10 +415,22 @@ async function installSkillsCommand(cwd, scope) {
     return;
   }
 
-  const selected = await promptSkillsSelection(available);
-  if (selected.length === 0) {
+  const bundles = getSkillBundles().filter((bundle) =>
+    bundle.skills.every((s) => available.includes(s))
+  );
+  if (bundles.length === 0) {
+    console.log("No skill bundles available to install.");
     return;
   }
+
+  const selectedBundles = await promptSkillsSelection(bundles);
+  if (selectedBundles.length === 0) {
+    return;
+  }
+
+  const selected = Array.from(
+    new Set(selectedBundles.flatMap((b) => b.skills))
+  );
 
   const existing = readConfig(cwd);
   const config = {
@@ -381,7 +448,8 @@ async function installSkillsCommand(cwd, scope) {
   console.log(
     `\nSkills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
   );
-  console.log(`\nInstalled skills: ${installed.join(", ")}`);
+  console.log(`\nSelected bundles: ${selectedBundles.map((b) => b.label).join(", ")}`);
+  console.log(`Installed skills: ${installed.join(", ")}`);
 }
 
 module.exports = {
@@ -392,4 +460,5 @@ module.exports = {
   promptScope,
   promptSkillsSelection,
   listAvailableSkills,
+  getSkillBundles,
 };
