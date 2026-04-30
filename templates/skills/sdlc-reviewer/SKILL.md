@@ -1,5 +1,5 @@
 ---
-name: sdlc-wizard-reviewer
+name: sdlc-reviewer
 description: >
   Code review and contrarian skill. Validates implementations against
   specifications, catches blind spots, challenges assumptions, and enforces
@@ -22,10 +22,10 @@ and ensure the final output meets a staff-engineer quality bar.
 
 - The active plan at `plans/<topic>/plan.md` (the full spec)
 - The current batch and its file list
-- The actual code changes made by the `sdlc-wizard-coder` skill
+- The actual code changes made by the `sdlc-coder` skill
 - Any relevant test results or logs
 - Prior lessons obtained by dispatching the
-  `sdlc-wizard-lessons-learned` skill in `read <topic>` mode — known
+  `sdlc-lessons-learned` skill in `read <topic>` mode — known
   patterns and past mistakes to watch for. Do not read `lessons.md`
   directly.
 
@@ -100,20 +100,20 @@ SUGGESTION: How to fix it (be specific)
 ## After Review
 
 1. If no blockers or majors: mark items `✅` in `plans/<topic>/plan.md`, recommend batch approval
-2. If issues found: send back to the `sdlc-wizard-coder` skill with the issue list, keep items as `🔄`
-3. Provide a one-paragraph summary for the `sdlc-wizard-orchestrator` skill to present to the user
+2. If issues found: send back to the `sdlc-coder` skill with the issue list, keep items as `🔄`
+3. Provide a one-paragraph summary for the `sdlc-council` skill to present to the user
 
 ## In the Debate Pattern
 
-When the `sdlc-wizard-orchestrator` skill runs the consensus check:
+When the `sdlc-council` skill runs the consensus check:
 - Challenge: "Here's what could go wrong or what was missed"
 - Present counterarguments even if you think the code is good — force the
-  `sdlc-wizard-coder` and `sdlc-wizard-implementation-plan` skills to defend their choices
+  `sdlc-coder` and `sdlc-implementation-plan` skills to defend their choices
 - If everything genuinely looks solid, say so clearly (don't manufacture issues)
 
 ## Review Philosophy
 
 - Be thorough but not pedantic. A minor style inconsistency is not worth blocking a batch.
 - Ask "would a staff engineer approve this?" — that's the bar.
-- If you catch the same issue across multiple files, it's likely a spec gap. Flag it to the `sdlc-wizard-implementation-plan` skill.
+- If you catch the same issue across multiple files, it's likely a spec gap. Flag it to the `sdlc-implementation-plan` skill.
 - Verify, don't trust. Run the code when possible, don't just read it.

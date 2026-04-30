@@ -42,24 +42,24 @@ user's confirmations; do not paraphrase the skill's rules.
 
 | Choice | Skill the subagent must load | Skill file |
 |--------|-------------------------------|------------|
-| DevContainer | `sdlc-wizard-devcontainer-setup` | `.claude/skills/sdlc-wizard-devcontainer-setup/SKILL.md` |
-| Graphify | `sdlc-wizard-graphify-setup` | `.claude/skills/sdlc-wizard-graphify-setup/SKILL.md` |
-| Implementation Plan | `sdlc-wizard-implementation-plan` | `.claude/skills/sdlc-wizard-implementation-plan/SKILL.md` |
+| DevContainer | `sdlc-devcontainer-setup` | `.claude/skills/sdlc-devcontainer-setup/SKILL.md` |
+| Graphify | `sdlc-graphify-setup` | `.claude/skills/sdlc-graphify-setup/SKILL.md` |
+| Implementation Plan | `sdlc-implementation-plan` | `.claude/skills/sdlc-implementation-plan/SKILL.md` |
 
 For DevContainer and Graphify, the sub-skill detects whether the component
 is already configured and runs either its new-setup flow or its audit flow
 automatically. Do not pre-branch here.
 
 For Implementation Plan, the skill is already installed by
-`wizard install`. Verify `.claude/skills/sdlc-wizard-implementation-plan/SKILL.md`
+`wizard install`. Verify `.claude/skills/sdlc-implementation-plan/SKILL.md`
 exists, then tell the user:
 
-> "The `sdlc-wizard-implementation-plan` skill is ready. Ask your IDE chat to run it
+> "The `sdlc-implementation-plan` skill is ready. Ask your IDE chat to run it
 > whenever you want to produce a `plans/<topic>/plan.md` + `lessons.md`
 > pair before implementation starts. For a richer, multi-skill workflow
-> (orchestrated planning, coding, review, and debate), run the `sdlc-wizard-orchestrator`
+> (orchestrated planning, coding, review, and debate), run the `sdlc-council`
 > skill instead — it produces the same artifact shape, only shaped by the
-> `sdlc-wizard-planner`, `sdlc-wizard-coder`, and `sdlc-wizard-reviewer` skills in combination."
+> `sdlc-planner`, `sdlc-coder`, and `sdlc-reviewer` skills in combination."
 
 ## Step 3 — Update `.wizard.json`
 
@@ -70,8 +70,8 @@ After the sub-skill reports success, append the step key to
 - Graphify → `"graphify"`
 - Implementation Plan → `"implementation-plan"`
 
-Report success to the user and, when relevant, point them at the `sdlc-wizard-orchestrator`
+Report success to the user and, when relevant, point them at the `sdlc-council`
 skill for end-to-end task orchestration:
 
-> "Run the `sdlc-wizard-orchestrator` skill in your IDE chat (Copilot or Claude Code) to
+> "Run the `sdlc-council` skill in your IDE chat (Copilot or Claude Code) to
 > begin a new task with orchestrated planning, coding, and review."

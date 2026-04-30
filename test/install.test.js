@@ -68,17 +68,16 @@ describe("installCommand", () => {
 
     const expected = [
       "sdlc-wizard",
-      "sdlc-wizard-bug-fixer",
-      "sdlc-wizard-coder",
-      "sdlc-wizard-devcontainer-setup",
-      "sdlc-wizard-graphify-setup",
-      "sdlc-wizard-implementation-debate",
-      "sdlc-wizard-implementation-plan",
-      "sdlc-wizard-lessons-learned",
-      "sdlc-wizard-openspec-feature",
-      "sdlc-wizard-planner",
-      "sdlc-wizard-reviewer",
-      "sdlc-wizard-orchestrator",
+      "sdlc-bug-fixer",
+      "sdlc-coder",
+      "sdlc-devcontainer-setup",
+      "sdlc-graphify-setup",
+      "sdlc-implementation-debate",
+      "sdlc-implementation-plan",
+      "sdlc-lessons-learned",
+      "sdlc-planner",
+      "sdlc-reviewer",
+      "sdlc-council",
     ].sort();
 
     expect(actual).toEqual(expected);
@@ -95,14 +94,14 @@ describe("installCommand", () => {
     expect(content).toContain("Step 1");
   });
 
-  test("installs the sdlc-wizard-orchestrator (orchestrator) skill", async () => {
+  test("installs the sdlc-council (orchestrator) skill", async () => {
     await installCommand(testDir);
 
-    const skill = path.join(testDir, ".claude", "skills", "sdlc-wizard-orchestrator", "SKILL.md");
+    const skill = path.join(testDir, ".claude", "skills", "sdlc-council", "SKILL.md");
     expect(fs.existsSync(skill)).toBe(true);
 
     const content = fs.readFileSync(skill, "utf-8");
-    expect(content).toMatch(/name:\s*sdlc-wizard-orchestrator/);
+    expect(content).toMatch(/name:\s*sdlc-council/);
     expect(content).toContain("Orchestrator");
   });
 
@@ -377,7 +376,7 @@ describe("repository contract", () => {
 
   test("wizard skill documents dispatch for both Claude Code and Copilot", () => {
     const wizard = fs.readFileSync(
-      path.join(repoRoot, "templates", "skills", "sdlc-wizard-orchestrator", "SKILL.md"),
+      path.join(repoRoot, "templates", "skills", "sdlc-council", "SKILL.md"),
       "utf-8"
     );
     expect(wizard).toMatch(/Claude Code/);

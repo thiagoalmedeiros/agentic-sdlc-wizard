@@ -1,5 +1,5 @@
 ---
-name: sdlc-wizard-graphify-setup
+name: sdlc-graphify-setup
 description: 'Install and configure graphify so the AI coding assistant can navigate the codebase via a persistent knowledge graph.'
 ---
 

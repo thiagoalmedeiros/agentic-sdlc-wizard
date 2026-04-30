@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 "use strict";
 
-const { installCommand, promptScope } = require("./commands/install");
+const {
+  installCommand,
+  installSkillsCommand,
+  promptScope,
+} = require("./commands/install");
 const { VERSION } = require("./config");
 
 function printHelp() {
@@ -12,6 +16,7 @@ function printHelp() {
       "\n" +
       "Commands:\n" +
       "  install          Install wizard configuration and all skills\n" +
+      "  install skills   Interactively select skills to install\n" +
       "\n" +
       "Options:\n" +
       "  --version        Show version number\n" +
@@ -35,6 +40,12 @@ async function main() {
   if (args[0] === "install") {
     if (args[1] === "-h" || args[1] === "--help") {
       printHelp();
+      return;
+    }
+
+    if (args[1] === "skills") {
+      const scope = await promptScope();
+      await installSkillsCommand(undefined, scope);
       return;
     }
 

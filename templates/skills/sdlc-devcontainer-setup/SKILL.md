@@ -1,5 +1,5 @@
 ---
-name: sdlc-wizard-devcontainer-setup
+name: sdlc-devcontainer-setup
 description: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'
 ---
 

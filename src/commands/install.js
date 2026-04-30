@@ -35,13 +35,16 @@ function copyDirRecursive(srcDir, destDir) {
  *
  * Every template skill is installed by this function — there are no
  * optional skill bundles and no agents. Skills drive the entire workflow:
- * initial setup (`sdlc-wizard`), task orchestration (`sdlc-wizard-orchestrator`), planning
- * (`sdlc-wizard-implementation-plan`, `sdlc-wizard-planner`), coding (`sdlc-wizard-coder`), review
- * (`sdlc-wizard-reviewer`), debugging (`sdlc-wizard-bug-fixer`), pre-plan critique
- * (`sdlc-wizard-implementation-debate`), and per-step setup (`sdlc-wizard-devcontainer-setup`,
- * `sdlc-wizard-graphify-setup`).
+ * initial setup (`sdlc-wizard`), task orchestration (`sdlc-council`), planning
+ * (`sdlc-implementation-plan`, `sdlc-planner`), coding (`sdlc-coder`), review
+ * (`sdlc-reviewer`), debugging (`sdlc-bug-fixer`), pre-plan critique
+ * (`sdlc-implementation-debate`), and per-step setup (`sdlc-devcontainer-setup`,
+ * `sdlc-graphify-setup`).
+ *
+ * When `selected` is provided, only those skill directory names are
+ * installed (used by `wizard install skills`).
  */
-function installSkills(cwd, scope) {
+function installSkills(cwd, scope, selected) {
   scope = scope || "project";
   const paths = resolvePaths(cwd, scope);
   const skillsDir = getSkillsDir();
@@ -50,13 +53,13 @@ function installSkills(cwd, scope) {
   const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
   const skillNames = [];
   for (const entry of entries) {
-    if (entry.isDirectory()) {
-      copyDirRecursive(
-        path.join(skillsDir, entry.name),
-        path.join(targetDir, entry.name)
-      );
-      skillNames.push(entry.name);
-    }
+    if (!entry.isDirectory()) continue;
+    if (selected && !selected.includes(entry.name)) continue;
+    copyDirRecursive(
+      path.join(skillsDir, entry.name),
+      path.join(targetDir, entry.name)
+    );
+    skillNames.push(entry.name);
   }
 
   return skillNames;
@@ -188,6 +191,120 @@ function scopeLabel(scope) {
   return scope === "global" ? "global (~/.claude)" : "project (.claude)";
 }
 
+/**
+ * List skill directory names available in the templates folder.
+ * @returns {string[]}
+ */
+function listAvailableSkills() {
+  return fs
+    .readdirSync(getSkillsDir(), { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort();
+}
+
+/**
+ * Show an interactive multi-select menu for choosing skills to install.
+ * Up/Down arrows to move the cursor, Space to toggle, Enter to confirm.
+ * Falls back to selecting all skills in non-interactive environments.
+ * @param {string[]} skills - All available skill names
+ * @returns {Promise<string[]>} Selected skill names
+ */
+function promptSkillsSelection(skills) {
+  return new Promise((resolve) => {
+    if (!process.stdin.isTTY || !process.stdout.isTTY) {
+      console.log("Non-interactive environment detected, selecting all skills.");
+      resolve(skills.slice());
+      return;
+    }
+
+    const readline = require("readline");
+
+    let cursor = 0;
+    const checked = new Array(skills.length).fill(false);
+
+    function render() {
+      process.stdout.write("\n");
+      process.stdout.write("  Select skills to install\n");
+      process.stdout.write("\n");
+      for (let i = 0; i < skills.length; i++) {
+        const box = checked[i] ? "[\x1b[32mx\x1b[0m]" : "[ ]";
+        if (i === cursor) {
+          process.stdout.write(`  \x1b[36m❯\x1b[0m ${box} ${skills[i]}\n`);
+        } else {
+          process.stdout.write(`    ${box} ${skills[i]}\n`);
+        }
+      }
+      process.stdout.write("\n");
+      process.stdout.write(
+        "  (Use \u2191 \u2193 to move, Space to toggle, Enter to confirm)\n"
+      );
+    }
+
+    function clearRender() {
+      const FIXED_LINES = 5;
+      const lines = skills.length + FIXED_LINES;
+      for (let i = 0; i < lines; i++) {
+        readline.moveCursor(process.stdout, 0, -1);
+        readline.clearLine(process.stdout, 0);
+      }
+    }
+
+    render();
+
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.setEncoding("utf8");
+
+    function onData(key) {
+      if (key === "\u0003") {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        process.exit(1);
+      }
+
+      if (key === "\x1b[A") {
+        cursor = (cursor - 1 + skills.length) % skills.length;
+        clearRender();
+        render();
+        return;
+      }
+
+      if (key === "\x1b[B") {
+        cursor = (cursor + 1) % skills.length;
+        clearRender();
+        render();
+        return;
+      }
+
+      if (key === " ") {
+        checked[cursor] = !checked[cursor];
+        clearRender();
+        render();
+        return;
+      }
+
+      if (key === "\r" || key === "\n") {
+        const selected = skills.filter((_, i) => checked[i]);
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        process.stdin.removeListener("data", onData);
+        clearRender();
+        if (selected.length === 0) {
+          process.stdout.write(`\n  No skills selected. Aborting.\n\n`);
+        } else {
+          process.stdout.write(
+            `\n  \u2714 Selected: ${selected.join(", ")}\n\n`
+          );
+        }
+        resolve(selected);
+      }
+    }
+
+    process.stdin.on("data", onData);
+  });
+}
+
 async function installCommand(cwd, scope) {
   cwd = cwd || process.cwd();
   scope = scope || "project";
@@ -220,14 +337,59 @@ async function installCommand(cwd, scope) {
     `  Ask your IDE chat (Copilot or Claude Code) to run the "sdlc-wizard" skill`
   );
   console.log(
-    `  for initial configuration, or the "sdlc-wizard-orchestrator" skill to begin an`
+    `  for initial configuration, or the "sdlc-council" skill to begin an`
   );
   console.log(`  orchestrated task with planning, coding, and review.`);
+}
+
+/**
+ * Install only a user-selected subset of skills.
+ *
+ * Shows an interactive multi-select prompt (space-toggle), then copies
+ * the selected skills into `<scope>/.claude/skills/`. Does not touch
+ * instructions and does not overwrite `.wizard.json` — but it does
+ * record the install scope so subsequent runs are consistent.
+ */
+async function installSkillsCommand(cwd, scope) {
+  cwd = cwd || process.cwd();
+  scope = scope || "project";
+
+  const available = listAvailableSkills();
+  if (available.length === 0) {
+    console.log("No skills available to install.");
+    return;
+  }
+
+  const selected = await promptSkillsSelection(available);
+  if (selected.length === 0) {
+    return;
+  }
+
+  const existing = readConfig(cwd);
+  const config = {
+    version: VERSION,
+    completedSteps: (existing && existing.completedSteps) || [],
+    scope,
+  };
+  writeConfig(cwd, config);
+
+  const installed = installSkills(cwd, scope, selected);
+
+  console.log(
+    `\nSDLC Wizard v${VERSION} skills installed (${scopeLabel(scope)}).`
+  );
+  console.log(
+    `\nSkills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
+  );
+  console.log(`\nInstalled skills: ${installed.join(", ")}`);
 }
 
 module.exports = {
   installCommand,
   installSkills,
   installInstructions,
+  installSkillsCommand,
   promptScope,
+  promptSkillsSelection,
+  listAvailableSkills,
 };

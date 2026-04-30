@@ -1,10 +1,10 @@
 ---
-name: sdlc-wizard-coder
+name: sdlc-coder
 description: >
   Implementation skill. Writes, modifies, and refactors code based on
-  specifications produced by the `sdlc-wizard-implementation-plan` skill. Executes
+  specifications produced by the `sdlc-implementation-plan` skill. Executes
   batch work precisely, writes tests alongside code, and hands off to the
-  `sdlc-wizard-reviewer` skill. Use when implementing features, writing code, creating
+  `sdlc-reviewer` skill. Use when implementing features, writing code, creating
   tests, executing plan steps, or fixing code based on reviewer feedback.
 ---
 
@@ -13,7 +13,7 @@ description: >
 ## Purpose
 
 Implement features with precision and verify that the code is logically
-sound. The spec comes from the `sdlc-wizard-implementation-plan` skill; produce
+sound. The spec comes from the `sdlc-implementation-plan` skill; produce
 working code that matches it. Do not decide the architecture — that was
 already decided. Execute the plan with craftsmanship and rigor.
 
@@ -22,7 +22,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 - The active plan at `plans/<topic>/plan.md` (especially Section 2: How)
 - The current batch number and its file list
 - Specific constraints and decisions from the plan
-- Any feedback from the `sdlc-wizard-reviewer` skill in previous review cycles
+- Any feedback from the `sdlc-reviewer` skill in previous review cycles
 
 ## How to Work
 
@@ -30,7 +30,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 1. Read `plans/<topic>/plan.md`, focusing on the current batch
 2. Read every file you're about to modify — understand the current state
-3. Dispatch the `sdlc-wizard-lessons-learned` skill in `read <topic>`
+3. Dispatch the `sdlc-lessons-learned` skill in `read <topic>`
    mode to load prior lessons (if any) — avoid repeating past mistakes.
    Do not read or edit `lessons.md` directly.
 4. Identify dependencies — what must exist before your changes work?
@@ -39,7 +39,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 ### While Writing Code
 
 - **Follow the spec exactly.** Architectural decisions in the plan were
-  made for a reason. If you disagree, flag it to the `sdlc-wizard-orchestrator` skill —
+  made for a reason. If you disagree, flag it to the `sdlc-council` skill —
   don't silently deviate.
 - **One file at a time.** Complete a file, then move to the next. Don't leave half-finished files.
 - **Simplicity first.** The simplest code that satisfies the spec wins. No clever tricks, no premature abstractions.
@@ -49,9 +49,9 @@ already decided. Execute the plan with craftsmanship and rigor.
 ### After Writing Code
 
 1. Update the batch status in `plans/<topic>/plan.md` (items → `🔄` while
-   under review, `✅` only after the `sdlc-wizard-reviewer` skill approves).
+   under review, `✅` only after the `sdlc-reviewer` skill approves).
 2. Run any relevant tests or linters
-3. Hand off to the `sdlc-wizard-orchestrator` skill for review dispatch
+3. Hand off to the `sdlc-council` skill for review dispatch
 
 ## Coding Approach
 
@@ -69,7 +69,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 ## When You Get Review Feedback
 
-The `sdlc-wizard-reviewer` skill may send back issues. Handle them like this:
+The `sdlc-reviewer` skill may send back issues. Handle them like this:
 
 1. Read each issue carefully
 2. If you agree: fix it and explain what you changed
@@ -78,15 +78,15 @@ The `sdlc-wizard-reviewer` skill may send back issues. Handle them like this:
 
 ## In the Debate Pattern
 
-When the `sdlc-wizard-orchestrator` skill runs the consensus check before presenting a batch:
+When the `sdlc-council` skill runs the consensus check before presenting a batch:
 - Confirm: "The code works, tests pass, matches the spec"
-- If the `sdlc-wizard-reviewer` skill raises an issue, address it (fix or explain why it's not an issue)
-- If the `sdlc-wizard-implementation-plan` skill notes spec drift, either realign or justify the deviation
+- If the `sdlc-reviewer` skill raises an issue, address it (fix or explain why it's not an issue)
+- If the `sdlc-implementation-plan` skill notes spec drift, either realign or justify the deviation
 
 ## What Not To Do
 
-- Don't make architecture decisions (that's the `sdlc-wizard-implementation-plan` skill's job)
+- Don't make architecture decisions (that's the `sdlc-implementation-plan` skill's job)
 - Don't skip files in the batch (complete the full batch)
 - Don't modify files outside your current batch scope
-- Don't introduce new dependencies without approval from the `sdlc-wizard-orchestrator` skill
-- Don't mark your own work as `done` — only the `sdlc-wizard-reviewer` skill can promote to `done`
+- Don't introduce new dependencies without approval from the `sdlc-council` skill
+- Don't mark your own work as `done` — only the `sdlc-reviewer` skill can promote to `done`
