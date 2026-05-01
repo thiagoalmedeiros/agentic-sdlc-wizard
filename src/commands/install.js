@@ -36,9 +36,9 @@ function copyDirRecursive(srcDir, destDir) {
  * Every template skill is installed by this function — there are no
  * optional skill bundles and no agents. Skills drive the entire workflow:
  * initial setup (`sdlc-wizard`), task orchestration (`sdlc-council`), planning
- * (`sdlc-implementation-plan`, `sdlc-council-daedalus`), coding (`sdlc-council-hephaestus`), review
+ * (`sdlc-impl-strategy`, `sdlc-council-daedalus`), coding (`sdlc-council-hephaestus`), review
  * (`sdlc-council-thomas`), debugging (`sdlc-council-sherlock`), pre-plan critique
- * (`sdlc-implementation-debate`), and per-step setup (`sdlc-devcontainer-setup`,
+ * (`sdlc-strategy-debate`), and per-step setup (`sdlc-devcontainer-setup`,
  * `sdlc-graphify-setup`).
  *
  * When `selected` is provided, only those skill directory names are
@@ -208,7 +208,7 @@ function listAvailableSkills() {
  *
  * Some skills only make sense together. `sdlc-council` is the
  * orchestrator and depends on the planner, reviewer, coder, bug-fixer,
- * implementation-plan, implementation-debate, and lessons-learned
+ * impl-strategy, strategy-debate, and lessons-learned
  * skills — selecting it installs the whole orchestration stack as a
  * single unit. Standalone skills are presented as their own bundles.
  *
@@ -226,15 +226,15 @@ function getSkillBundles() {
       id: "sdlc-council",
       label: "sdlc-council",
       description:
-        "Orchestrator + planner, reviewer, coder, bug-fixer, implementation-plan, implementation-debate, lessons-learned",
+        "Orchestrator + planner, reviewer, coder, bug-fixer, impl-strategy, strategy-debate, lessons-learned",
       skills: [
         "sdlc-council",
         "sdlc-council-daedalus",
         "sdlc-council-thomas",
         "sdlc-council-hephaestus",
         "sdlc-council-sherlock",
-        "sdlc-implementation-plan",
-        "sdlc-implementation-debate",
+        "sdlc-impl-strategy",
+        "sdlc-strategy-debate",
         "sdlc-lessons-learned",
       ],
     },

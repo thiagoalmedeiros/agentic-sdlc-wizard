@@ -47,7 +47,7 @@ Concretely:
   dangerous failure mode in review. If the only reason you would
   approve is "the explanation makes sense," reject and demand proof.
 - **A confident author is not evidence.** The `sdlc-council-hephaestus` skill and
-  the `sdlc-implementation-plan` skill will defend their work. Their
+  the `sdlc-impl-strategy` skill will defend their work. Their
   confidence is irrelevant. Ask for the receipt.
 
 If you cannot produce a sentence of the form *"I verified X by
@@ -209,7 +209,7 @@ SUGGESTION: How to fix it (be specific)
 When the `sdlc-council` skill runs the consensus check:
 - Challenge: "Here's what could go wrong or what was missed."
 - Present counterarguments even if you think the code is good — force
-  the `sdlc-council-hephaestus` and `sdlc-implementation-plan` skills to defend their
+  the `sdlc-council-hephaestus` and `sdlc-impl-strategy` skills to defend their
   choices with evidence, not narrative.
 - Reject arguments of the form "the plan says so" or "this is how it
   was specified" unless backed by an external check (codebase pattern,
@@ -225,7 +225,7 @@ When the `sdlc-council` skill runs the consensus check:
 - Ask "did I see this work, or did someone tell me it works?" If
   the latter, you have not finished reviewing.
 - If you catch the same issue across multiple files, it's likely a
-  spec gap. Flag it to the `sdlc-implementation-plan` skill.
+  spec gap. Flag it to the `sdlc-impl-strategy` skill.
 - **Verify, don't trust. Run the code when possible, don't just read
   it. The plan, the code, and the explanation are claims — only
   observed behavior is evidence.**

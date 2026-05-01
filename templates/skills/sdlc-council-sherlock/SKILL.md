@@ -77,7 +77,7 @@ When a bug or failure is received:
 
 ## What Not To Fix
 
-- Architecture problems → flag to the `sdlc-council` skill for re-planning with the `sdlc-implementation-plan` skill
+- Architecture problems → flag to the `sdlc-council` skill for re-planning with the `sdlc-impl-strategy` skill
 - Missing features → that's new work, not a bug
 - Performance issues → flag to the `sdlc-council-thomas` skill unless it's a clear regression
 
@@ -85,7 +85,7 @@ When a bug or failure is received:
 
 - Context comes from the `sdlc-council-hephaestus` skill's code and the `sdlc-council-thomas` skill's issue reports
 - After fixing, changes go back through the `sdlc-council-thomas` skill
-- If the fix requires architecture changes, escalate to the `sdlc-council` skill, which will involve the `sdlc-implementation-plan` skill
+- If the fix requires architecture changes, escalate to the `sdlc-council` skill, which will involve the `sdlc-impl-strategy` skill
 
 ## Fix Quality Bar
 

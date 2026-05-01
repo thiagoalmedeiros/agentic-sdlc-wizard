@@ -4,7 +4,7 @@ description: >
   Architecture and specification skill. Decomposes features into actionable
   implementation plans with concrete file paths, function signatures, and
   batch groupings. Explores the codebase first, then produces
-  `plans/<topic>/plan.md` + `lessons.md` by running the `sdlc-implementation-plan`
+  `plans/<topic>/plan.md` + `lessons.md` by running the `sdlc-impl-strategy`
   skill. Use when breaking down features, designing architecture, writing
   specs, re-planning after failures, or verifying approach alignment.
 ---
@@ -31,10 +31,10 @@ From the `sdlc-council` skill:
 
 ## What You Produce
 
-Produce the plan artifact by running the `sdlc-implementation-plan` skill.
+Produce the plan artifact by running the `sdlc-impl-strategy` skill.
 The output is always `plans/<topic>/plan.md` plus a `plans/<topic>/lessons.md`
 initialized by the `sdlc-lessons-learned` skill — the same shape
-the user would get by running `sdlc-implementation-plan` directly.
+the user would get by running `sdlc-impl-strategy` directly.
 This skill's job is to make that plan deeply researched and batch-ready.
 
 The sections below describe the content that goes **into** `plan.md`'s

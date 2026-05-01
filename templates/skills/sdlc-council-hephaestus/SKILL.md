@@ -2,7 +2,7 @@
 name: sdlc-council-hephaestus
 description: >
   Implementation skill. Writes, modifies, and refactors code based on
-  specifications produced by the `sdlc-implementation-plan` skill. Executes
+  specifications produced by the `sdlc-impl-strategy` skill. Executes
   batch work precisely, writes tests alongside code, and hands off to the
   `sdlc-council-thomas` skill. Use when implementing features, writing code, creating
   tests, executing plan steps, or fixing code based on reviewer feedback.
@@ -13,7 +13,7 @@ description: >
 ## Purpose
 
 Implement features with precision and verify that the code is logically
-sound. The spec comes from the `sdlc-implementation-plan` skill; produce
+sound. The spec comes from the `sdlc-impl-strategy` skill; produce
 working code that matches it. Do not decide the architecture — that was
 already decided. Execute the plan with craftsmanship and rigor.
 
@@ -81,11 +81,11 @@ The `sdlc-council-thomas` skill may send back issues. Handle them like this:
 When the `sdlc-council` skill runs the consensus check before presenting a batch:
 - Confirm: "The code works, tests pass, matches the spec"
 - If the `sdlc-council-thomas` skill raises an issue, address it (fix or explain why it's not an issue)
-- If the `sdlc-implementation-plan` skill notes spec drift, either realign or justify the deviation
+- If the `sdlc-impl-strategy` skill notes spec drift, either realign or justify the deviation
 
 ## What Not To Do
 
-- Don't make architecture decisions (that's the `sdlc-implementation-plan` skill's job)
+- Don't make architecture decisions (that's the `sdlc-impl-strategy` skill's job)
 - Don't skip files in the batch (complete the full batch)
 - Don't modify files outside your current batch scope
 - Don't introduce new dependencies without approval from the `sdlc-council` skill

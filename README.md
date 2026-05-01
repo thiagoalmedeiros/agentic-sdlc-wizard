@@ -75,8 +75,8 @@ Installed skills:
 |-------|---------|
 | `sdlc-wizard` | Interactive initial configuration (DevContainer, Graphify, Implementation Plan) |
 | `sdlc-council` | Multi-skill task orchestrator (plan → code → review → fix) |
-| `sdlc-implementation-plan` | Produce a `plans/<topic>/plan.md` planning artifact (delegates `lessons.md` init to `sdlc-lessons-learned`) |
-| `sdlc-implementation-debate` | Pre-plan multi-skill critique that feeds `sdlc-implementation-plan` |
+| `sdlc-impl-strategy` | Produce a `plans/<topic>/plan.md` planning artifact (delegates `lessons.md` init to `sdlc-lessons-learned`) |
+| `sdlc-strategy-debate` | Pre-plan multi-skill critique that feeds `sdlc-impl-strategy` |
 | `sdlc-lessons-learned` | Owns the per-plan `plans/<topic>/lessons.md` lifecycle (init / read / append) |
 | `sdlc-council-daedalus` | Architecture and specification skill used during orchestrated tasks |
 | `sdlc-council-hephaestus` | Implementation skill used during orchestrated tasks |
@@ -94,10 +94,10 @@ skill by name.
   **DevContainer**, **Graphify**, or **Implementation Plan**. It tracks
   completed steps in `.wizard.json`.
 - Ask for the `sdlc-council` skill to begin an orchestrated task. It runs the
-  full loop: clarify intent → plan (`sdlc-implementation-plan`) → code
+  full loop: clarify intent → plan (`sdlc-impl-strategy`) → code
   (`sdlc-council-hephaestus`) → review (`sdlc-council-thomas`) → fix (`sdlc-council-sherlock`) → debate gate
-  across `sdlc-council-hephaestus`/`sdlc-council-thomas`/`sdlc-implementation-plan` → user confirmation.
-- Ask for the `sdlc-implementation-plan` skill directly to create a planning
+  across `sdlc-council-hephaestus`/`sdlc-council-thomas`/`sdlc-impl-strategy` → user confirmation.
+- Ask for the `sdlc-impl-strategy` skill directly to create a planning
   artifact for a feature or refactor without going through the
   orchestrator.
 
@@ -107,9 +107,9 @@ When you run the `sdlc-council` skill, it orchestrates a structured workflow:
 
 1. **Init** — derive a kebab-case topic and run the clarification loop
    until the task is unambiguous.
-2. **Plan** — dispatch the `sdlc-implementation-plan` skill, producing
+2. **Plan** — dispatch the `sdlc-impl-strategy` skill, producing
    `plans/<topic>/plan.md` + `lessons.md`. For non-trivial work, the
-   `sdlc-implementation-debate` skill feeds a multi-skill-critiqued brief
+   `sdlc-strategy-debate` skill feeds a multi-skill-critiqued brief
    into the plan first.
 3. **Execute** — dispatch the `sdlc-council-hephaestus` skill for each batch following
    `plan.md`.
@@ -118,7 +118,7 @@ When you run the `sdlc-council` skill, it orchestrates a structured workflow:
 5. **Fix** — dispatch the `sdlc-council-sherlock` skill if tests fail or issues
    surface.
 6. **Debate Gate** — before every user-facing result, dispatch the
-   `sdlc-council-hephaestus`, `sdlc-council-thomas`, and `sdlc-implementation-plan` skills in parallel for
+   `sdlc-council-hephaestus`, `sdlc-council-thomas`, and `sdlc-impl-strategy` skills in parallel for
    a consensus check.
 7. **Confirm** — results are presented to the user for approval.
 
@@ -132,7 +132,7 @@ harness. Skill names are identical across harnesses.
 | Claude Code | One subagent call that loads the skill | Multiple subagent calls in a single message, each loading a skill |
 | GitHub Copilot | One subagent message referencing the skill by name | A single message dispatching multiple subagents, each referencing a skill by name |
 
-The `sdlc-council` and `sdlc-implementation-debate` skills document the full
+The `sdlc-council` and `sdlc-strategy-debate` skills document the full
 dispatch protocol. Cross-harness dispatch is not supported.
 
 ## Project Structure
@@ -147,8 +147,8 @@ templates/
   skills/             - Skills installed to .claude/skills/
     sdlc-wizard/                 - Interactive initial configuration
     sdlc-council/                - Multi-skill task orchestrator
-    sdlc-implementation-plan/    - Standalone planning skill
-    sdlc-implementation-debate/  - Pre-plan multi-skill critique
+    sdlc-impl-strategy/    - Standalone planning skill
+    sdlc-strategy-debate/  - Pre-plan multi-skill critique
     sdlc-council-daedalus/                - Architecture / specification skill
     sdlc-council-hephaestus/                  - Implementation skill
     sdlc-council-thomas/               - Code review skill

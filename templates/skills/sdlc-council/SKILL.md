@@ -2,18 +2,18 @@
 name: sdlc-council
 description: >
   Multi-skill workflow orchestrator. Runs the full task loop: initialize the
-  task, clarify intent, delegate planning via the `sdlc-implementation-plan`
+  task, clarify intent, delegate planning via the `sdlc-impl-strategy`
   skill, execute batches via the `sdlc-council-hephaestus` skill, review via the `sdlc-council-thomas`
   skill, fix via the `sdlc-council-sherlock` skill, and gate every user-facing result
   through a parallel debate that combines the `sdlc-council-daedalus`, `sdlc-council-hephaestus`, and
   `sdlc-council-thomas` skills. The plan artifact produced by the workflow is the same
   `plans/<topic>/plan.md` + `lessons.md` pair produced by running
-  `sdlc-implementation-plan` alone — only richer, because it is shaped by
+  `sdlc-impl-strategy` alone — only richer, because it is shaped by
   multi-skill critique. USE FOR: starting any new task, managing batches,
   running the clarification loop, coordinating subagents that run each
   skill, synthesizing multi-skill output. DO NOT USE FOR: direct code
   execution without planning, or standalone planning without the workflow
-  (use `sdlc-implementation-plan` directly for that).
+  (use `sdlc-impl-strategy` directly for that).
 argument-hint: 'Optional: the task description when starting a new task'
 ---
 
@@ -36,11 +36,11 @@ documentation.
 | Skill | Role |
 |-------|------|
 | `sdlc-council` (this skill) | Coordination, flow control, user communication |
-| `sdlc-implementation-plan` | Research, architecture, specification |
+| `sdlc-impl-strategy` | Research, architecture, specification |
 | `sdlc-council-hephaestus` | Implementation, code, logic verification |
 | `sdlc-council-thomas` | Review, contrarian thinking, quality gates |
 | `sdlc-council-sherlock` | Autonomous debugging (invoked when needed) |
-| `sdlc-implementation-debate` | Pre-plan multi-skill critique (**mandatory for every plan**) |
+| `sdlc-strategy-debate` | Pre-plan multi-skill critique (**mandatory for every plan**) |
 | `sdlc-lessons-learned` | Owns `plans/<topic>/lessons.md` lifecycle (init/read/append) |
 
 ## Core Loop
@@ -48,8 +48,8 @@ documentation.
 ```
 0. INIT      → Clarify intent, derive topic, prepare to plan
 1. DEBATE    → Always dispatch planner + coder + reviewer as parallel
-               subagents via the implementation-debate skill, then hand
-               the brief to the implementation-plan skill
+               subagents via the strategy-debate skill, then hand
+               the brief to the impl-strategy skill
 2. EXECUTE   → Delegate batches to the coder skill
 3. REVIEW    → Delegate to the reviewer skill
 4. FIX       → Delegate to the bug-fixer skill if issues found
@@ -73,12 +73,12 @@ Run this stage once at the start of every new task.
      confirms it.
    - If the user says "just do it" or "you decide" — make the call, record
      the decision in `plan.md` later, and proceed.
-3. **Delegate plan creation** by invoking the `sdlc-implementation-debate`
+3. **Delegate plan creation** by invoking the `sdlc-strategy-debate`
    skill (see Stage 1). The debate skill dispatches the `sdlc-council-daedalus`,
    `sdlc-council-hephaestus`, and `sdlc-council-thomas` skills as parallel subagents, then hands the
-   synthesized brief to the `sdlc-implementation-plan` skill, which owns the
+   synthesized brief to the `sdlc-impl-strategy` skill, which owns the
    plan folder and writes `plan.md` inside `plans/<topic>/`. The
-   `sdlc-implementation-plan` skill then dispatches the
+   `sdlc-impl-strategy` skill then dispatches the
    `sdlc-lessons-learned` skill to initialize `lessons.md` next to
    `plan.md`. The debate is **not optional** — every plan produced by
    this skill goes through it, regardless of task size.
@@ -89,15 +89,15 @@ Run this stage once at the start of every new task.
 exist and the user has approved the plan.
 
 > The plan artifact is identical in shape to what the user would get by
-> running `sdlc-implementation-plan` directly — a `plan.md` + `lessons.md` pair
+> running `sdlc-impl-strategy` directly — a `plan.md` + `lessons.md` pair
 > inside `plans/<topic>/`. This workflow always produces a richer plan
 > because the draft is shaped by the `sdlc-council-daedalus` skill's architecture pass,
 > the `sdlc-council-hephaestus` skill's correctness pass, and the `sdlc-council-thomas` skill's
 > contrarian pass — all dispatched as parallel subagents by the
-> `sdlc-implementation-debate` skill — before `sdlc-implementation-plan` writes the
+> `sdlc-strategy-debate` skill — before `sdlc-impl-strategy` writes the
 > final artifact. Never bypass the debate when invoked through `sdlc-council`,
 > even for small tasks; if the user wants a plan without debate, they
-> should invoke `sdlc-implementation-plan` directly.
+> should invoke `sdlc-impl-strategy` directly.
 
 ---
 
@@ -109,20 +109,20 @@ through `sdlc-council` goes through the full debate flow — there is no
 
 Mandatory sequence:
 
-1. **Dispatch `sdlc-implementation-debate`** as the single entry point for
+1. **Dispatch `sdlc-strategy-debate`** as the single entry point for
    planning. That skill is responsible for fanning out the `sdlc-council-daedalus`,
    `sdlc-council-hephaestus`, and `sdlc-council-thomas` skills as **parallel subagents** (one subagent
    per skill, in a single dispatch message for the active harness). Each
    subagent loads its own skill file and returns its role-specific
    deliverable. The caller must not collapse the three roles into one
    request.
-2. **`sdlc-implementation-debate` synthesizes the brief** (Stages 1–4 of its
-   procedure) and hands it to `sdlc-implementation-plan`.
-3. **`sdlc-implementation-plan` writes the artifact** at
+2. **`sdlc-strategy-debate` synthesizes the brief** (Stages 1–4 of its
+   procedure) and hands it to `sdlc-impl-strategy`.
+3. **`sdlc-impl-strategy` writes the artifact** at
    `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`.
 
-- **Skill to run first:** `sdlc-implementation-debate` (never
-  `sdlc-implementation-plan` on its own from this skill)
+- **Skill to run first:** `sdlc-strategy-debate` (never
+  `sdlc-impl-strategy` on its own from this skill)
 - **Artifact location:** `plans/<topic>/debate.md` +
   `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`
 - **Inputs passed through to the debate:**
@@ -131,7 +131,7 @@ Mandatory sequence:
   - Any constraints or decisions the user made during clarification
   - Prior lessons from `plans/<topic>/lessons.md` if it already exists
 
-The debate feeds its synthesized brief into `sdlc-implementation-plan` so
+The debate feeds its synthesized brief into `sdlc-impl-strategy` so
 the final artifact still lives at `plans/<topic>/plan.md`.
 
 ---
@@ -166,7 +166,7 @@ Update `plan.md` status cells (`⬜` → `🔄` → `✅`) as batches progress.
   sourced facts before presenting them to the user as settled.
 - Require the `sdlc-council-hephaestus` and `sdlc-council-sherlock` skills to show proof, not just
   confidence.
-- If the `sdlc-implementation-plan` or `sdlc-council-thomas` skill challenges an
+- If the `sdlc-impl-strategy` or `sdlc-council-thomas` skill challenges an
   implementation detail, resolve the disagreement with evidence rather
   than intuition.
 
@@ -179,7 +179,7 @@ issue the `sdlc-council-hephaestus` skill dismisses):
 
 - Document both positions by dispatching the `sdlc-lessons-learned`
   skill in `append <topic>` mode under the current date.
-- If it's a spec question → the `sdlc-implementation-plan` skill decides.
+- If it's a spec question → the `sdlc-impl-strategy` skill decides.
 - If it's a code-quality question → the `sdlc-council-thomas` skill decides.
 - If it's an architecture question → escalate to the user.
 - Never silently ignore a disagreement.
@@ -215,7 +215,7 @@ At the end of each task, or whenever the user corrects you mid-task:
 If a skill's output is rejected by the `sdlc-council-thomas` skill or the user:
 
 - Do NOT retry the same approach.
-- Re-enter planning with the `sdlc-implementation-plan` skill (update mode).
+- Re-enter planning with the `sdlc-impl-strategy` skill (update mode).
 - Consider whether the approach needs revision.
 - Record what went wrong by dispatching `sdlc-lessons-learned` in
   `append <topic>` mode.
@@ -236,8 +236,8 @@ use its dispatch primitive. Do **not** mix mechanisms across harnesses.
 | **Claude Code** | One subagent call that loads the skill, await result | Multiple subagent calls, each loading a skill, in a single message |
 | **GitHub Copilot** | One subagent message that references the skill by name | A single message that dispatches multiple subagents, each referencing a skill by name |
 
-Skill names are identical on both harnesses: `sdlc-implementation-plan`,
-`sdlc-council-hephaestus`, `sdlc-council-thomas`, `sdlc-council-sherlock`, `sdlc-implementation-debate`.
+Skill names are identical on both harnesses: `sdlc-impl-strategy`,
+`sdlc-council-hephaestus`, `sdlc-council-thomas`, `sdlc-council-sherlock`, `sdlc-strategy-debate`.
 
 ### What every dispatch must include
 
@@ -252,13 +252,13 @@ Skill names are identical on both harnesses: `sdlc-implementation-plan`,
 
 | Phase | Skill | Method | Notes |
 |-------|-------|--------|-------|
-| **Debate (pre-plan)** | `sdlc-implementation-debate` | Sequential entry, **mandatory** parallel fan-out of `sdlc-council-daedalus` + `sdlc-council-hephaestus` + `sdlc-council-thomas` subagents internally | Runs on **every** plan created through `sdlc-council`. Never skipped. |
-| **Plan** | `sdlc-implementation-plan` | Sequential, invoked by `sdlc-implementation-debate` at handoff | Produces `plan.md`; dispatches `sdlc-lessons-learned` to init `lessons.md`. Not called directly by `sdlc-council`. |
+| **Debate (pre-plan)** | `sdlc-strategy-debate` | Sequential entry, **mandatory** parallel fan-out of `sdlc-council-daedalus` + `sdlc-council-hephaestus` + `sdlc-council-thomas` subagents internally | Runs on **every** plan created through `sdlc-council`. Never skipped. |
+| **Plan** | `sdlc-impl-strategy` | Sequential, invoked by `sdlc-strategy-debate` at handoff | Produces `plan.md`; dispatches `sdlc-lessons-learned` to init `lessons.md`. Not called directly by `sdlc-council`. |
 | **Lessons** | `sdlc-lessons-learned` | Sequential | Owns `lessons.md` init/read/append. Invoked by every other skill that touches lessons. |
 | **Execute** | `sdlc-council-hephaestus` | Sequential | Implements one batch per `plan.md` |
 | **Review** | `sdlc-council-thomas` | Sequential | Validates batch against `plan.md` |
 | **Fix** | `sdlc-council-sherlock` | Sequential | Handles failing tests / issues |
-| **Debate Gate** | `sdlc-council-hephaestus`, `sdlc-council-thomas`, `sdlc-implementation-plan` | Parallel | Run before presenting any batch |
+| **Debate Gate** | `sdlc-council-hephaestus`, `sdlc-council-thomas`, `sdlc-impl-strategy` | Parallel | Run before presenting any batch |
 
 ### Debate Gate Loop
 
@@ -271,14 +271,14 @@ looping until consensus:
      matches `plan.md`. Report any concerns."
    - `sdlc-council-thomas` skill: "Challenge the implementation. What could go wrong?
      What's missing? What assumptions are untested?"
-   - `sdlc-implementation-plan` skill: "Verify the approach still aligns with
+   - `sdlc-impl-strategy` skill: "Verify the approach still aligns with
      `plan.md` Section 2. Flag any drift."
 2. Collect all three responses.
 3. **If all agree** → synthesize and present to user.
 4. **If disagreement exists:**
    - Document the disagreement by dispatching
      `sdlc-lessons-learned` in `append <topic>` mode.
-   - Resolve it (re-plan with `sdlc-implementation-plan`, re-implement with
+   - Resolve it (re-plan with `sdlc-impl-strategy`, re-implement with
      `sdlc-council-hephaestus`, or re-review with `sdlc-council-thomas`).
    - **Re-run the debate gate** — dispatch all three again in parallel.
 5. **Repeat until consensus** or until disagreements are documented and

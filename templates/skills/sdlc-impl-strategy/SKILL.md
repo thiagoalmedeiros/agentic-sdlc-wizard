@@ -1,5 +1,5 @@
 ---
-name: sdlc-implementation-plan
+name: sdlc-impl-strategy
 description: 'Create structured implementation plans with a fixed three-section output: What We Are Doing, How We Are Doing It / What Is Out of Scope, and Tracking List. USE FOR: planning refactors, migrations, feature delivery, technical execution plans, and persistent plan documents that will guide a later implementation phase. DO NOT USE FOR: direct execution, ad-hoc code explanations, one-off tiny edits that do not need planning, or broad product brainstorming without a concrete implementation target.'
 argument-hint: 'Feature, route, or task to analyze and turn into an implementation plan'
 ---
