@@ -62,23 +62,36 @@ Rules:
   planning artifacts under a different root (e.g. `tasks/`, `docs/plans/`),
   use the existing convention and note the choice in the plan.
 - If the folder does not exist:
-  - Create `plan.md` and populate it immediately using the Output
-    Structure below.
-  - Dispatch the `sdlc-lessons-learned` skill in `init <topic>`
-    mode to create `lessons.md`. This skill does **not** write
-    `lessons.md` directly — `sdlc-lessons-learned` owns that
-    file's lifecycle.
+  1. Create `plan.md` and populate it immediately using the Output
+     Structure below.
+  2. **MANDATORY — do not skip:** Dispatch the `sdlc-lessons-learned`
+     skill in `init <topic>` mode to create `lessons.md` in the same
+     folder. This step is **not optional**. The plan folder is incomplete
+     until `lessons.md` exists. This skill does **not** write
+     `lessons.md` directly — `sdlc-lessons-learned` owns that file's
+     lifecycle.
 - If the folder already exists, read `plan.md` first, preserve completed
   status items, and update it in place. Do **not** touch `lessons.md` —
   it belongs to `sdlc-lessons-learned` and the execution phase.
+
+> **HARD RULE:** Every new plan folder must contain both `plan.md` and
+> `lessons.md` before this skill finishes. If `sdlc-lessons-learned` is
+> not available, surface the missing dependency to the user and do not
+> proceed.
 
 Always use the exact section structure defined in the Output Structure
 section below for `plan.md`.
 
 ### Phase 4 - Handoff
 
-Stop after `plan.md` is complete and `sdlc-lessons-learned` has
-initialized `lessons.md`. Do not execute the plan.
+**Before handing off, verify both files exist in the plan folder:**
+- `plan.md` — written by this skill
+- `lessons.md` — initialized by `sdlc-lessons-learned` (dispatched in
+  Phase 3, step 2)
+
+If `lessons.md` is missing, dispatch `sdlc-lessons-learned` in
+`init <topic>` mode now — do not skip it. Stop after both files are
+complete. Do not execute the plan.
 
 If execution is requested later, the plan folder becomes the source of truth
 for that work:
@@ -201,11 +214,13 @@ Follow this flow every time the skill is used:
 
 1. Research the current state.
 2. Design the execution approach and batch structure.
-3. Create or update the plan folder: write `plan.md` using the 3-section
-   structure, then dispatch `sdlc-lessons-learned` in
-   `init <topic>` mode to initialize `lessons.md`.
-4. Stop once the plan folder is complete, unless the user explicitly asks
-   to transition into a separate execution workflow.
+3. Write `plan.md` using the 3-section structure.
+4. **Dispatch `sdlc-lessons-learned` in `init <topic>` mode** to
+   initialize `lessons.md` in the same folder. **This step is
+   mandatory.** Do not stop before it is done.
+5. Stop once both `plan.md` and `lessons.md` exist in the plan folder,
+   unless the user explicitly asks to transition into a separate
+   execution workflow.
 
 If the user asked only for planning, the completed plan folder is the final
 output.
