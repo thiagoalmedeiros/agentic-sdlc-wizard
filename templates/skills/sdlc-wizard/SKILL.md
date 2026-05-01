@@ -59,7 +59,7 @@ exists, then tell the user:
 > pair before implementation starts. For a richer, multi-skill workflow
 > (orchestrated planning, coding, review, and debate), run the `sdlc-council`
 > skill instead — it produces the same artifact shape, only shaped by the
-> `sdlc-council-daedalus`, `sdlc-council-hephaestus`, and `sdlc-council-thomas` skills in combination."
+> `sdlc-council-daedalus`, `sdlc-council-hephaestus`, and `sdlc-council-lucas` skills in combination."
 
 ## Step 3 — Update `.wizard.json`
 

@@ -70,7 +70,7 @@ Group the steps into logical batches:
 1. **Explore** — Read the relevant codebase broadly. Understand what exists before proposing changes. Read adjacent code, not just the target files. When external behavior matters, verify it with web research or official documentation.
 2. **Sketch** — Draft a rough plan. Identify the critical path.
 3. **Detail** — Write the full specification. Be specific about file paths and function signatures.
-4. **Challenge** — Re-read your plan and ask: "Is there a simpler way?" If yes, rewrite. Consider what the `sdlc-council-thomas` skill will challenge — preemptively address the contrarian view in your spec.
+4. **Challenge** — Re-read your plan and ask: "Is there a simpler way?" If yes, rewrite. Consider what the `sdlc-council-lucas` skill will challenge — preemptively address the contrarian view in your spec.
 5. **Batch** — Group into batches. Each batch should be a logical unit a reviewer can assess.
 
 ## Research Approach
@@ -78,7 +78,7 @@ Group the steps into logical batches:
 - **Ground decisions in evidence.** Don't recommend an approach unless you've verified it fits the existing codebase patterns.
 - **Verify external claims.** If another skill cites framework behavior, package semantics, security guidance, or API constraints, confirm it against primary sources on the web before building it into the spec.
 - **Flag uncertainties.** If you're 80% sure but not 100%, say so. The `sdlc-council` skill will escalate to the user.
-- **Consider the contrarian view.** What would the `sdlc-council-thomas` skill challenge? Address it in the spec.
+- **Consider the contrarian view.** What would the `sdlc-council-lucas` skill challenge? Address it in the spec.
 
 ## Quality Checks
 
@@ -99,7 +99,7 @@ When the `sdlc-council` skill runs the consensus check before presenting a batch
 
 ## Re-Planning
 
-If the `sdlc-council` skill sends you back to re-plan (because the `sdlc-council-thomas`
+If the `sdlc-council` skill sends you back to re-plan (because the `sdlc-council-lucas`
 skill or user rejected the approach):
 1. Read the session log to understand what went wrong
 2. Read the specific feedback

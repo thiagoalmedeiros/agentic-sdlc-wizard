@@ -80,7 +80,7 @@ Installed skills:
 | `sdlc-lessons-learned` | Owns the per-plan `plans/<topic>/lessons.md` lifecycle (init / read / append) |
 | `sdlc-council-daedalus` | Architecture and specification skill used during orchestrated tasks |
 | `sdlc-council-hephaestus` | Implementation skill used during orchestrated tasks |
-| `sdlc-council-thomas` | Code review and contrarian skill used during orchestrated tasks |
+| `sdlc-council-lucas` | Code review and contrarian skill used during orchestrated tasks |
 | `sdlc-council-sherlock` | Autonomous debugging skill for failing tests and runtime errors |
 | `sdlc-devcontainer-setup` | Set up or audit a `.devcontainer/` environment |
 | `sdlc-graphify-setup` | Install and configure the graphify knowledge-graph skill |
@@ -95,8 +95,8 @@ skill by name.
   completed steps in `.wizard.json`.
 - Ask for the `sdlc-council` skill to begin an orchestrated task. It runs the
   full loop: clarify intent → plan (`sdlc-impl-strategy`) → code
-  (`sdlc-council-hephaestus`) → review (`sdlc-council-thomas`) → fix (`sdlc-council-sherlock`) → debate gate
-  across `sdlc-council-hephaestus`/`sdlc-council-thomas`/`sdlc-impl-strategy` → user confirmation.
+  (`sdlc-council-hephaestus`) → review (`sdlc-council-lucas`) → fix (`sdlc-council-sherlock`) → debate gate
+  across `sdlc-council-hephaestus`/`sdlc-council-lucas`/`sdlc-impl-strategy` → user confirmation.
 - Ask for the `sdlc-impl-strategy` skill directly to create a planning
   artifact for a feature or refactor without going through the
   orchestrator.
@@ -113,12 +113,12 @@ When you run the `sdlc-council` skill, it orchestrates a structured workflow:
    into the plan first.
 3. **Execute** — dispatch the `sdlc-council-hephaestus` skill for each batch following
    `plan.md`.
-4. **Review** — dispatch the `sdlc-council-thomas` skill to validate against the
+4. **Review** — dispatch the `sdlc-council-lucas` skill to validate against the
    spec and challenge assumptions.
 5. **Fix** — dispatch the `sdlc-council-sherlock` skill if tests fail or issues
    surface.
 6. **Debate Gate** — before every user-facing result, dispatch the
-   `sdlc-council-hephaestus`, `sdlc-council-thomas`, and `sdlc-impl-strategy` skills in parallel for
+   `sdlc-council-hephaestus`, `sdlc-council-lucas`, and `sdlc-impl-strategy` skills in parallel for
    a consensus check.
 7. **Confirm** — results are presented to the user for approval.
 
@@ -151,7 +151,7 @@ templates/
     sdlc-strategy-debate/  - Pre-plan multi-skill critique
     sdlc-council-daedalus/                - Architecture / specification skill
     sdlc-council-hephaestus/                  - Implementation skill
-    sdlc-council-thomas/               - Code review skill
+    sdlc-council-lucas/               - Code review skill
     sdlc-council-sherlock/              - Autonomous debugging skill
     sdlc-lessons-learned/        - Per-plan lessons.md lifecycle
     sdlc-devcontainer-setup/     - DevContainer setup skill

@@ -37,7 +37,7 @@ function copyDirRecursive(srcDir, destDir) {
  * optional skill bundles and no agents. Skills drive the entire workflow:
  * initial setup (`sdlc-wizard`), task orchestration (`sdlc-council`), planning
  * (`sdlc-impl-strategy`, `sdlc-council-daedalus`), coding (`sdlc-council-hephaestus`), review
- * (`sdlc-council-thomas`), debugging (`sdlc-council-sherlock`), pre-plan critique
+ * (`sdlc-council-lucas`), debugging (`sdlc-council-sherlock`), pre-plan critique
  * (`sdlc-strategy-debate`), and per-step setup (`sdlc-devcontainer-setup`,
  * `sdlc-graphify-setup`).
  *
@@ -230,7 +230,7 @@ function getSkillBundles() {
       skills: [
         "sdlc-council",
         "sdlc-council-daedalus",
-        "sdlc-council-thomas",
+        "sdlc-council-lucas",
         "sdlc-council-hephaestus",
         "sdlc-council-sherlock",
         "sdlc-impl-strategy",

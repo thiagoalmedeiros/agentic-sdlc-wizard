@@ -76,7 +76,7 @@ describe("installCommand", () => {
       "sdlc-impl-strategy",
       "sdlc-lessons-learned",
       "sdlc-council-daedalus",
-      "sdlc-council-thomas",
+      "sdlc-council-lucas",
       "sdlc-council",
     ].sort();
 
