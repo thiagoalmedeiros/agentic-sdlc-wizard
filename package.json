@@ -1,0 +1,26 @@
+{
+  "name": "agentic-sdlc-wizard",
+  "version": "1.0.0",
+  "description": "SDLC Wizard - Configure your development environment with AI coding agents",
+  "main": "src/cli.js",
+  "bin": {
+    "wizard": "src/cli.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "sdlc",
+    "wizard",
+    "copilot",
+    "claude",
+    "codex",
+    "devcontainer",
+    "vscode"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {}
+}
