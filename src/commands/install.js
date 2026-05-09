@@ -411,7 +411,6 @@ async function installCommand(cwd, scope) {
   writeConfig(cwd, config);
 
   const skills = installSkills(cwd, scope);
-  const instructions = installInstructions(cwd, scope);
   const envInstalled = installEnvSample(cwd, scope);
 
   console.log(`\nSDLC Wizard v${VERSION} installed successfully (${scopeLabel(scope)}).`);
@@ -419,12 +418,6 @@ async function installCommand(cwd, scope) {
     `\nSkills installed to ${scope === "global" ? "~/.claude/skills/" : ".claude/skills/"}`
   );
   console.log(`\nInstalled skills: ${skills.join(", ")}`);
-  if (instructions.length > 0) {
-    console.log(
-      `\nInstructions installed to ${scope === "global" ? "~/.claude/instructions/" : ".claude/instructions/"}`
-    );
-    console.log(`  ${instructions.join(", ")}`);
-  }
   if (envInstalled) {
     console.log(
       `\n.env.sample installed to ${scope === "global" ? "~/.claude/.env.sample" : ".claude/.env.sample"}`

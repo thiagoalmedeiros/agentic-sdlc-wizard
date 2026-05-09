@@ -56,7 +56,6 @@ wizard install
 The install command will:
 - Create `.wizard.json` with version, step tracking, and install scope.
 - Install every skill to `.claude/skills/`.
-- Install global coding standards to `.claude/instructions/`.
 
 To install only a chosen subset of skills, run:
 
@@ -94,9 +93,9 @@ skill by name.
   **DevContainer**, **Graphify**, or **Implementation Plan**. It tracks
   completed steps in `.wizard.json`.
 - Ask for the `sdlc-council` skill to begin an orchestrated task. It runs the
-  full loop: clarify intent → plan (`sdlc-impl-strategy`) → code
-  (`sdlc-council-hephaestus`) → review (`sdlc-council-lucas`) → fix (`sdlc-council-sherlock`) → debate gate
-  across `sdlc-council-hephaestus`/`sdlc-council-lucas`/`sdlc-impl-strategy` → user confirmation.
+  full loop: clarify intent → debate (`sdlc-strategy-debate`) → plan (`sdlc-impl-strategy`) → code
+  (`sdlc-council-hephaestus`) → review (`sdlc-council-lucas`) → validate (`sdlc-thomas`) → fix (`sdlc-council-sherlock`) → debate gate
+  across `sdlc-council-daedalus`/`sdlc-council-hephaestus`/`sdlc-council-lucas` → user confirmation.
 - Ask for the `sdlc-impl-strategy` skill directly to create a planning
   artifact for a feature or refactor without going through the
   orchestrator.
@@ -107,20 +106,21 @@ When you run the `sdlc-council` skill, it orchestrates a structured workflow:
 
 1. **Init** — derive a kebab-case topic and run the clarification loop
    until the task is unambiguous.
-2. **Plan** — dispatch the `sdlc-impl-strategy` skill, producing
-   `plans/<topic>/plan.md` + `lessons.md`. For non-trivial work, the
-   `sdlc-strategy-debate` skill feeds a multi-skill-critiqued brief
-   into the plan first.
-3. **Execute** — dispatch the `sdlc-council-hephaestus` skill for each batch following
-   `plan.md`.
+2. **Debate** — always dispatch the `sdlc-strategy-debate` skill (planner +
+   coder + reviewer in parallel) to produce a critiqued brief, then hand
+   it to the `sdlc-impl-strategy` skill to produce `plans/<topic>/plan.md` + `lessons.md`.
+3. **Execute** — dispatch the `sdlc-council-hephaestus` skill for each batch
+   following `plan.md`.
 4. **Review** — dispatch the `sdlc-council-lucas` skill to validate against the
    spec and challenge assumptions.
-5. **Fix** — dispatch the `sdlc-council-sherlock` skill if tests fail or issues
+5. **Validate** — dispatch the `sdlc-thomas` skill; only witnessed passing
+   output marks a batch complete.
+6. **Fix** — dispatch the `sdlc-council-sherlock` skill if tests fail or issues
    surface.
-6. **Debate Gate** — before every user-facing result, dispatch the
-   `sdlc-council-hephaestus`, `sdlc-council-lucas`, and `sdlc-impl-strategy` skills in parallel for
+7. **Debate Gate** — before every user-facing result, dispatch
+   `sdlc-council-daedalus`, `sdlc-council-hephaestus`, and `sdlc-council-lucas` in parallel for
    a consensus check.
-7. **Confirm** — results are presented to the user for approval.
+8. **Confirm** — results are presented to the user for approval.
 
 ### Skill dispatch (platform-aware)
 
@@ -142,7 +142,7 @@ src/                  - Node.js CLI source
   cli.js              - CLI entry point and argument routing
   config.js           - Configuration management and path resolution
   commands/
-    install.js        - Install command (config + skills + instructions)
+    install.js        - Install command (config + skills)
 templates/
   skills/             - Skills installed to .claude/skills/
     sdlc-wizard/                 - Interactive initial configuration
@@ -156,8 +156,6 @@ templates/
     sdlc-lessons-learned/        - Per-plan lessons.md lifecycle
     sdlc-devcontainer-setup/     - DevContainer setup skill
     sdlc-graphify-setup/         - Graphify setup skill
-  instructions/       - Installed to .claude/instructions/
-    global-coding.instructions.md
 ```
 
 ## Development
