@@ -38,7 +38,7 @@ When a bug or failure is received:
 - Trace from the error to the root cause
 - Read the relevant source files
 - Check recent changes — what was modified in this batch?
-- Dispatch the `sdlc-lessons-learned` skill in `read <topic>`
+- Invoke `skill:sdlc-lessons-learned` in `read <topic>`
   mode — has this pattern been seen before? Do not read `lessons.md`
   directly.
 - If the failure involves third-party libraries, CI tooling, platform behavior, or framework semantics, verify likely causes with web research and primary documentation.
@@ -61,8 +61,8 @@ When a bug or failure is received:
 ### Step 5: Document
 
 - Update the session log: what broke, why, and how it was fixed
-- If this is a pattern that could recur, dispatch the
-  `sdlc-lessons-learned` skill in `append <topic>` mode to record
+- If this is a pattern that could recur, invoke
+  `skill:sdlc-lessons-learned` in `append <topic>` mode to record
   it. Do not edit `lessons.md` directly.
 - Update file tracking status
 
@@ -77,15 +77,15 @@ When a bug or failure is received:
 
 ## What Not To Fix
 
-- Architecture problems → flag to the `sdlc-council` skill for re-planning with the `sdlc-impl-strategy` skill
+- Architecture problems → flag to `skill:sdlc-council` for re-planning via `skill:sdlc-impl-strategy`
 - Missing features → that's new work, not a bug
-- Performance issues → flag to the `sdlc-council-lucas` skill unless it's a clear regression
+- Performance issues → flag to `skill:sdlc-council-lucas` unless it's a clear regression
 
 ## Workflow Integration
 
-- Context comes from the `sdlc-council-hephaestus` skill's code and the `sdlc-council-lucas` skill's issue reports
-- After fixing, changes go back through the `sdlc-council-lucas` skill
-- If the fix requires architecture changes, escalate to the `sdlc-council` skill, which will involve the `sdlc-impl-strategy` skill
+- Context comes from `skill:sdlc-council-hephaestus`'s code and `skill:sdlc-council-lucas`'s issue reports
+- After fixing, changes go back through `skill:sdlc-council-lucas`
+- If the fix requires architecture changes, escalate to `skill:sdlc-council`, which will involve `skill:sdlc-impl-strategy`
 
 ## Fix Quality Bar
 
@@ -94,12 +94,12 @@ Every fix must satisfy:
 - [ ] All tests pass after the fix
 - [ ] No new warnings introduced
 - [ ] Fix is minimal — only touches what's necessary
-- [ ] Would survive a code review by the `sdlc-council-lucas` skill
+- [ ] Would survive a code review by `skill:sdlc-council-lucas`
 
 ## When Stuck
 
 If the root cause cannot be found after thorough investigation:
 1. Document what was tried and what was ruled out
-2. Flag to the `sdlc-council` skill with a clear description of the blocker
+2. Flag to `skill:sdlc-council` with a clear description of the blocker
 3. Suggest next diagnostic steps
 4. Do NOT silently give up or apply a workaround

@@ -36,35 +36,34 @@ Otherwise ask: "Which step would you like to configure? (enter the number)"
 
 ## Step 2 — Dispatch the sub-skill
 
-Based on the user's choice, **dispatch a subagent** that loads the
+Based on the user’s choice, **dispatch a subagent** that invokes the
 corresponding skill and performs the setup end-to-end. Pass through the
-user's confirmations; do not paraphrase the skill's rules.
+user’s confirmations; do not paraphrase the skill’s rules.
 
-| Choice | Skill the subagent must load | Skill file |
-|--------|-------------------------------|------------|
-| DevContainer | `sdlc-devcontainer-setup` | `.claude/skills/sdlc-devcontainer-setup/SKILL.md` |
-| Graphify | `sdlc-graphify-setup` | `.claude/skills/sdlc-graphify-setup/SKILL.md` |
-| Implementation Plan | `sdlc-impl-strategy` | `.claude/skills/sdlc-impl-strategy/SKILL.md` |
+| Choice | Skill |
+|--------|-------|
+| DevContainer | `skill:sdlc-devcontainer-setup` |
+| Graphify | `skill:sdlc-graphify-setup` |
+| Implementation Plan | `skill:sdlc-impl-strategy` |
 
 For DevContainer and Graphify, the sub-skill detects whether the component
 is already configured and runs either its new-setup flow or its audit flow
 automatically. Do not pre-branch here.
 
 For Implementation Plan, the skill is already installed by
-`wizard install`. Verify `.claude/skills/sdlc-impl-strategy/SKILL.md`
-exists, then tell the user:
+`wizard install`. Verify that `skill:sdlc-impl-strategy` is available, then tell the user:
 
-> "The `sdlc-impl-strategy` skill is ready. Ask your IDE chat to run it
+> "The `skill:sdlc-impl-strategy` skill is ready. Ask your IDE chat to run it
 > whenever you want to produce a `plans/<topic>/plan.md` + `lessons.md`
-> pair before implementation starts. The `sdlc-thomas` skill is also
+> pair before implementation starts. `skill:sdlc-thomas` is also
 > installed — it runs every verification check itself and issues an
 > **APPROVED** or **NOT APPROVED** verdict after each batch; it is called
-> automatically when `sdlc-impl-strategy` or `sdlc-council` executes a plan.
+> automatically when `skill:sdlc-impl-strategy` or `skill:sdlc-council` executes a plan.
 > For a richer, multi-skill workflow (orchestrated planning, coding, review,
-> validation, and debate), run the `sdlc-council` skill instead — it produces
-> the same artifact shape, only shaped by the `sdlc-council-daedalus`,
-> `sdlc-council-hephaestus`, and `sdlc-council-lucas` skills in combination,
-> with `sdlc-thomas` as the mandatory verification gate after every batch."
+> validation, and debate), run `skill:sdlc-council` instead — it produces
+> the same artifact shape, only shaped by `skill:sdlc-council-daedalus`,
+> `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-lucas` in combination,
+> with `skill:sdlc-thomas` as the mandatory verification gate after every batch."
 
 ## Step 3 — Update `.wizard.json`
 
@@ -75,8 +74,8 @@ After the sub-skill reports success, append the step key to
 - Graphify → `"graphify"`
 - Implementation Plan → `"impl-strategy"`
 
-Report success to the user and, when relevant, point them at the `sdlc-council`
-skill for end-to-end task orchestration:
+Report success to the user and, when relevant, point them at `skill:sdlc-council`
+for end-to-end task orchestration:
 
-> "Run the `sdlc-council` skill in your IDE chat (Copilot or Claude Code) to
+> "Run `skill:sdlc-council` in your IDE chat (Copilot or Claude Code) to
 > begin a new task with orchestrated planning, coding, and review."

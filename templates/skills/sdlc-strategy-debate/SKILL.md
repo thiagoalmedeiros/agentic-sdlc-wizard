@@ -1,9 +1,9 @@
 ---
 name: sdlc-strategy-debate
 description: >
-  Pre-implementation multi-skill debate. Dispatches `sdlc-council-daedalus`, `sdlc-council-hephaestus`,
-  and `sdlc-council-lucas` in parallel to critique a proposal, then hands the
-  synthesized brief to `sdlc-impl-strategy`. USE FOR: planning non-trivial
+  Pre-implementation multi-skill debate. Dispatches `skill:sdlc-council-daedalus`, `skill:sdlc-council-hephaestus`,
+  and `skill:sdlc-council-lucas` in parallel to critique a proposal, then hands the
+  synthesized brief to `skill:sdlc-impl-strategy`. USE FOR: planning non-trivial
   features, refactors, migrations, or architecture decisions. DO NOT USE
   FOR: bug fixes, one-line edits, or work already covered by an approved
   plan.
@@ -13,7 +13,7 @@ argument-hint: 'The user prompt describing the feature or implementation to deba
 # Implementation Debate
 
 Run a structured multi-skill debate on the user's proposed implementation,
-then produce the plan through the `sdlc-impl-strategy` skill. The debate
+then produce the plan through `skill:sdlc-impl-strategy`. The debate
 exists to surface disagreements, blind spots, and alternatives **before** a
 plan is committed — not to replace planning.
 
@@ -22,15 +22,15 @@ plan is committed — not to replace planning.
 This skill has a fixed execution contract. Every run follows it without
 shortcuts:
 
-1. **Always run through `sdlc-council`.** When `sdlc-council` asks for a plan, this
-   skill is invoked first. There is no "small task" bypass from `sdlc-council`.
+1. **Always run through `skill:sdlc-council`.** When `skill:sdlc-council` asks for a plan, this
+   skill is invoked first. There is no "small task" bypass from `skill:sdlc-council`.
 2. **Stage 1 — Decompose (caller, serial).** The caller restates the
    proposal in one sentence, derives `<topic-kebab-case>`, creates the
    plan folder, and writes 3–5 debate angles into `debate.md`.
-3. **Stage 2 — Parallel fan-out as subagents.** Dispatch the `sdlc-council-daedalus`,
-   `sdlc-council-hephaestus`, and `sdlc-council-lucas` skills **in parallel, one subagent per skill**,
+3. **Stage 2 — Parallel fan-out as subagents.** Dispatch `skill:sdlc-council-daedalus`,
+   `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-lucas` **in parallel, one subagent per skill**,
    using the active harness's fan-out mechanism. Never collapse the three
-   roles into a single call. Each subagent loads its own skill file, sees
+   roles into a single call. Each subagent invokes its own skill, sees
    only its own role-specific deliverable, and must not see the others'
    output during this stage.
 4. **Stage 3 — Parallel cross-critique as subagents.** Dispatch the same
@@ -38,16 +38,16 @@ shortcuts:
    output verbatim. Fan-out is mandatory for this stage too — no serial
    shortcut.
 5. **Stage 4 — Synthesis (caller, serial).** The caller merges Stage 2 +
-   Stage 3 into the implementation brief and resolves disputes using the
-   `sdlc-council` skill's conflict-resolution rules.
-6. **Stage 5 — Handoff to `sdlc-impl-strategy`.** Invoke
-   `sdlc-impl-strategy` sequentially with the Stage 4 brief and the
-   existing plan folder. The plan skill writes `plan.md` and dispatches
-   `sdlc-lessons-learned` to initialize `lessons.md`, both landing
+   Stage 3 into the implementation brief and resolves disputes using
+   `skill:sdlc-council`'s conflict-resolution rules.
+6. **Stage 5 — Handoff to `skill:sdlc-impl-strategy`.** Invoke
+   `skill:sdlc-impl-strategy` sequentially with the Stage 4 brief and the
+   existing plan folder. The plan skill writes `plan.md` and invokes
+   `skill:sdlc-lessons-learned` to initialize `lessons.md`, both landing
    next to `debate.md`.
 7. **Stage 6 — Present to user.** Return the chosen approach, rejected
    alternatives, and any open questions along with the plan artifact.
-   Do not proceed to execution — the `sdlc-council` skill owns the batch loop.
+   Do not proceed to execution — `skill:sdlc-council` owns the batch loop.
 
 Hard rules that apply to the whole run:
 
@@ -56,14 +56,14 @@ Hard rules that apply to the whole run:
   instead of simulating the debate in a single context.
 - **One harness only.** Use Claude Code's or GitHub Copilot's fan-out
   mechanism — never mix them in the same run.
-- **Do not write `plan.md`.** Only `sdlc-impl-strategy` writes the plan
+- **Do not write `plan.md`.** Only `skill:sdlc-impl-strategy` writes the plan
   artifact. This skill owns `debate.md` only.
 - **Stop at handoff.** This skill ends after Stage 6. It never implements
   code, runs tests, or opens review.
 
 ## When to Use
 
-- **Always**, when invoked through the `sdlc-council` skill — every plan goes
+- **Always**, when invoked through `skill:sdlc-council` — every plan goes
   through this debate, regardless of task size.
 - The user asks to plan or design a non-trivial implementation.
 - The work spans multiple files, modules, or architectural concerns.
@@ -73,8 +73,8 @@ Hard rules that apply to the whole run:
 ## When NOT to Use
 
 - The task is a mechanical fix with an obvious path **and** the caller is
-  not the `sdlc-council` skill — go straight to `sdlc-impl-strategy`.
-- The user asks for execution, not planning — the `sdlc-council` skill handles
+  not `skill:sdlc-council` — go straight to `skill:sdlc-impl-strategy`.
+- The user asks for execution, not planning — `skill:sdlc-council` handles
   the batch loop directly.
 - An approved plan already exists — update it, don't re-debate it.
 
@@ -85,8 +85,8 @@ at once. Use the dispatch primitive of whichever harness is active:
 
 | Harness | Parallel dispatch | Skill reference |
 |---------|-------------------|-----------------|
-| Claude Code | Multiple subagent calls in a single message, each loading a skill | `sdlc-council-daedalus`, `sdlc-council-hephaestus`, `sdlc-council-lucas` |
-| GitHub Copilot | A single message that dispatches multiple subagents, each referencing a skill by name | `sdlc-council-daedalus`, `sdlc-council-hephaestus`, `sdlc-council-lucas` |
+| Claude Code | Multiple subagent calls in a single message, each invoking a skill | `skill:sdlc-council-daedalus`, `skill:sdlc-council-hephaestus`, `skill:sdlc-council-lucas` |
+| GitHub Copilot | A single message that dispatches multiple subagents, each referencing a skill by name | `skill:sdlc-council-daedalus`, `skill:sdlc-council-hephaestus`, `skill:sdlc-council-lucas` |
 
 Wherever this skill says **"dispatch in parallel"**, use the mechanism of
 the active harness. Do not attempt cross-harness fan-out.
@@ -94,21 +94,20 @@ the active harness. Do not attempt cross-harness fan-out.
 ## Inputs
 
 - `$ARGUMENTS` — the user's implementation prompt
-- Prior lessons obtained by dispatching the
-  `sdlc-lessons-learned` skill in `read <topic>` mode (when the
+- Prior lessons obtained by invoking `skill:sdlc-lessons-learned` in `read <topic>` mode (when the
   plan folder already exists)
-- Current codebase (for the `sdlc-council-daedalus` skill's exploration step)
+- Current codebase (for `skill:sdlc-council-daedalus`'s exploration step)
 
 ## Skills Involved
 
 | Skill | Debate role |
 |-------|-------------|
-| **`sdlc-council` (caller)** | Decomposes, dispatches, synthesizes, resolves conflicts, invokes `sdlc-impl-strategy` |
-| **`sdlc-council-daedalus`** | Architecture fit, external-fact grounding, existing patterns |
-| **`sdlc-council-hephaestus`** | Correctness, edge cases, data/state invariants, logic walkthrough |
-| **`sdlc-council-lucas`** | Contrarian, alternative designs, failure modes, blind spots |
+| **`skill:sdlc-council` (caller)** | Decomposes, dispatches, synthesizes, resolves conflicts, invokes `skill:sdlc-impl-strategy` |
+| **`skill:sdlc-council-daedalus`** | Architecture fit, external-fact grounding, existing patterns |
+| **`skill:sdlc-council-hephaestus`** | Correctness, edge cases, data/state invariants, logic walkthrough |
+| **`skill:sdlc-council-lucas`** | Contrarian, alternative designs, failure modes, blind spots |
 
-The `sdlc-council-sherlock` skill is **not** part of the debate — it is invoked later
+The `skill:sdlc-council-sherlock` skill is **not** part of the debate — it is invoked later
 if the executed plan produces failures.
 
 ---
@@ -118,7 +117,7 @@ if the executed plan produces failures.
 ### Stage 1 — Decompose (caller, serial)
 
 1. Read `$ARGUMENTS` and restate the implementation in one sentence.
-2. If intent is ambiguous, run the `sdlc-council` skill's clarification loop first.
+2. If intent is ambiguous, run `skill:sdlc-council`'s clarification loop first.
 3. Break the proposal into 3–5 **debate angles**. Good angles include:
    - Architecture fit with the existing codebase
    - Data/state model and invariants
@@ -128,14 +127,14 @@ if the executed plan produces failures.
      security guidance)
 4. Derive `<topic-kebab-case>` from the prompt and create the plan folder:
    `plans/<topic-kebab-case>/`. Inside it, create `debate.md` with the
-   angles listed. The folder is shared with the `sdlc-impl-strategy` skill
+   angles listed. The folder is shared with `skill:sdlc-impl-strategy`
    (Stage 5) — `plan.md` will be written there, and
-   `sdlc-lessons-learned` will initialize `lessons.md` next to
+   `skill:sdlc-lessons-learned` will initialize `lessons.md` next to
    `debate.md`.
 
 ### Stage 2 — Parallel Thinking (fan-out, no cross-talk)
 
-Dispatch the `sdlc-council-daedalus`, `sdlc-council-hephaestus`, and `sdlc-council-lucas` skills **in parallel as
+Dispatch `skill:sdlc-council-daedalus`, `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-lucas` **in parallel as
 subagents** using the active harness's mechanism. This step is **not
 optional** and must not be collapsed into a single call that tries to
 play all three roles — the whole point of the debate is three
@@ -149,21 +148,21 @@ Dispatch contract — every call includes:
 2. Role-specific deliverable (see below)
 3. Scope boundary — "Do not propose a full plan. Critique and reason only."
 
-**`sdlc-council-daedalus` deliverable:**
+**`skill:sdlc-council-daedalus` deliverable:**
 
 > "Architecture & research pass on <proposal>. For each debate angle: does
 > the existing codebase already have a pattern? What external facts
 > (framework, API, security) must be verified? Cite sources. Flag drift
 > risks. Return: findings, verified facts, open questions."
 
-**`sdlc-council-hephaestus` deliverable:**
+**`skill:sdlc-council-hephaestus` deliverable:**
 
 > "Correctness pass on <proposal>. For each debate angle: walk the data
 > flow and state transitions. List invariants. Enumerate edge cases and
 > off-by-one risks. Return: invariants, edge cases, concrete failure
 > scenarios."
 
-**`sdlc-council-lucas` deliverable:**
+**`skill:sdlc-council-lucas` deliverable:**
 
 > "Contrarian pass on <proposal>. Propose at least 2 alternative designs.
 > Identify blind spots the other skills will miss. List the top failure
@@ -199,11 +198,11 @@ Stage 3:
 1. **Consensus items** — agreed by all three skills, or unchallenged in
    Stage 3.
 2. **Disputed items** — where Stage 3 responses did not converge.
-3. **Resolution** — for each disputed item, apply the `sdlc-council` skill's
+3. **Resolution** — for each disputed item, apply `skill:sdlc-council`'s
    conflict-resolution rules:
-   - Spec / architecture question → the `sdlc-council-daedalus` skill's position wins,
-     unless the `sdlc-council-lucas` skill provides evidence
-   - Code quality / correctness → the `sdlc-council-lucas` skill's position wins if
+   - Spec / architecture question → `skill:sdlc-council-daedalus`'s position wins,
+     unless `skill:sdlc-council-lucas` provides evidence
+   - Code quality / correctness → `skill:sdlc-council-lucas`'s position wins if
      the risk is concrete
    - Unverified external fact → require web-backed verification before
      deciding
@@ -217,11 +216,11 @@ Stage 3:
 
 Append the brief to `plans/<topic-kebab-case>/debate.md` under **Stage 4 — Brief**.
 
-### Stage 5 — Handoff to `sdlc-impl-strategy`
+### Stage 5 — Handoff to `skill:sdlc-impl-strategy`
 
-Invoke the `sdlc-impl-strategy` skill with the Stage 4 brief as input, and
+Invoke `skill:sdlc-impl-strategy` with the Stage 4 brief as input, and
 tell it to use the **existing** plan folder created in Stage 1 (so `plan.md`
-is written there and `sdlc-lessons-learned` initializes
+is written there and `skill:sdlc-lessons-learned` initializes
 `lessons.md` next to `debate.md`). Pass:
 
 - The plan folder path — `plans/<topic-kebab-case>/`
@@ -232,15 +231,15 @@ is written there and `sdlc-lessons-learned` initializes
 - Any **Open questions** still outstanding
 - A **mandatory enforcement note**: "Follow your own SKILL.md output structure rules exactly when writing `plan.md` — specifically: (1) Section 1 must include the standing lessons-capture item ('Lessons are automatically logged to `lessons.md` after every user correction and every agent mistake discovered during execution — without being asked.'), and (2) every batch in Section 3 must include a `**DoD Gate:**` line that spawns a validation subagent to run every DoD criterion before the batch is marked complete. These rules are not overridden by this brief — they are additive."
 
-The `sdlc-impl-strategy` skill owns `plan.md` and dispatches
-`sdlc-lessons-learned` to initialize `lessons.md`. Do not duplicate
+The `skill:sdlc-impl-strategy` skill owns `plan.md` and invokes
+`skill:sdlc-lessons-learned` to initialize `lessons.md`. Do not duplicate
 their output in `debate.md`; the three documents are linked but distinct
 and all live in the same folder:
 
 ```
 plans/<topic-kebab-case>/
 ├── debate.md      # why this approach was chosen (this skill)
-├── plan.md        # what will be executed (impl-strategy skill)
+├── plan.md        # what will be executed (skill:sdlc-impl-strategy)
 └── lessons.md     # execution lessons, appended during implementation
 ```
 
@@ -250,10 +249,10 @@ Present two things to the user:
 
 1. A short summary of the chosen approach, rejected alternatives, and any
    open questions from Stage 4.
-2. The plan artifact produced by `sdlc-impl-strategy`.
+2. The plan artifact produced by `skill:sdlc-impl-strategy`.
 
 Do not proceed to execution. This skill ends at the handoff — execution
-is driven by the `sdlc-council` skill's batch loop.
+is driven by `skill:sdlc-council`'s batch loop.
 
 ---
 
@@ -269,22 +268,22 @@ is driven by the `sdlc-council` skill's batch loop.
   it with sharper angles.
 - Every disputed item is either resolved with a rule, escalated to the user,
   or documented as an accepted risk. No silent omissions.
-- The `sdlc-impl-strategy` invocation receives the brief verbatim — do not
+- The `skill:sdlc-impl-strategy` invocation receives the brief verbatim — do not
   summarize it away.
 
 ## Failure Modes to Avoid
 
-- **Debate theater** — three subagents agreeing to save time. If the
-  `sdlc-council-lucas` skill finds nothing, push harder; if it still finds nothing,
+- **Debate theater** — three subagents agreeing to save time. If
+  `skill:sdlc-council-lucas` finds nothing, push harder; if it still finds nothing,
   note it explicitly.
 - **Cross-harness dispatch** — this project is Claude OR Copilot, not both.
-- **Skipping the plan skill** — `sdlc-strategy-debate` produces a brief,
-  not a plan. The plan must come from `sdlc-impl-strategy` so the tracking
+- **Skipping the plan skill** — `skill:sdlc-strategy-debate` produces a brief,
+  not a plan. The plan must come from `skill:sdlc-impl-strategy` so the tracking
   list, batch structure, and validation rules are consistent with the rest
   of the project.
 - **Debating during execution** — if an implementation is already underway
-  and disagreement emerges, use the post-hoc Debate Gate in the `sdlc-council`
-  skill, not this one.
+  and disagreement emerges, use the post-hoc Debate Gate in `skill:sdlc-council`,
+  not this one.
 
 ## Output Summary
 
@@ -294,10 +293,10 @@ containing three files:
 - `plans/<topic-kebab-case>/debate.md` — decomposition, three independent
   takes, cross-critique, synthesized brief (this skill)
 - `plans/<topic-kebab-case>/plan.md` — the 3-section plan artifact (created
-  by the `sdlc-impl-strategy` skill from the Stage 4 brief)
+  by `skill:sdlc-impl-strategy` from the Stage 4 brief)
 - `plans/<topic-kebab-case>/lessons.md` — initialized by
-  `sdlc-lessons-learned` (dispatched by
-  `sdlc-impl-strategy`); appended to during execution by the
+  `skill:sdlc-lessons-learned` (invoked by
+  `skill:sdlc-impl-strategy`); appended to during execution by the
   same skill
 
 Plus a user-facing summary with chosen approach, rejected alternatives, and

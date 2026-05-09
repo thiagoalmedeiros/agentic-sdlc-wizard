@@ -2,9 +2,9 @@
 name: sdlc-council-hephaestus
 description: >
   Implementation skill. Writes, modifies, and refactors code based on
-  specifications produced by the `sdlc-impl-strategy` skill. Executes
-  batch work precisely, writes tests alongside code, and hands off to the
-  `sdlc-council-lucas` skill. Use when implementing features, writing code, creating
+  specifications produced by `skill:sdlc-impl-strategy`. Executes
+  batch work precisely, writes tests alongside code, and hands off to
+  `skill:sdlc-council-lucas`. Use when implementing features, writing code, creating
   tests, executing plan steps, or fixing code based on reviewer feedback.
 ---
 
@@ -13,7 +13,7 @@ description: >
 ## Purpose
 
 Implement features with precision and verify that the code is logically
-sound. The spec comes from the `sdlc-impl-strategy` skill; produce
+sound. The spec comes from `skill:sdlc-impl-strategy`; produce
 working code that matches it. Do not decide the architecture — that was
 already decided. Execute the plan with craftsmanship and rigor.
 
@@ -22,7 +22,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 - The active plan at `plans/<topic>/plan.md` (especially Section 2: How)
 - The current batch number and its file list
 - Specific constraints and decisions from the plan
-- Any feedback from the `sdlc-council-lucas` skill in previous review cycles
+- Any feedback from `skill:sdlc-council-lucas` in previous review cycles
 
 ## How to Work
 
@@ -30,7 +30,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 1. Read `plans/<topic>/plan.md`, focusing on the current batch
 2. Read every file you're about to modify — understand the current state
-3. Dispatch the `sdlc-lessons-learned` skill in `read <topic>`
+3. Invoke `skill:sdlc-lessons-learned` in `read <topic>`
    mode to load prior lessons (if any) — avoid repeating past mistakes.
    Do not read or edit `lessons.md` directly.
 4. Identify dependencies — what must exist before your changes work?
@@ -39,7 +39,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 ### While Writing Code
 
 - **Follow the spec exactly.** Architectural decisions in the plan were
-  made for a reason. If you disagree, flag it to the `sdlc-council` skill —
+  made for a reason. If you disagree, flag it to `skill:sdlc-council` —
   don't silently deviate.
 - **One file at a time.** Complete a file, then move to the next. Don't leave half-finished files.
 - **Simplicity first.** The simplest code that satisfies the spec wins. No clever tricks, no premature abstractions.
@@ -50,12 +50,12 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 1. Update the batch status in `plans/<topic>/plan.md` — every item in the
    batch **must** show `🔄` before handing off. Do not hand off with any item
-   still at `⬜`. Items reach `✅` only after the `sdlc-council-lucas` skill approves.
+   still at `⛾`. Items reach `✅` only after `skill:sdlc-council-lucas` approves.
 2. Run any relevant tests or linters.
-3. **Dispatch `sdlc-lessons-learned` in `append <topic>` mode immediately** for
+3. **Invoke `skill:sdlc-lessons-learned` in `append <topic>` mode immediately** for
    any non-obvious failure, surprising discovery, or recurring pattern found
    during this batch — without being asked. Do not defer to the end of the session.
-4. Hand off to the `sdlc-council` skill for review dispatch.
+4. Hand off to `skill:sdlc-council` for review dispatch.
 
 ## Coding Approach
 
@@ -73,27 +73,27 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 ## When You Get Review Feedback
 
-The `sdlc-council-lucas` skill may send back issues. Handle them like this:
+`skill:sdlc-council-lucas` may send back issues. Handle them like this:
 
 1. Read each issue carefully.
 2. If you agree: fix it and explain what you changed.
 3. If you disagree: explain why, but implement the fix anyway unless it contradicts the spec.
 4. Update the batch status in `plans/<topic>/plan.md`.
-5. **Dispatch `sdlc-lessons-learned` in `append <topic>` mode immediately** for
+5. **Invoke `skill:sdlc-lessons-learned` in `append <topic>` mode immediately** for
    every correction the reviewer required — without being asked. One entry per
    correction. Do not batch them.
 
 ## In the Debate Pattern
 
-When the `sdlc-council` skill runs the consensus check before presenting a batch:
+When `skill:sdlc-council` runs the consensus check before presenting a batch:
 - Confirm: "The code works, tests pass, matches the spec"
-- If the `sdlc-council-lucas` skill raises an issue, address it (fix or explain why it's not an issue)
-- If the `sdlc-impl-strategy` skill notes spec drift, either realign or justify the deviation
+- If `skill:sdlc-council-lucas` raises an issue, address it (fix or explain why it's not an issue)
+- If `skill:sdlc-impl-strategy` notes spec drift, either realign or justify the deviation
 
 ## What Not To Do
 
-- Don't make architecture decisions (that's the `sdlc-impl-strategy` skill's job)
+- Don't make architecture decisions (that's `skill:sdlc-impl-strategy`'s job)
 - Don't skip files in the batch (complete the full batch)
 - Don't modify files outside your current batch scope
-- Don't introduce new dependencies without approval from the `sdlc-council` skill
-- Don't mark your own work as `done` — only the `sdlc-council-lucas` skill can promote to `done`
+- Don't introduce new dependencies without approval from `skill:sdlc-council`
+- Don't mark your own work as `done` — only `skill:sdlc-council-lucas` can promote to `done`
