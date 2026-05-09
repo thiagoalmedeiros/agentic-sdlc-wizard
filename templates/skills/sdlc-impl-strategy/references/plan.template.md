@@ -14,6 +14,27 @@
 
 ## Section 2 — How We Are Doing It / What Is Out of Scope
 
+## Execution Config
+
+> This section is read by any executor — standalone agent or `sdlc-council` —
+> before starting batch work. Do not skip it.
+
+| Setting | Value |
+| ------- | ----- |
+| Per-batch verify command | `<command agreed with user>` |
+| Global verify command | `<command agreed with user>` |
+| Thomas validation | `enabled` / `disabled` |
+| Definition of Done | `skill:<name>` / `<inline criteria>` / `none` |
+
+### Execution rules (always active)
+
+1. **Lessons** — Dispatch `sdlc-lessons-learned` in `append` mode immediately after any user correction, any non-obvious failure, or any recurring pattern discovered. Do not wait to be asked. Do not batch multiple lessons into one call.
+2. **Status updates** — Every item must be `🔄` before handoff to review. Every item must be `✅` before the next batch starts. Never advance with a `⬜` item in a completed batch.
+3. **Verify gate** — After each batch, run the per-batch verify command listed above. If Thomas is enabled, dispatch `sdlc-thomas` as a subagent with the batch's exact `**Verify:**` checklist. Do not mark items `✅` until Thomas returns a WITNESSED PASSING verdict.
+4. **Global gate** — After all batches complete, run the global verify command. If Thomas is enabled, dispatch `sdlc-thomas` for a final full-plan validation pass before presenting results to the user.
+
+---
+
 ### Implementation checklist
 
 #### `<path/to/primary/file.ext>`
@@ -51,49 +72,57 @@ Or the project-wide shortcut: `<root-level shortcut command>`
 
 ### Batch 1 — <Short batch description>
 
-| #   | Item | File/Area | Status |
-| --- | ---- | --------- | ------ |
-| 1   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 2   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 3   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 4   | `<Work item>` | `<path/or/feature>` | ⬜ |
+| #      | Item              | File/Area                    | Status |
+| ------ | ----------------- | ---------------------------- | ------ |
+| 1      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 2      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 3      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 4      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| Thomas | Verify this batch | `sdlc-thomas` (if enabled)   | ⬜     |
 
 **Verify:** `<command>` → <what passing looks like; no regressions in related suite.>
+**Thomas Gate (if enabled):** Dispatch `skill:sdlc-thomas` as a subagent to execute every check in this batch's `Verify` line itself and confirm witnessed passing output. Thomas will also verify that all tracking-list rows for this batch are marked ✅ in `plan.md`. Mark the Thomas row ✅ only after Thomas issues an **APPROVED** verdict. If Thomas returns **NOT APPROVED**, the batch is not complete.
 
 ---
 
 ### Batch 2 — <Short batch description>
 
-| #   | Item | File/Area | Status |
-| --- | ---- | --------- | ------ |
-| 1   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 2   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 3   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 4   | `<Work item>` | `<path/or/feature>` | ⬜ |
+| #      | Item              | File/Area                    | Status |
+| ------ | ----------------- | ---------------------------- | ------ |
+| 1      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 2      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 3      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 4      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| Thomas | Verify this batch | `sdlc-thomas` (if enabled)   | ⬜     |
 
 **Verify:** <Manual or automated check — describe what to inspect and what outcome confirms success.>
+**Thomas Gate (if enabled):** Dispatch `skill:sdlc-thomas` as a subagent to execute every check in this batch's `Verify` line itself and confirm witnessed passing output. Thomas will also verify that all tracking-list rows for this batch are marked ✅ in `plan.md`. Mark the Thomas row ✅ only after Thomas issues an **APPROVED** verdict. If Thomas returns **NOT APPROVED**, the batch is not complete.
 
 ---
 
 ### Batch 3 — <Short batch description>
 
-| #   | Item | File/Area | Status |
-| --- | ---- | --------- | ------ |
-| 1   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 2   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 3   | `<Work item>` | `<path/or/feature>` | ⬜ |
-| 4   | `<Work item>` | `<path/or/feature>` | ⬜ |
+| #      | Item              | File/Area                    | Status |
+| ------ | ----------------- | ---------------------------- | ------ |
+| 1      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 2      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 3      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| 4      | `<Work item>`     | `<path/or/feature>`          | ⬜     |
+| Thomas | Verify this batch | `sdlc-thomas` (if enabled)   | ⬜     |
 
 **Verify:** `<command>` → <N> tests all green; `<suite command>` passes.
+**Thomas Gate (if enabled):** Dispatch `skill:sdlc-thomas` as a subagent to execute every check in this batch's `Verify` line itself and confirm witnessed passing output. Thomas will also verify that all tracking-list rows for this batch are marked ✅ in `plan.md`. Mark the Thomas row ✅ only after Thomas issues an **APPROVED** verdict. If Thomas returns **NOT APPROVED**, the batch is not complete.
 
 ---
 
 ### Batch 4 — Final validation
 
-| #   | Item | File/Area | Status |
-| --- | ---- | --------- | ------ |
-| 1   | Run `<full test suite command>` — all suites green | repo root | ⬜ |
-| 2   | <Manual code review item> | manual code review | ⬜ |
-| 3   | <Runtime smoke check or log verification> | `<path/to/file>` | ⬜ |
+| #      | Item                                               | File/Area                    | Status |
+| ------ | -------------------------------------------------- | ---------------------------- | ------ |
+| 1      | Run `<full test suite command>` — all suites green | repo root                    | ⬜     |
+| 2      | <Manual code review item>                          | manual code review           | ⬜     |
+| 3      | <Runtime smoke check or log verification>          | `<path/to/file>`             | ⬜     |
+| Thomas | Full plan sign-off                                 | `sdlc-thomas` (if enabled)   | ⬜     |
 
-**Verify:** `<full suite command>` → 0 failures; <observable outcome in logs or output that confirms end-to-end correctness.>
+**Verify:** `<global verify command from Execution Config>` → 0 failures; <observable outcome in logs or output that confirms end-to-end correctness.>
+**Thomas Gate (if enabled):** Dispatch `skill:sdlc-thomas` as a subagent for the full-plan validation pass. Thomas re-runs the global verify command, reviews every section of `plan.md` to confirm all rows are ✅, and issues a final **APPROVED** or **NOT APPROVED** verdict for the plan as a whole. The plan is not complete until this verdict is **APPROVED**.

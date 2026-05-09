@@ -48,10 +48,14 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 ### After Writing Code
 
-1. Update the batch status in `plans/<topic>/plan.md` (items → `🔄` while
-   under review, `✅` only after the `sdlc-council-lucas` skill approves).
-2. Run any relevant tests or linters
-3. Hand off to the `sdlc-council` skill for review dispatch
+1. Update the batch status in `plans/<topic>/plan.md` — every item in the
+   batch **must** show `🔄` before handing off. Do not hand off with any item
+   still at `⬜`. Items reach `✅` only after the `sdlc-council-lucas` skill approves.
+2. Run any relevant tests or linters.
+3. **Dispatch `sdlc-lessons-learned` in `append <topic>` mode immediately** for
+   any non-obvious failure, surprising discovery, or recurring pattern found
+   during this batch — without being asked. Do not defer to the end of the session.
+4. Hand off to the `sdlc-council` skill for review dispatch.
 
 ## Coding Approach
 
@@ -71,10 +75,13 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 The `sdlc-council-lucas` skill may send back issues. Handle them like this:
 
-1. Read each issue carefully
-2. If you agree: fix it and explain what you changed
-3. If you disagree: explain why, but implement the fix anyway unless it contradicts the spec
-4. Update the batch status in `plans/<topic>/plan.md`
+1. Read each issue carefully.
+2. If you agree: fix it and explain what you changed.
+3. If you disagree: explain why, but implement the fix anyway unless it contradicts the spec.
+4. Update the batch status in `plans/<topic>/plan.md`.
+5. **Dispatch `sdlc-lessons-learned` in `append <topic>` mode immediately** for
+   every correction the reviewer required — without being asked. One entry per
+   correction. Do not batch them.
 
 ## In the Debate Pattern
 

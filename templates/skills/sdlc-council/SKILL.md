@@ -147,9 +147,10 @@ Work is organized into logical batches of 3–5 related files as defined in
 1. **Announce:** Tell the user what this batch will change and why.
 2. **Execute:** Dispatch the `sdlc-council-hephaestus` skill, then the `sdlc-council-lucas` skill.
 3. **Validate:** Dispatch the `sdlc-thomas` skill. Thomas runs every check itself and returns an Evidence Record with an **APPROVED** or **NOT APPROVED** verdict. If **NOT APPROVED**, dispatch `sdlc-council-sherlock` to fix the failures, then re-run Thomas. Do NOT advance to the Debate Gate until Thomas issues an **APPROVED** verdict.
-4. **Debate Gate:** Run the parallel consensus check (see below).
-5. **Present:** Summarize what changed, any issues, any decisions.
-6. **Wait:** Do NOT proceed until the user explicitly approves.
+4. **Checkmark gate:** Before the Debate Gate, verify in `plan.md` that every item in the current batch shows `✅`. If any item is still `🔄` or `⬜`, do not proceed — return to step 2 to resolve outstanding work first.
+5. **Debate Gate:** Run the parallel consensus check (see below).
+6. **Present:** Summarize what changed, any issues, any decisions.
+7. **Wait:** Do NOT proceed until the user explicitly approves.
 
 **Approval keywords:** "yes", "approved", "next", "continue", "lgtm", "go ahead"
 **Rejection keywords:** "no", "stop", "wait", "change", "redo"
@@ -157,7 +158,10 @@ Work is organized into logical batches of 3–5 related files as defined in
 If rejected, ask what needs to change, update `plan.md`, and re-execute the
 batch.
 
-Update `plan.md` status cells (`⬜` → `🔄` → `✅`) as batches progress.
+Update `plan.md` status cells (`⬜` → `🔄` → `✅`) as batches progress. Items
+must be `🔄` before handing off to `sdlc-council-lucas` review, and `✅` before
+reaching the Checkmark Gate (step 4). Never present a batch to the user with
+any item below `✅`.
 
 ---
 
@@ -206,11 +210,15 @@ At the start of every execution session:
 2. Apply relevant rules before dispatching the `sdlc-council-hephaestus` or
    `sdlc-council-lucas` skill.
 
-At the end of each task, or whenever the user corrects you mid-task:
+At the end of each task, or whenever any of the following happens:
 
-1. Dispatch `sdlc-lessons-learned` in `append <topic>` mode with
-   the date, context, mistake, rule, and scope.
-2. Keep entries short — one lesson, one rule.
+- The user corrects an approach mid-task
+- A batch fails Thomas validation or Lucas review
+- A non-obvious failure or codebase pattern is discovered
+
+Dispatch `sdlc-lessons-learned` in `append <topic>` mode immediately —
+**without being asked**. Do not batch lessons to the end of the session. Keep
+entries short: one lesson, one rule.
 
 ---
 

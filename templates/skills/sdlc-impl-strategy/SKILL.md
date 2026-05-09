@@ -28,15 +28,21 @@ Gather the minimum context required to produce a defensible plan:
 1. Define the target outcome, scope, and explicit constraints.
 2. Inspect the current implementation and identify the affected files, components, modules, or flows.
 3. Identify dependencies, shared infrastructure, and risks that may force work out of scope.
-4. Search the codebase to identify the relevant validation path: inspect files such as `Taskfile.yml`, `package.json`, `README.md`, CI configs, and existing docs to determine which build, test, runtime, and manual verification commands are actually used by the project.
-5. **Capture the Definition of Done (DoD).** Follow this order:
+4. Search the codebase to identify the relevant validation path: inspect files such as `Taskfile.yml`, `package.json`, `README.md`, CI configs, and existing docs to determine which build, test, runtime, and manual verification commands are actually used by the project. Then ask the user (one message, two questions):
+   - *"What command(s) should run after each batch to verify it?"*
+   - *"What command(s) should run globally after all batches complete?"*
+   If the user says "auto-detect" or equivalent, use the discovered commands. Record the answers (or discovered commands) in `## Execution Config` in the plan — they become the per-batch and global verify commands embedded in every batch's `**Verify:**` line.
+5. **Check for `sdlc-thomas`.** Search the workspace for any `SKILL.md` whose `name` field is `sdlc-thomas` (scan all `SKILL.md` files in the workspace). If found, ask the user:
+   *"`sdlc-thomas` is installed — do you want it spawned as a subagent to witness every batch's Verify step before the batch is marked ✅?"*
+   Record the answer as `thomas: enabled` or `thomas: disabled` in `## Execution Config`. If Thomas is disabled or not installed, omit the `Thomas` row and `**Thomas Gate:**` lines from all batches.
+6. **Capture the Definition of Done (DoD).** Follow this order:
    1. Search the repo for any skill whose name or description contains terms like `definition-of-done`, `dod`, `acceptance`, or `validation-gate` by scanning all `SKILL.md` files found anywhere in the workspace.
    2. If one or more such skills are found, present them to the user and ask: *"I found a DoD skill in this repo: `<skill-name>` — do you want to use it as the verification gate for every batch?"* Wait for the user's answer before proceeding.
    3. If the user confirms, record the skill reference as `skill:<skill-name>` in `plan.md` under `## Definition of Done` and instruct every batch's `**DoD Gate:**` to invoke `skill:<skill-name>`.
    4. If the user declines, or no DoD skill is found, and the user supplies a validation script, acceptance criteria, or an explicit DoD inline, record it verbatim under `## Definition of Done`.
    5. If neither a repo skill nor an inline DoD is provided, omit the `## Definition of Done` section and the `DoD Gate` lines from all batches.
    This DoD — however sourced — is attached to every batch as a mandatory gate and cannot be removed or deferred to a later batch.
-6. Group the work into batches of at most 4 items.
+7. Group the work into batches of at most 4 items.
 
 ### Phase 2 - Design The Plan
 
@@ -100,19 +106,27 @@ section below for `plan.md`.
   Phase 3, step 2)
 
 If `lessons.md` is missing, dispatch `sdlc-lessons-learned` in
-`init <topic>` mode now — do not skip it. Stop after both files are
-complete. Do not execute the plan.
+`init <topic>` mode now — do not skip it.
 
-If execution is requested later, the plan folder becomes the source of truth
-for that work:
+**Once both files exist, run the council detection check:**
 
-- The executor updates status values in `plan.md` as batches land.
-- The executor invokes the `sdlc-lessons-learned` skill in
-  `append` mode whenever the user corrects an approach, a batch fails
-  review, or a non-obvious pattern is discovered.
-- This skill is responsible for defining plan content and triggering
-  initialization of the lessons file; it is not responsible for writing
-  the lessons template or appending execution lessons.
+Search the workspace for any `SKILL.md` whose `name` field is `sdlc-council`
+(scan all `SKILL.md` files found anywhere in the workspace). If found, ask the
+user exactly this question before starting execution:
+
+> "The plan is ready. `sdlc-council` is installed — do you want to execute it
+> now using the full council workflow (debate-gated batches, multi-skill review,
+> Thomas validation)? Or should I execute the plan directly?"
+
+- **If the user confirms `sdlc-council`:** read the `sdlc-council` skill file
+  and hand off immediately. Pass the plan path (`plans/<topic>/plan.md`) as the
+  task context. From this point the `sdlc-council` skill owns the execution
+  loop — this skill's job is done.
+- **If the user declines, or `sdlc-council` is not installed:** proceed to
+  execute the plan directly. Read the `## Execution Config` section from
+  `plan.md` and begin executing batches in order, following all execution rules
+  embedded there (lessons capture, status updates, verify commands, Thomas gate
+  if enabled). No further user confirmation is required to start.
 
 ---
 
@@ -251,9 +265,9 @@ Follow this flow every time the skill is used:
 4. **Dispatch `sdlc-lessons-learned` in `init <topic>` mode** to
    initialize `lessons.md` in the same folder. **This step is
    mandatory.** Do not stop before it is done.
-5. Stop once both `plan.md` and `lessons.md` exist in the plan folder,
-   unless the user explicitly asks to transition into a separate
-   execution workflow.
+5. Run the council detection check (Phase 4): offer `sdlc-council` if installed,
+   otherwise execute the plan directly using the `## Execution Config` from
+   `plan.md`. Either way, execution starts without requiring further user input.
 
 Throughout every execution session that uses this plan:
 
@@ -262,9 +276,6 @@ Throughout every execution session that uses this plan:
 - **After every batch with a DoD Gate:** spawn a validation subagent to run all DoD criteria before advancing. The DoD row in the batch table must be ✅ before the next batch starts.
 - **After every batch (if `sdlc-thomas` is available):** dispatch `skill:sdlc-thomas` as a subagent after the `Verify` step (and after the DoD Gate, if present). Thomas executes every check itself, then verifies that all tracking-list rows for the batch are ✅ in `plan.md`. The Thomas row must be ✅ before the next batch starts.
 - **Final batch — full plan review (if `sdlc-thomas` is available):** the last batch in every plan must include a Thomas Gate that covers the entire plan, not just the final batch. Thomas re-runs the full validation suite, reviews every section of `plan.md` to confirm all rows are ✅, and issues a final **APPROVED** or **NOT APPROVED** verdict for the plan as a whole. This is Thomas's end-to-end sign-off. The plan is not complete until this verdict is **APPROVED**.
-
-If the user asked only for planning, the completed plan folder is the final
-output.
 
 If the user asked to continue an existing plan, update `plan.md` from the
 first incomplete or outdated batch, leave `lessons.md` untouched (it is
