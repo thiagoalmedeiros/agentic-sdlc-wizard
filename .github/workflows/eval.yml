@@ -27,9 +27,7 @@ jobs:
         run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash
 
       - name: Authenticate GitHub Copilot CLI
-        run: |
-          echo "${{ secrets.COPILOT_TOKEN }}" | gh auth login --with-token
-          gh auth status
+        run: gh auth status
         env:
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
 
