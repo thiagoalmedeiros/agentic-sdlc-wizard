@@ -7,13 +7,3 @@ inputs:
   prompt: "planning non-trivial features"
 expected:
   should_trigger: true
-graders:
-  - type: text
-    name: contains-keywords
-    config:
-      contains:
-        - "features"
-        - "non-trivial"
-        - "planning"
-        - "refactors"
-

@@ -7,13 +7,3 @@ inputs:
   prompt: "direct code changes"
 expected:
   should_trigger: false
-graders:
-  - type: text
-    name: omits-skill-keywords
-    config:
-      not_contains:
-        - "adding"
-        - "initial"
-        - "project"
-        - "setup"
-

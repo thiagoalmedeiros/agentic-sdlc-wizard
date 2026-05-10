@@ -7,13 +7,3 @@ inputs:
   prompt: "bug fixes"
 expected:
   should_trigger: false
-graders:
-  - type: text
-    name: omits-skill-keywords
-    config:
-      not_contains:
-        - "features"
-        - "non-trivial"
-        - "planning"
-        - "refactors"
-

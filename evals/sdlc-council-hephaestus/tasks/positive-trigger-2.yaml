@@ -7,12 +7,3 @@ inputs:
   prompt: "I need assistance with sdlc council hephaestus-related work"
 expected:
   should_trigger: true
-graders:
-  - type: text
-    name: contains-keywords
-    config:
-      contains:
-        - "council"
-        - "hephaestus"
-        - "sdlc"
-

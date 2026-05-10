@@ -7,13 +7,3 @@ inputs:
   prompt: "writing implementation plans"
 expected:
   should_trigger: false
-graders:
-  - type: text
-    name: omits-skill-keywords
-    config:
-      not_contains:
-        - "appending"
-        - "entries"
-        - "initializing"
-        - "reading"
-

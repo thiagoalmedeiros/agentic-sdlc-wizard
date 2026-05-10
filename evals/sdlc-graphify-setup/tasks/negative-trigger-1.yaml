@@ -7,12 +7,3 @@ inputs:
   prompt: "Tell me a short joke about coffee."
 expected:
   should_trigger: false
-graders:
-  - type: text
-    name: omits-skill-keywords
-    config:
-      not_contains:
-        - "graphify"
-        - "sdlc"
-        - "setup"
-

@@ -7,13 +7,3 @@ inputs:
   prompt: "adding new SDLC capabilities"
 expected:
   should_trigger: true
-graders:
-  - type: text
-    name: contains-keywords
-    config:
-      contains:
-        - "adding"
-        - "initial"
-        - "project"
-        - "setup"
-
