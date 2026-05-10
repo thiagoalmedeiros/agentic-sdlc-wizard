@@ -22,13 +22,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Waza
         run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash
-      - name: Run evaluations (mock executor)
+
+      - name: Authenticate GitHub Copilot CLI
         run: |
+          echo "${{ secrets.COPILOT_TOKEN }}" | gh auth login --with-token
+          gh auth status
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+
+      - name: Verify Copilot access
+        run: gh api user --jq '.login'
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+
+      - name: Run evaluations
+        run: |
+          set -e
           for f in evals/*/eval.yaml; do
-            waza run "$f" --model mock -v -o "${f%/eval.yaml}/results.json" || true
+            echo "▶ Running: $f"
+            waza run "$f" -v -o "${f%/eval.yaml}/results.json"
           done
+        env:
+          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
