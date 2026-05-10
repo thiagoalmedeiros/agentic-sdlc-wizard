@@ -24,13 +24,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Waza
         run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash
+      - name: Authenticate Copilot CLI
+        run: echo "${{ secrets.COPILOT_TOKEN }}" | gh auth login --with-token
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
       - name: Run evaluations
         run: |
           for f in evals/*/eval.yaml; do
             waza run "$f" -v -o "${f%/eval.yaml}/results.json" || true
           done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
