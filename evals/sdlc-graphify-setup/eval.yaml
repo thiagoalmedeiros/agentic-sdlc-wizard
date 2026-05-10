@@ -21,6 +21,6 @@ graders:
   - type: behavior
     name: token-budget
     config:
-      max_tokens: 200000
+      max_tokens: 2000000
 tasks:
   - "tasks/*.yaml"

@@ -38,11 +38,18 @@ jobs:
 
       - name: Run evaluations
         run: |
-          set -e
+          FAILED=0
           for f in evals/*/eval.yaml; do
             echo "▶ Running: $f"
-            waza run "$f" -v -o "${f%/eval.yaml}/results.json"
+            if ! waza run "$f" -v -o "${f%/eval.yaml}/results.json"; then
+              echo "❌ FAILED: $f"
+              FAILED=$((FAILED + 1))
+            else
+              echo "✅ PASSED: $f"
+            fi
           done
+          echo "--- Summary: $FAILED skill(s) failed ---"
+          exit $FAILED
         env:
           GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
 
