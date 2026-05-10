@@ -2,8 +2,12 @@ id: positive-trigger-001
 name: Positive Trigger 1
 description: Auto-generated positive-trigger task.
 tags:
-  - positive-trigger
+- positive-trigger
 inputs:
-  prompt: "Use docs-sync to help me complete this task"
+  prompt: Use docs-sync to help me complete this task
 expected:
   should_trigger: true
+  behavior:
+    required_tools:
+    - read_file
+    - run_in_terminal

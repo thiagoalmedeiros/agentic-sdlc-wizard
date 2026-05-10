@@ -2,8 +2,12 @@ id: positive-trigger-002
 name: Positive Trigger 2
 description: Auto-generated positive-trigger task.
 tags:
-  - positive-trigger
+- positive-trigger
 inputs:
-  prompt: "managing batches"
+  prompt: managing batches
 expected:
   should_trigger: true
+  behavior:
+    required_tools:
+    - manage_todo_list
+    - read_file

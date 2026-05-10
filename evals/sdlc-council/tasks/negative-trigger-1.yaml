@@ -2,8 +2,11 @@ id: negative-trigger-001
 name: Negative Trigger 1
 description: Auto-generated negative-trigger task.
 tags:
-  - negative-trigger
+- negative-trigger
 inputs:
-  prompt: "direct code execution without planning"
+  prompt: direct code execution without planning
 expected:
   should_trigger: false
+  behavior:
+    forbidden_tools:
+    - create_file

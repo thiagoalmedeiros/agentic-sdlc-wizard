@@ -2,8 +2,11 @@ id: positive-trigger-002
 name: Positive Trigger 2
 description: Auto-generated positive-trigger task.
 tags:
-  - positive-trigger
+- positive-trigger
 inputs:
-  prompt: "refactors"
+  prompt: refactors
 expected:
   should_trigger: true
+  behavior:
+    required_tools:
+    - runSubagent

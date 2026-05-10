@@ -2,8 +2,12 @@ id: negative-trigger-001
 name: Negative Trigger 1
 description: Auto-generated negative-trigger task.
 tags:
-  - negative-trigger
+- negative-trigger
 inputs:
-  prompt: "Tell me a short joke about coffee."
+  prompt: Tell me a short joke about coffee.
 expected:
   should_trigger: false
+  behavior:
+    forbidden_tools:
+    - create_file
+    - replace_string_in_file

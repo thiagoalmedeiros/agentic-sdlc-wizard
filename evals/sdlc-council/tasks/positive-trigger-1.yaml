@@ -2,8 +2,11 @@ id: positive-trigger-001
 name: Positive Trigger 1
 description: Auto-generated positive-trigger task.
 tags:
-  - positive-trigger
+- positive-trigger
 inputs:
-  prompt: "starting any new task"
+  prompt: starting any new task
 expected:
   should_trigger: true
+  behavior:
+    required_tools:
+    - manage_todo_list

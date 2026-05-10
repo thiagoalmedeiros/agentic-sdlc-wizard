@@ -2,8 +2,11 @@ id: positive-trigger-001
 name: Positive Trigger 1
 description: Auto-generated positive-trigger task.
 tags:
-  - positive-trigger
+- positive-trigger
 inputs:
-  prompt: "Use jira-fetch to help me complete this task"
+  prompt: Use jira-fetch to help me complete this task
 expected:
   should_trigger: true
+  behavior:
+    required_tools:
+    - run_in_terminal

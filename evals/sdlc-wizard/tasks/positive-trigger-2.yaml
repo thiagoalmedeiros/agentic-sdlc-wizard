@@ -2,8 +2,11 @@ id: positive-trigger-002
 name: Positive Trigger 2
 description: Auto-generated positive-trigger task.
 tags:
-  - positive-trigger
+- positive-trigger
 inputs:
-  prompt: "adding new SDLC capabilities"
+  prompt: adding new SDLC capabilities
 expected:
   should_trigger: true
+  behavior:
+    required_tools:
+    - vscode_askQuestions

@@ -2,8 +2,12 @@ id: positive-trigger-002
 name: Positive Trigger 2
 description: Auto-generated positive-trigger task.
 tags:
-  - positive-trigger
+- positive-trigger
 inputs:
-  prompt: "I need assistance with sdlc council hephaestus-related work"
+  prompt: I need assistance with sdlc council hephaestus-related work
 expected:
   should_trigger: true
+  behavior:
+    required_tools:
+    - read_file
+    - replace_string_in_file
