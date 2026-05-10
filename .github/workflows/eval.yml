@@ -1,16 +1,6 @@
 name: Run Skill Evaluations
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "evals/**"
-      - "templates/skills/**"
-  pull_request:
-    branches: [main]
-    paths:
-      - "evals/**"
-      - "templates/skills/**"
   workflow_dispatch:
 
 permissions:
