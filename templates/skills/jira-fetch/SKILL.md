@@ -93,9 +93,23 @@ Collect all subtask details (summary, status, assignee, description, comments).
 
 ### Step 4b — Fetch All Comments (Pagination)
 
-The `comment` field in the issue response is paginated (default max 20). Check `fields.comment.total` vs `fields.comment.maxResults`.
+Comments are paginated. Follow this decision tree:
 
-If `total > maxResults` for **any** ticket (parent or subtask), fetch the remaining comments using the dedicated endpoint:
+#### Case 1: All comments fit in initial response
+
+- Check the parent ticket response: `fields.comment.total` and `fields.comment.maxResults`
+- **If** `total ≤ maxResults`: All comments are already in the response. No additional fetch needed.
+- Example: `total=5, maxResults=20` → proceed to Step 5
+
+#### Case 2: Comments exceed initial response
+
+- **If** `total > maxResults`: Fetch remaining comments using the dedicated endpoint.
+- Example: `total=150, maxResults=20` → fetch pages 1, 2, 3, ... until all retrieved
+
+**For each ticket (parent and subtasks) that exceeds the page limit:**
+
+1. Start with `startAt=20` (the first page already has 20 comments from the issue response)
+2. Fetch the next batch:
 
 ```bash
 curl -s \
@@ -104,7 +118,16 @@ curl -s \
   "https://$JIRA_DOMAIN/rest/api/3/issue/PROJ-123/comment?startAt=20&maxResults=100"
 ```
 
-Repeat with increasing `startAt` until all comments are retrieved (`startAt >= total`). Merge these with the comments already returned in the issue response.
+3. Append the results to the comments already in memory
+4. Increment `startAt` by 100: `startAt=120`, then `startAt=220`, etc.
+5. Stop when `startAt >= total`
+
+**Example workflow:**
+
+- Initial response: 20 comments, `total=150`
+- Fetch page 2: `startAt=20` returns comments 21–120 (100 items)
+- Fetch page 3: `startAt=120` returns comments 121–150 (30 items)
+- Merge all three batches into the final comment list
 
 ### Step 5 — Save to File
 
@@ -124,25 +147,33 @@ The file must contain the full untruncated content of all fields, all comments, 
 **Project**: Project Name | **Labels**: label1, label2
 
 ### Description
+
 (full description text)
 
 ### Subtasks (N total)
-| Key | Summary | Status | Assignee |
-|-----|---------|--------|----------|
-| PROJ-124 | Subtask title | To Do | Name |
+
+| Key      | Summary       | Status | Assignee |
+| -------- | ------------- | ------ | -------- |
+| PROJ-124 | Subtask title | To Do  | Name     |
 
 ### Comments (N total)
+
 **Author** — 2025-01-15:
+
 > Comment body text
 
 ---
+
 **Author** — 2025-01-14:
+
 > Another comment
 
 ### Subtask Comments
 
 #### [PROJ-124] Subtask title
+
 **Author** — 2025-01-15:
+
 > Comment on subtask
 
 ---
@@ -156,17 +187,17 @@ Create the `plans/<ISSUE_KEY>/` directory if it does not exist. Do **not** displ
 
 Credentials are resolved via Basic Auth (email + API token) using the lookup order below:
 
-| Location | Purpose |
-|----------|---------|
-| `.claude/.env` | Skill-specific credentials — **preferred** location |
-| `.github/.env` | Shared CI / tooling credentials |
-| `.env` | Project root — fallback |
-| Shell environment | Variables already exported in the current session |
+| Location          | Purpose                                             |
+| ----------------- | --------------------------------------------------- |
+| `.claude/.env`    | Skill-specific credentials — **preferred** location |
+| `.github/.env`    | Shared CI / tooling credentials                     |
+| `.env`            | Project root — fallback                             |
+| Shell environment | Variables already exported in the current session   |
 
-| Variable | Purpose |
-|----------|---------|
-| `JIRA_DOMAIN` | Atlassian instance (e.g. `your-company.atlassian.net`) |
-| `JIRA_EMAIL` | User email for Basic Auth |
+| Variable         | Purpose                                                                                       |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| `JIRA_DOMAIN`    | Atlassian instance (e.g. `your-company.atlassian.net`)                                        |
+| `JIRA_EMAIL`     | User email for Basic Auth                                                                     |
 | `JIRA_API_TOKEN` | Jira API token ([generate here](https://id.atlassian.com/manage-profile/security/api-tokens)) |
 
 If **none** of the locations contain all three variables, the skill must stop with an explicit error and instruct the user to copy `.claude/.env.sample` to `.claude/.env` and fill in the values.

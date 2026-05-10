@@ -16,13 +16,13 @@ Keep `AGENTS.md`, `ARCHITECTURE.md`, `README.md`, `CLAUDE.md`, and `.github/copi
 
 ## Target Files
 
-| File | Governs | Key Sections to Watch |
-|------|---------|----------------------|
-| `AGENTS.md` | AI agent workflows, key commands | Key Workflows, Database Operations, Edit Configuration |
-| `ARCHITECTURE.md` | System design, components, directory tree | System Components, Directory Structure, Configuration, Tests, Data Flow |
-| `README.md` | Setup guide, prerequisites, quick start | Prerequisites, Environment Configuration, Documentation links |
-| `CLAUDE.md` | Claude/agent session rules, essential rules | Essential Rules, Quick Reference |
-| `.github/copilot-instructions.md` | Copilot context, navigation, file index | Project Overview, Documentation Structure, Quick Navigation, Where to Find Information |
+| File                              | Governs                                     | Key Sections to Watch                                                                  |
+| --------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `AGENTS.md`                       | AI agent workflows, key commands            | Key Workflows, Database Operations, Edit Configuration                                 |
+| `ARCHITECTURE.md`                 | System design, components, directory tree   | System Components, Directory Structure, Configuration, Tests, Data Flow                |
+| `README.md`                       | Setup guide, prerequisites, quick start     | Prerequisites, Environment Configuration, Documentation links                          |
+| `CLAUDE.md`                       | Claude/agent session rules, essential rules | Essential Rules, Quick Reference                                                       |
+| `.github/copilot-instructions.md` | Copilot context, navigation, file index     | Project Overview, Documentation Structure, Quick Navigation, Where to Find Information |
 
 ## Procedure
 
@@ -44,11 +44,12 @@ Scan the diff output and determine which documentation files are potentially aff
 - **Structural changes** (new/removed/renamed directories, apps, libs, services) → `ARCHITECTURE.md` (Components, Directory Structure), `README.md`, `copilot-instructions.md`
 - **Build/task changes** (task definitions, build scripts, orchestration) → `AGENTS.md` (Workflows), `ARCHITECTURE.md` (Orchestration)
 - **Configuration changes** (env vars, settings templates, port numbers) → `ARCHITECTURE.md` (Configuration), `README.md` (Setup)
-- **Infrastructure changes** (Dockerfiles, compose files, CI pipelines, deployment manifests) → `ARCHITECTURE.md` (Infrastructure, Ports, Directory Structure)
+- **Infrastructure changes** (Docker files, compose files, CI pipelines, deployment manifests) → `ARCHITECTURE.md` (Infrastructure, Ports, Directory Structure)
 - **Dependency changes** (package manifests, requirements files) → `ARCHITECTURE.md` (Components), `README.md` (Prerequisites)
 - **Agent/skill/instruction changes** (new or modified customization files in `.claude/` or `.github/instructions/`) → `copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md`
 - **Renamed or moved files** that are referenced in any doc → All four files
 - **Database or migration changes** → `AGENTS.md` (Database Operations)
+- **Other file changes** (not matching above heuristics) → Log and continue; do not force documentation updates for unrelated code changes. Notify the user if significant non-doc files changed but no documentation updates are warranted.
 
 If no changes match any heuristic, report "Docs are up to date" and stop.
 

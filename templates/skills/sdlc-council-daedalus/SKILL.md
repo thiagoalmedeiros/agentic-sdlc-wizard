@@ -2,9 +2,10 @@
 name: sdlc-council-daedalus
 description: >
   Architecture and specification skill. Decomposes features into actionable
-  implementation plans with concrete file paths, function signatures, and
-  batch groupings. Explores the codebase first, then produces
-  `plans/<topic>/plan.md` + `lessons.md` by invoking `skill:sdlc-impl-strategy`.
+  implementation plans using a sequential process: (1) explore the codebase,
+  (2) produce concrete steps with specific file paths and function signatures,
+  (3) group steps into dependency-ordered batches, then output
+  `plans/<topic>/plan.md` + `lessons.md` via `skill:sdlc-impl-strategy`.
   Use when breaking down features, designing architecture, writing
   specs, re-planning after failures, or verifying approach alignment.
 ---
@@ -15,13 +16,15 @@ description: >
 
 Investigate the codebase, research the best approach, and produce a
 concrete specification that can be executed. This skill is the workflow's
-fact-checker and architect. If something is unclear, research it. If there
-are multiple approaches, evaluate them. The output becomes the blueprint
+fact-checker and architect. If something is unclear, perform targeted research
+to clarify the ambiguity, focusing on official documentation or primary sources.
+If there are multiple approaches, evaluate them. The output becomes the blueprint
 `skill:sdlc-council-hephaestus` follows.
 
 ## Inputs
 
 From `skill:sdlc-council`:
+
 - The clarified task description (one-sentence intent + acceptance criteria)
 - Any existing codebase context (file tree, key files)
 - Constraints and decisions already made
@@ -43,16 +46,19 @@ The sections below describe the content that goes **into** `plan.md`'s
 ### Section 2: How
 
 **What TO DO** — Numbered steps, each one:
+
 - Concrete (file paths, function signatures, not vague descriptions)
 - Verifiable (how do you know it's done?)
 - Ordered by dependency (what must exist before the next step)
 
 **What NOT TO DO** — Anti-patterns specific to this task:
+
 - What shortcuts would cause regressions?
 - What files should NOT be touched?
 - What patterns should be avoided?
 
 **Architecture Decisions** — For every non-obvious choice:
+
 - Document the decision
 - Explain why (not just what)
 - List what you considered and rejected
@@ -60,6 +66,7 @@ The sections below describe the content that goes **into** `plan.md`'s
 ### Batch Plan
 
 Group the steps into logical batches:
+
 - Each batch should be independently reviewable
 - A batch should leave the codebase in a working state
 - Aim for 3-5 files per batch
@@ -83,6 +90,7 @@ Group the steps into logical batches:
 ## Quality Checks
 
 Before handing the plan back to `skill:sdlc-council`, verify:
+
 - [ ] Every step references a specific file or location
 - [ ] No step is vague ("improve the code" is not a step)
 - [ ] Batches are ordered by dependency
@@ -93,6 +101,7 @@ Before handing the plan back to `skill:sdlc-council`, verify:
 ## In the Debate Pattern
 
 When `skill:sdlc-council` runs the consensus check before presenting a batch:
+
 - Verify the approach still aligns with the architecture
 - Check that `skill:sdlc-council-hephaestus`'s implementation didn't drift from the spec
 - If it drifted, determine whether the drift was an improvement or a regression
@@ -101,6 +110,7 @@ When `skill:sdlc-council` runs the consensus check before presenting a batch:
 
 If `skill:sdlc-council` sends you back to re-plan (because `skill:sdlc-council-lucas`
 or the user rejected the approach):
+
 1. Read the session log to understand what went wrong
 2. Read the specific feedback
 3. Produce a NEW plan, not a patch on the old one
