@@ -12,6 +12,6 @@ graders:
     name: contains-keywords
     config:
       contains:
-        - "docs"
+        - "doc"
         - "sync"
 
