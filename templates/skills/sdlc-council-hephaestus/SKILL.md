@@ -4,7 +4,7 @@ description: >
   Implementation skill. Writes, modifies, and refactors code based on
   specifications produced by `skill:sdlc-impl-strategy`. Executes
   batch work precisely, writes tests alongside code, and hands off to
-  `skill:sdlc-council-lucas`. Use when implementing features, writing code, creating
+  `skill:sdlc-council-critic`. Use when implementing features, writing code, creating
   tests, executing plan steps, or fixing code based on reviewer feedback.
 ---
 
@@ -22,7 +22,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 - The active plan at `plans/<topic>/plan.md` (especially Section 2: How)
 - The current batch number and its file list
 - Specific constraints and decisions from the plan
-- Any feedback from `skill:sdlc-council-lucas` in previous review cycles
+- Any feedback from `skill:sdlc-council-critic` in previous review cycles
 
 ## How to Work
 
@@ -50,7 +50,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 1. Update the batch status in `plans/<topic>/plan.md` — every item in the
    batch **must** show `🔄` before handing off. Do not hand off with any item
-   still at `⛾`. Items reach `✅` only after `skill:sdlc-council-lucas` approves.
+   still at `⛾`. Items reach `✅` only after `skill:sdlc-council-critic` approves.
 2. Run any relevant tests or linters.
 3. **Invoke `skill:sdlc-lessons-learned` in `append <topic>` mode immediately** for
    any non-obvious failure, surprising discovery, or recurring pattern found
@@ -73,7 +73,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 ## When You Get Review Feedback
 
-`skill:sdlc-council-lucas` may send back issues. Handle them like this:
+`skill:sdlc-council-critic` may send back issues. Handle them like this:
 
 1. Read each issue carefully.
 2. If you agree: fix it and explain what you changed.
@@ -87,7 +87,7 @@ already decided. Execute the plan with craftsmanship and rigor.
 
 When `skill:sdlc-council` runs the consensus check before presenting a batch:
 - Confirm: "The code works, tests pass, matches the spec"
-- If `skill:sdlc-council-lucas` raises an issue, address it (fix or explain why it's not an issue)
+- If `skill:sdlc-council-critic` raises an issue, address it (fix or explain why it's not an issue)
 - If `skill:sdlc-impl-strategy` notes spec drift, either realign or justify the deviation
 
 ## What Not To Do
@@ -96,4 +96,4 @@ When `skill:sdlc-council` runs the consensus check before presenting a batch:
 - Don't skip files in the batch (complete the full batch)
 - Don't modify files outside your current batch scope
 - Don't introduce new dependencies without approval from `skill:sdlc-council`
-- Don't mark your own work as `done` — only `skill:sdlc-council-lucas` can promote to `done`
+- Don't mark your own work as `done` — only `skill:sdlc-council-critic` can promote to `done`

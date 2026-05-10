@@ -2,3 +2,4 @@ node_modules/
 dist/
 .wizard.json
 .claude/
+.env

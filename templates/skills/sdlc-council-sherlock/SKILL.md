@@ -79,12 +79,12 @@ When a bug or failure is received:
 
 - Architecture problems → flag to `skill:sdlc-council` for re-planning via `skill:sdlc-impl-strategy`
 - Missing features → that's new work, not a bug
-- Performance issues → flag to `skill:sdlc-council-lucas` unless it's a clear regression
+- Performance issues → flag to `skill:sdlc-council-critic` unless it's a clear regression
 
 ## Workflow Integration
 
-- Context comes from `skill:sdlc-council-hephaestus`'s code and `skill:sdlc-council-lucas`'s issue reports
-- After fixing, changes go back through `skill:sdlc-council-lucas`
+- Context comes from `skill:sdlc-council-hephaestus`'s code and `skill:sdlc-council-critic`'s issue reports
+- After fixing, changes go back through `skill:sdlc-council-critic`
 - If the fix requires architecture changes, escalate to `skill:sdlc-council`, which will involve `skill:sdlc-impl-strategy`
 
 ## Fix Quality Bar
@@ -94,7 +94,7 @@ Every fix must satisfy:
 - [ ] All tests pass after the fix
 - [ ] No new warnings introduced
 - [ ] Fix is minimal — only touches what's necessary
-- [ ] Would survive a code review by `skill:sdlc-council-lucas`
+- [ ] Would survive a code review by `skill:sdlc-council-critic`
 
 ## When Stuck
 

@@ -1,0 +1,562 @@
+{
+  "eval_id": "run-1778441221",
+  "skill": "sdlc-council-daedalus",
+  "eval_name": "sdlc-council-daedalus-eval",
+  "timestamp": "2026-05-10T19:26:42.539177167Z",
+  "config": {
+    "runs_per_test": 1,
+    "model_id": "mock",
+    "engine_type": "copilot-sdk",
+    "timeout_sec": 300
+  },
+  "summary": {
+    "total_tests": 3,
+    "succeeded": 0,
+    "failed": 3,
+    "errors": 0,
+    "skipped": 0,
+    "success_rate": 0,
+    "aggregate_score": 0.27777777777777773,
+    "weighted_score": 0.27777777777777773,
+    "min_score": 0.16666666666666666,
+    "max_score": 0.5,
+    "std_dev": 0.15713484026367724,
+    "duration_ms": 19331,
+    "usage": {
+      "turns": 5,
+      "input_tokens": 89460,
+      "output_tokens": 713,
+      "cache_read_tokens": 57868,
+      "cache_write_tokens": 0,
+      "premium_requests": 5
+    }
+  },
+  "metrics": {},
+  "tasks": [
+    {
+      "test_id": "negative-trigger-001",
+      "display_name": "Negative Trigger 1",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 2533,
+          "validations": {
+            "omits-skill-keywords": {
+              "identifier": "omits-skill-keywords",
+              "type": "text",
+              "score": 1,
+              "weight": 1,
+              "passed": true,
+              "feedback": "All text checks passed",
+              "details": {
+                "contains": null,
+                "contains_cs": null,
+                "failures": null,
+                "not_contains": [
+                  "council",
+                  "daedalus",
+                  "sdlc"
+                ],
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 17289 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 2533,
+                "failures": [
+                  "Token usage 17289 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 17289,
+                "tool_call_count": 0,
+                "tools_used": []
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 0,
+            "tools_used": [],
+            "errors": [],
+            "usage": {
+              "turns": 1,
+              "input_tokens": 17269,
+              "output_tokens": 20,
+              "cache_read_tokens": 8044,
+              "cache_write_tokens": 0,
+              "premium_requests": 1
+            },
+            "session_id": "fb3c5031-8be1-406a-9962-c8e17ee3cb5d"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "Tell me a short joke about coffee.",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "Why did the coffee file a police report?\n\nBecause it got **mugged**.",
+              "type": "assistant.message"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "Why did the coffee file a police report?\n\nBecause it got **mugged**.",
+          "workspace_dir": "/tmp/waza-3792949156"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.5,
+        "avg_weighted_score": 0.5,
+        "min_score": 0.5,
+        "max_score": 0.5,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 2533
+      }
+    },
+    {
+      "test_id": "positive-trigger-001",
+      "display_name": "Positive Trigger 1",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 8815,
+          "validations": {
+            "contains-keywords": {
+              "identifier": "contains-keywords",
+              "type": "text",
+              "score": 0.3333333333333333,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Missing expected substring: council; Missing expected substring: sdlc",
+              "details": {
+                "contains": [
+                  "council",
+                  "daedalus",
+                  "sdlc"
+                ],
+                "contains_cs": null,
+                "failures": [
+                  "Missing expected substring: council",
+                  "Missing expected substring: sdlc"
+                ],
+                "not_contains": null,
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 36521 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 8815,
+                "failures": [
+                  "Token usage 36521 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 36521,
+                "tool_call_count": 1,
+                "tools_used": [
+                  "skill"
+                ]
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 1,
+            "tools_used": [
+              "skill"
+            ],
+            "tool_calls": [
+              {
+                "name": "skill",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": "sdlc-council-daedalus"
+                },
+                "result": {
+                  "content": "Skill \"sdlc-council-daedalus\" loaded successfully. Follow the instructions in the skill context.",
+                  "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-council-daedalus\ndescription: \u003e\n  Architecture and specification skill. Decomposes features into actionable\n  implementation plans using a sequential process: (1) explore the codebase,\n  (2) produce concrete steps with specific file paths and function signatures,\n  (3) group steps into dependency-ordered batches, then output\n  `plans/\u003ctopic\u003e/plan.md` + `lessons.md` via `skill:sdlc-impl-strategy`.\n  Use when breaking down features, designing architecture, writing\n  specs, re-planning after failures, or verifying approach alignment.\n---\n\n# Daedalus\n\n## Purpose\n\nInvestigate the codebase, research the best approach, and produce a\nconcrete specification that can be executed. This skill is the workflow's\nfact-checker and architect. If something is unclear, perform targeted research\nto clarify the ambiguity, focusing on official documentation or primary sources.\nIf there are multiple approaches, evaluate them. The output becomes the blueprint\n`skill:sdlc-council-hephaestus` follows.\n\n## Inputs\n\nFrom `skill:sdlc-council`:\n\n- The clarified task description (one-sentence intent + acceptance criteria)\n- Any existing codebase context (file tree, key files)\n- Constraints and decisions already made\n- Prior lessons obtained by invoking\n  `skill:sdlc-lessons-learned` in `read \u003ctopic\u003e` mode (when the\n  plan folder already exists)\n\n## What You Produce\n\nProduce the plan artifact by invoking `skill:sdlc-impl-strategy`.\nThe output is always `plans/\u003ctopic\u003e/plan.md` plus a `plans/\u003ctopic\u003e/lessons.md`\ninitialized by `skill:sdlc-lessons-learned` — the same shape\nthe user would get by running `skill:sdlc-impl-strategy` directly.\nThis skill's job is to make that plan deeply researched and batch-ready.\n\nThe sections below describe the content that goes **into** `plan.md`'s\n\"How We Are Doing It\" section and batch plan.\n\n### Section 2: How\n\n**What TO DO** — Numbered steps, each one:\n\n- Concrete (file paths, function signatures, not vague descriptions)\n- Verifiable (how do you know it's done?)\n- Ordered by dependency (what must exist before the next step)\n\n**What NOT TO DO** — Anti-patterns specific to this task:\n\n- What shortcuts would cause regressions?\n- What files should NOT be touched?\n- What patterns should be avoided?\n\n**Architecture Decisions** — For every non-obvious choice:\n\n- Document the decision\n- Explain why (not just what)\n- List what you considered and rejected\n\n### Batch Plan\n\nGroup the steps into logical batches:\n\n- Each batch should be independently reviewable\n- A batch should leave the codebase in a working state\n- Aim for 3-5 files per batch\n- Order batches by dependency\n\n## Planning Process\n\n1. **Explore** — Read the relevant codebase broadly. Understand what exists before proposing changes. Read adjacent code, not just the target files. When external behavior matters, verify it with web research or official documentation.\n2. **Sketch** — Draft a rough plan. Identify the critical path.\n3. **Detail** — Write the full specification. Be specific about file paths and function signatures.\n4. **Challenge** — Re-read your plan and ask: “Is there a simpler way?” If yes, rewrite. Consider what `skill:sdlc-council-lucas` will challenge — preemptively address the contrarian view in your spec.\n5. **Batch** — Group into batches. Each batch should be a logical unit a reviewer can assess.\n\n## Research Approach\n\n- **Ground decisions in evidence.** Don't recommend an approach unless you've verified it fits the existing codebase patterns.\n- **Verify external claims.** If another skill cites framework behavior, package semantics, security guidance, or API constraints, confirm it against primary sources on the web before building it into the spec.\n- **Flag uncertainties.** If you're 80% sure but not 100%, say so. `skill:sdlc-council` will escalate to the user.\n- **Consider the contrarian view.** What would `skill:sdlc-council-lucas` challenge? Address it in the spec.\n\n## Quality Checks\n\nBefore handing the plan back to `skill:sdlc-council`, verify:\n\n- [ ] Every step references a specific file or location\n- [ ] No step is vague (\"improve the code\" is not a step)\n- [ ] Batches are ordered by dependency\n- [ ] What NOT TO DO section prevents known pitfalls\n- [ ] Architecture decisions have rationale, not just choices\n- [ ] The plan could be executed by someone who wasn't in the planning session\n\n## In the Debate Pattern\n\nWhen `skill:sdlc-council` runs the consensus check before presenting a batch:\n\n- Verify the approach still aligns with the architecture\n- Check that `skill:sdlc-council-hephaestus`'s implementation didn't drift from the spec\n- If it drifted, determine whether the drift was an improvement or a regression\n\n## Re-Planning\n\nIf `skill:sdlc-council` sends you back to re-plan (because `skill:sdlc-council-lucas`\nor the user rejected the approach):\n\n1. Read the session log to understand what went wrong\n2. Read the specific feedback\n3. Produce a NEW plan, not a patch on the old one\n4. Explain what changed and why in the Architecture Decisions table\n"
+                },
+                "success": true
+              }
+            ],
+            "errors": [],
+            "usage": {
+              "turns": 2,
+              "input_tokens": 36145,
+              "output_tokens": 376,
+              "cache_read_tokens": 24912,
+              "cache_write_tokens": 0,
+              "premium_requests": 2
+            },
+            "session_id": "1ecda51d-7298-4d05-8bcd-5b2bd0f53753"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "Use sdlc-council-daedalus to help me complete this task",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants me to invoke the sdlc-council-daedalus skill. Let me do that.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "skill": "sdlc-council-daedalus"
+              },
+              "tool_call_id": "toolu_vrtx_01RvFLeACzVNeusfDn4CTBBA",
+              "tool_name": "skill"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01RvFLeACzVNeusfDn4CTBBA",
+              "tool_result": {
+                "content": "Skill \"sdlc-council-daedalus\" loaded successfully. Follow the instructions in the skill context.",
+                "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-council-daedalus\ndescription: \u003e\n  Architecture and specification skill. Decomposes features into actionable\n  implementation plans using a sequential process: (1) explore the codebase,\n  (2) produce concrete steps with specific file paths and function signatures,\n  (3) group steps into dependency-ordered batches, then output\n  `plans/\u003ctopic\u003e/plan.md` + `lessons.md` via `skill:sdlc-impl-strategy`.\n  Use when breaking down features, designing architecture, writing\n  specs, re-planning after failures, or verifying approach alignment.\n---\n\n# Daedalus\n\n## Purpose\n\nInvestigate the codebase, research the best approach, and produce a\nconcrete specification that can be executed. This skill is the workflow's\nfact-checker and architect. If something is unclear, perform targeted research\nto clarify the ambiguity, focusing on official documentation or primary sources.\nIf there are multiple approaches, evaluate them. The output becomes the blueprint\n`skill:sdlc-council-hephaestus` follows.\n\n## Inputs\n\nFrom `skill:sdlc-council`:\n\n- The clarified task description (one-sentence intent + acceptance criteria)\n- Any existing codebase context (file tree, key files)\n- Constraints and decisions already made\n- Prior lessons obtained by invoking\n  `skill:sdlc-lessons-learned` in `read \u003ctopic\u003e` mode (when the\n  plan folder already exists)\n\n## What You Produce\n\nProduce the plan artifact by invoking `skill:sdlc-impl-strategy`.\nThe output is always `plans/\u003ctopic\u003e/plan.md` plus a `plans/\u003ctopic\u003e/lessons.md`\ninitialized by `skill:sdlc-lessons-learned` — the same shape\nthe user would get by running `skill:sdlc-impl-strategy` directly.\nThis skill's job is to make that plan deeply researched and batch-ready.\n\nThe sections below describe the content that goes **into** `plan.md`'s\n\"How We Are Doing It\" section and batch plan.\n\n### Section 2: How\n\n**What TO DO** — Numbered steps, each one:\n\n- Concrete (file paths, function signatures, not vague descriptions)\n- Verifiable (how do you know it's done?)\n- Ordered by dependency (what must exist before the next step)\n\n**What NOT TO DO** — Anti-patterns specific to this task:\n\n- What shortcuts would cause regressions?\n- What files should NOT be touched?\n- What patterns should be avoided?\n\n**Architecture Decisions** — For every non-obvious choice:\n\n- Document the decision\n- Explain why (not just what)\n- List what you considered and rejected\n\n### Batch Plan\n\nGroup the steps into logical batches:\n\n- Each batch should be independently reviewable\n- A batch should leave the codebase in a working state\n- Aim for 3-5 files per batch\n- Order batches by dependency\n\n## Planning Process\n\n1. **Explore** — Read the relevant codebase broadly. Understand what exists before proposing changes. Read adjacent code, not just the target files. When external behavior matters, verify it with web research or official documentation.\n2. **Sketch** — Draft a rough plan. Identify the critical path.\n3. **Detail** — Write the full specification. Be specific about file paths and function signatures.\n4. **Challenge** — Re-read your plan and ask: “Is there a simpler way?” If yes, rewrite. Consider what `skill:sdlc-council-lucas` will challenge — preemptively address the contrarian view in your spec.\n5. **Batch** — Group into batches. Each batch should be a logical unit a reviewer can assess.\n\n## Research Approach\n\n- **Ground decisions in evidence.** Don't recommend an approach unless you've verified it fits the existing codebase patterns.\n- **Verify external claims.** If another skill cites framework behavior, package semantics, security guidance, or API constraints, confirm it against primary sources on the web before building it into the spec.\n- **Flag uncertainties.** If you're 80% sure but not 100%, say so. `skill:sdlc-council` will escalate to the user.\n- **Consider the contrarian view.** What would `skill:sdlc-council-lucas` challenge? Address it in the spec.\n\n## Quality Checks\n\nBefore handing the plan back to `skill:sdlc-council`, verify:\n\n- [ ] Every step references a specific file or location\n- [ ] No step is vague (\"improve the code\" is not a step)\n- [ ] Batches are ordered by dependency\n- [ ] What NOT TO DO section prevents known pitfalls\n- [ ] Architecture decisions have rationale, not just choices\n- [ ] The plan could be executed by someone who wasn't in the planning session\n\n## In the Debate Pattern\n\nWhen `skill:sdlc-council` runs the consensus check before presenting a batch:\n\n- Verify the approach still aligns with the architecture\n- Check that `skill:sdlc-council-hephaestus`'s implementation didn't drift from the spec\n- If it drifted, determine whether the drift was an improvement or a regression\n\n## Re-Planning\n\nIf `skill:sdlc-council` sends you back to re-plan (because `skill:sdlc-council-lucas`\nor the user rejected the approach):\n\n1. Read the session log to understand what went wrong\n2. Read the specific feedback\n3. Produce a NEW plan, not a patch on the old one\n4. Explain what changed and why in the Architecture Decisions table\n"
+              }
+            },
+            {
+              "content": "---\nname: sdlc-council-daedalus\ndescription: \u003e\n  Architecture and specification skill. Decomposes features into actionable\n  implementation plans using a sequential process: (1) explore the codebase,\n  (2) produce concrete steps with specific file paths and function signatures,\n  (3) group steps into dependency-ordered batches, then output\n  `plans/\u003ctopic\u003e/plan.md` + `lessons.md` via `skill:sdlc-impl-strategy`.\n  Use when breaking down features, designing architecture, writing\n  specs, re-planning after failures, or verifying approach alignment.\n---\n\n# Daedalus\n\n## Purpose\n\nInvestigate the codebase, research the best approach, and produce a\nconcrete specification that can be executed. This skill is the workflow's\nfact-checker and architect. If something is unclear, perform targeted research\nto clarify the ambiguity, focusing on official documentation or primary sources.\nIf there are multiple approaches, evaluate them. The output becomes the blueprint\n`skill:sdlc-council-hephaestus` follows.\n\n## Inputs\n\nFrom `skill:sdlc-council`:\n\n- The clarified task description (one-sentence intent + acceptance criteria)\n- Any existing codebase context (file tree, key files)\n- Constraints and decisions already made\n- Prior lessons obtained by invoking\n  `skill:sdlc-lessons-learned` in `read \u003ctopic\u003e` mode (when the\n  plan folder already exists)\n\n## What You Produce\n\nProduce the plan artifact by invoking `skill:sdlc-impl-strategy`.\nThe output is always `plans/\u003ctopic\u003e/plan.md` plus a `plans/\u003ctopic\u003e/lessons.md`\ninitialized by `skill:sdlc-lessons-learned` — the same shape\nthe user would get by running `skill:sdlc-impl-strategy` directly.\nThis skill's job is to make that plan deeply researched and batch-ready.\n\nThe sections below describe the content that goes **into** `plan.md`'s\n\"How We Are Doing It\" section and batch plan.\n\n### Section 2: How\n\n**What TO DO** — Numbered steps, each one:\n\n- Concrete (file paths, function signatures, not vague descriptions)\n- Verifiable (how do you know it's done?)\n- Ordered by dependency (what must exist before the next step)\n\n**What NOT TO DO** — Anti-patterns specific to this task:\n\n- What shortcuts would cause regressions?\n- What files should NOT be touched?\n- What patterns should be avoided?\n\n**Architecture Decisions** — For every non-obvious choice:\n\n- Document the decision\n- Explain why (not just what)\n- List what you considered and rejected\n\n### Batch Plan\n\nGroup the steps into logical batches:\n\n- Each batch should be independently reviewable\n- A batch should leave the codebase in a working state\n- Aim for 3-5 files per batch\n- Order batches by dependency\n\n## Planning Process\n\n1. **Explore** — Read the relevant codebase broadly. Understand what exists before proposing changes. Read adjacent code, not just the target files. When external behavior matters, verify it with web research or official documentation.\n2. **Sketch** — Draft a rough plan. Identify the critical path.\n3. **Detail** — Write the full specification. Be specific about file paths and function signatures.\n4. **Challenge** — Re-read your plan and ask: “Is there a simpler way?” If yes, rewrite. Consider what `skill:sdlc-council-lucas` will challenge — preemptively address the contrarian view in your spec.\n5. **Batch** — Group into batches. Each batch should be a logical unit a reviewer can assess.\n\n## Research Approach\n\n- **Ground decisions in evidence.** Don't recommend an approach unless you've verified it fits the existing codebase patterns.\n- **Verify external claims.** If another skill cites framework behavior, package semantics, security guidance, or API constraints, confirm it against primary sources on the web before building it into the spec.\n- **Flag uncertainties.** If you're 80% sure but not 100%, say so. `skill:sdlc-council` will escalate to the user.\n- **Consider the contrarian view.** What would `skill:sdlc-council-lucas` challenge? Address it in the spec.\n\n## Quality Checks\n\nBefore handing the plan back to `skill:sdlc-council`, verify:\n\n- [ ] Every step references a specific file or location\n- [ ] No step is vague (\"improve the code\" is not a step)\n- [ ] Batches are ordered by dependency\n- [ ] What NOT TO DO section prevents known pitfalls\n- [ ] Architecture decisions have rationale, not just choices\n- [ ] The plan could be executed by someone who wasn't in the planning session\n\n## In the Debate Pattern\n\nWhen `skill:sdlc-council` runs the consensus check before presenting a batch:\n\n- Verify the approach still aligns with the architecture\n- Check that `skill:sdlc-council-hephaestus`'s implementation didn't drift from the spec\n- If it drifted, determine whether the drift was an improvement or a regression\n\n## Re-Planning\n\nIf `skill:sdlc-council` sends you back to re-plan (because `skill:sdlc-council-lucas`\nor the user rejected the approach):\n\n1. Read the session log to understand what went wrong\n2. Read the specific feedback\n3. Produce a NEW plan, not a patch on the old one\n4. Explain what changed and why in the Architecture Decisions table\n",
+              "type": "skill.invoked"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "I'm Daedalus — ready to investigate, architect, and produce a concrete implementation plan. To get started, I need to understand your task.\n\n**What are you trying to build or change?**\n\nPlease share:\n1. **The task** — What feature, refactor, bug fix, or migration do you need?\n2. **Acceptance criteria** — How will you know it's done?\n3. **Any constraints** — Tech stack preferences, files to avoid, deadlines, etc.\n\nIf you have a codebase already open, I'll explore it to ground the plan in evidence. Otherwise, point me to where we're starting.",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants me to act as Daedalus - the architecture and specification skill. I need to first understand what task they want me to help with. The user said \"help me complete this task\" but didn't specify what task. I need to ask them what they want to build/implement.\n\nLet me ask the user for the task details.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "I'm Daedalus — ready to investigate, architect, and produce a concrete implementation plan. To get started, I need to understand your task.\n\n**What are you trying to build or change?**\n\nPlease share:\n1. **The task** — What feature, refactor, bug fix, or migration do you need?\n2. **Acceptance criteria** — How will you know it's done?\n3. **Any constraints** — Tech stack preferences, files to avoid, deadlines, etc.\n\nIf you have a codebase already open, I'll explore it to ground the plan in evidence. Otherwise, point me to where we're starting.",
+          "skill_invocations": [
+            {
+              "name": "sdlc-council-daedalus",
+              "path": "/workspaces/agentic-sdlc-wizard/templates/skills/sdlc-council-daedalus/SKILL.md"
+            }
+          ],
+          "workspace_dir": "/tmp/waza-2424280238"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.16666666666666666,
+        "avg_weighted_score": 0.16666666666666666,
+        "min_score": 0.16666666666666666,
+        "max_score": 0.16666666666666666,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 8815
+      }
+    },
+    {
+      "test_id": "positive-trigger-002",
+      "display_name": "Positive Trigger 2",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 7965,
+          "validations": {
+            "contains-keywords": {
+              "identifier": "contains-keywords",
+              "type": "text",
+              "score": 0.3333333333333333,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Missing expected substring: council; Missing expected substring: sdlc",
+              "details": {
+                "contains": [
+                  "council",
+                  "daedalus",
+                  "sdlc"
+                ],
+                "contains_cs": null,
+                "failures": [
+                  "Missing expected substring: council",
+                  "Missing expected substring: sdlc"
+                ],
+                "not_contains": null,
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 36363 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 7965,
+                "failures": [
+                  "Token usage 36363 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 36363,
+                "tool_call_count": 1,
+                "tools_used": [
+                  "skill"
+                ]
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 1,
+            "tools_used": [
+              "skill"
+            ],
+            "tool_calls": [
+              {
+                "name": "skill",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": "sdlc-council-daedalus"
+                },
+                "result": {
+                  "content": "Skill \"sdlc-council-daedalus\" loaded successfully. Follow the instructions in the skill context.",
+                  "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-council-daedalus\ndescription: \u003e\n  Architecture and specification skill. Decomposes features into actionable\n  implementation plans using a sequential process: (1) explore the codebase,\n  (2) produce concrete steps with specific file paths and function signatures,\n  (3) group steps into dependency-ordered batches, then output\n  `plans/\u003ctopic\u003e/plan.md` + `lessons.md` via `skill:sdlc-impl-strategy`.\n  Use when breaking down features, designing architecture, writing\n  specs, re-planning after failures, or verifying approach alignment.\n---\n\n# Daedalus\n\n## Purpose\n\nInvestigate the codebase, research the best approach, and produce a\nconcrete specification that can be executed. This skill is the workflow's\nfact-checker and architect. If something is unclear, perform targeted research\nto clarify the ambiguity, focusing on official documentation or primary sources.\nIf there are multiple approaches, evaluate them. The output becomes the blueprint\n`skill:sdlc-council-hephaestus` follows.\n\n## Inputs\n\nFrom `skill:sdlc-council`:\n\n- The clarified task description (one-sentence intent + acceptance criteria)\n- Any existing codebase context (file tree, key files)\n- Constraints and decisions already made\n- Prior lessons obtained by invoking\n  `skill:sdlc-lessons-learned` in `read \u003ctopic\u003e` mode (when the\n  plan folder already exists)\n\n## What You Produce\n\nProduce the plan artifact by invoking `skill:sdlc-impl-strategy`.\nThe output is always `plans/\u003ctopic\u003e/plan.md` plus a `plans/\u003ctopic\u003e/lessons.md`\ninitialized by `skill:sdlc-lessons-learned` — the same shape\nthe user would get by running `skill:sdlc-impl-strategy` directly.\nThis skill's job is to make that plan deeply researched and batch-ready.\n\nThe sections below describe the content that goes **into** `plan.md`'s\n\"How We Are Doing It\" section and batch plan.\n\n### Section 2: How\n\n**What TO DO** — Numbered steps, each one:\n\n- Concrete (file paths, function signatures, not vague descriptions)\n- Verifiable (how do you know it's done?)\n- Ordered by dependency (what must exist before the next step)\n\n**What NOT TO DO** — Anti-patterns specific to this task:\n\n- What shortcuts would cause regressions?\n- What files should NOT be touched?\n- What patterns should be avoided?\n\n**Architecture Decisions** — For every non-obvious choice:\n\n- Document the decision\n- Explain why (not just what)\n- List what you considered and rejected\n\n### Batch Plan\n\nGroup the steps into logical batches:\n\n- Each batch should be independently reviewable\n- A batch should leave the codebase in a working state\n- Aim for 3-5 files per batch\n- Order batches by dependency\n\n## Planning Process\n\n1. **Explore** — Read the relevant codebase broadly. Understand what exists before proposing changes. Read adjacent code, not just the target files. When external behavior matters, verify it with web research or official documentation.\n2. **Sketch** — Draft a rough plan. Identify the critical path.\n3. **Detail** — Write the full specification. Be specific about file paths and function signatures.\n4. **Challenge** — Re-read your plan and ask: “Is there a simpler way?” If yes, rewrite. Consider what `skill:sdlc-council-lucas` will challenge — preemptively address the contrarian view in your spec.\n5. **Batch** — Group into batches. Each batch should be a logical unit a reviewer can assess.\n\n## Research Approach\n\n- **Ground decisions in evidence.** Don't recommend an approach unless you've verified it fits the existing codebase patterns.\n- **Verify external claims.** If another skill cites framework behavior, package semantics, security guidance, or API constraints, confirm it against primary sources on the web before building it into the spec.\n- **Flag uncertainties.** If you're 80% sure but not 100%, say so. `skill:sdlc-council` will escalate to the user.\n- **Consider the contrarian view.** What would `skill:sdlc-council-lucas` challenge? Address it in the spec.\n\n## Quality Checks\n\nBefore handing the plan back to `skill:sdlc-council`, verify:\n\n- [ ] Every step references a specific file or location\n- [ ] No step is vague (\"improve the code\" is not a step)\n- [ ] Batches are ordered by dependency\n- [ ] What NOT TO DO section prevents known pitfalls\n- [ ] Architecture decisions have rationale, not just choices\n- [ ] The plan could be executed by someone who wasn't in the planning session\n\n## In the Debate Pattern\n\nWhen `skill:sdlc-council` runs the consensus check before presenting a batch:\n\n- Verify the approach still aligns with the architecture\n- Check that `skill:sdlc-council-hephaestus`'s implementation didn't drift from the spec\n- If it drifted, determine whether the drift was an improvement or a regression\n\n## Re-Planning\n\nIf `skill:sdlc-council` sends you back to re-plan (because `skill:sdlc-council-lucas`\nor the user rejected the approach):\n\n1. Read the session log to understand what went wrong\n2. Read the specific feedback\n3. Produce a NEW plan, not a patch on the old one\n4. Explain what changed and why in the Architecture Decisions table\n"
+                },
+                "success": true
+              }
+            ],
+            "errors": [],
+            "usage": {
+              "turns": 2,
+              "input_tokens": 36046,
+              "output_tokens": 317,
+              "cache_read_tokens": 24912,
+              "cache_write_tokens": 0,
+              "premium_requests": 2
+            },
+            "session_id": "b3785567-bae5-4a4a-9b7f-1295f63742dc"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "I need assistance with sdlc council daedalus-related work",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants assistance with sdlc-council-daedalus related work. I should invoke that skill.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "skill": "sdlc-council-daedalus"
+              },
+              "tool_call_id": "toolu_vrtx_017hzYhq5Yf61nDiSETePJ63",
+              "tool_name": "skill"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_017hzYhq5Yf61nDiSETePJ63",
+              "tool_result": {
+                "content": "Skill \"sdlc-council-daedalus\" loaded successfully. Follow the instructions in the skill context.",
+                "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-council-daedalus\ndescription: \u003e\n  Architecture and specification skill. Decomposes features into actionable\n  implementation plans using a sequential process: (1) explore the codebase,\n  (2) produce concrete steps with specific file paths and function signatures,\n  (3) group steps into dependency-ordered batches, then output\n  `plans/\u003ctopic\u003e/plan.md` + `lessons.md` via `skill:sdlc-impl-strategy`.\n  Use when breaking down features, designing architecture, writing\n  specs, re-planning after failures, or verifying approach alignment.\n---\n\n# Daedalus\n\n## Purpose\n\nInvestigate the codebase, research the best approach, and produce a\nconcrete specification that can be executed. This skill is the workflow's\nfact-checker and architect. If something is unclear, perform targeted research\nto clarify the ambiguity, focusing on official documentation or primary sources.\nIf there are multiple approaches, evaluate them. The output becomes the blueprint\n`skill:sdlc-council-hephaestus` follows.\n\n## Inputs\n\nFrom `skill:sdlc-council`:\n\n- The clarified task description (one-sentence intent + acceptance criteria)\n- Any existing codebase context (file tree, key files)\n- Constraints and decisions already made\n- Prior lessons obtained by invoking\n  `skill:sdlc-lessons-learned` in `read \u003ctopic\u003e` mode (when the\n  plan folder already exists)\n\n## What You Produce\n\nProduce the plan artifact by invoking `skill:sdlc-impl-strategy`.\nThe output is always `plans/\u003ctopic\u003e/plan.md` plus a `plans/\u003ctopic\u003e/lessons.md`\ninitialized by `skill:sdlc-lessons-learned` — the same shape\nthe user would get by running `skill:sdlc-impl-strategy` directly.\nThis skill's job is to make that plan deeply researched and batch-ready.\n\nThe sections below describe the content that goes **into** `plan.md`'s\n\"How We Are Doing It\" section and batch plan.\n\n### Section 2: How\n\n**What TO DO** — Numbered steps, each one:\n\n- Concrete (file paths, function signatures, not vague descriptions)\n- Verifiable (how do you know it's done?)\n- Ordered by dependency (what must exist before the next step)\n\n**What NOT TO DO** — Anti-patterns specific to this task:\n\n- What shortcuts would cause regressions?\n- What files should NOT be touched?\n- What patterns should be avoided?\n\n**Architecture Decisions** — For every non-obvious choice:\n\n- Document the decision\n- Explain why (not just what)\n- List what you considered and rejected\n\n### Batch Plan\n\nGroup the steps into logical batches:\n\n- Each batch should be independently reviewable\n- A batch should leave the codebase in a working state\n- Aim for 3-5 files per batch\n- Order batches by dependency\n\n## Planning Process\n\n1. **Explore** — Read the relevant codebase broadly. Understand what exists before proposing changes. Read adjacent code, not just the target files. When external behavior matters, verify it with web research or official documentation.\n2. **Sketch** — Draft a rough plan. Identify the critical path.\n3. **Detail** — Write the full specification. Be specific about file paths and function signatures.\n4. **Challenge** — Re-read your plan and ask: “Is there a simpler way?” If yes, rewrite. Consider what `skill:sdlc-council-lucas` will challenge — preemptively address the contrarian view in your spec.\n5. **Batch** — Group into batches. Each batch should be a logical unit a reviewer can assess.\n\n## Research Approach\n\n- **Ground decisions in evidence.** Don't recommend an approach unless you've verified it fits the existing codebase patterns.\n- **Verify external claims.** If another skill cites framework behavior, package semantics, security guidance, or API constraints, confirm it against primary sources on the web before building it into the spec.\n- **Flag uncertainties.** If you're 80% sure but not 100%, say so. `skill:sdlc-council` will escalate to the user.\n- **Consider the contrarian view.** What would `skill:sdlc-council-lucas` challenge? Address it in the spec.\n\n## Quality Checks\n\nBefore handing the plan back to `skill:sdlc-council`, verify:\n\n- [ ] Every step references a specific file or location\n- [ ] No step is vague (\"improve the code\" is not a step)\n- [ ] Batches are ordered by dependency\n- [ ] What NOT TO DO section prevents known pitfalls\n- [ ] Architecture decisions have rationale, not just choices\n- [ ] The plan could be executed by someone who wasn't in the planning session\n\n## In the Debate Pattern\n\nWhen `skill:sdlc-council` runs the consensus check before presenting a batch:\n\n- Verify the approach still aligns with the architecture\n- Check that `skill:sdlc-council-hephaestus`'s implementation didn't drift from the spec\n- If it drifted, determine whether the drift was an improvement or a regression\n\n## Re-Planning\n\nIf `skill:sdlc-council` sends you back to re-plan (because `skill:sdlc-council-lucas`\nor the user rejected the approach):\n\n1. Read the session log to understand what went wrong\n2. Read the specific feedback\n3. Produce a NEW plan, not a patch on the old one\n4. Explain what changed and why in the Architecture Decisions table\n"
+              }
+            },
+            {
+              "content": "---\nname: sdlc-council-daedalus\ndescription: \u003e\n  Architecture and specification skill. Decomposes features into actionable\n  implementation plans using a sequential process: (1) explore the codebase,\n  (2) produce concrete steps with specific file paths and function signatures,\n  (3) group steps into dependency-ordered batches, then output\n  `plans/\u003ctopic\u003e/plan.md` + `lessons.md` via `skill:sdlc-impl-strategy`.\n  Use when breaking down features, designing architecture, writing\n  specs, re-planning after failures, or verifying approach alignment.\n---\n\n# Daedalus\n\n## Purpose\n\nInvestigate the codebase, research the best approach, and produce a\nconcrete specification that can be executed. This skill is the workflow's\nfact-checker and architect. If something is unclear, perform targeted research\nto clarify the ambiguity, focusing on official documentation or primary sources.\nIf there are multiple approaches, evaluate them. The output becomes the blueprint\n`skill:sdlc-council-hephaestus` follows.\n\n## Inputs\n\nFrom `skill:sdlc-council`:\n\n- The clarified task description (one-sentence intent + acceptance criteria)\n- Any existing codebase context (file tree, key files)\n- Constraints and decisions already made\n- Prior lessons obtained by invoking\n  `skill:sdlc-lessons-learned` in `read \u003ctopic\u003e` mode (when the\n  plan folder already exists)\n\n## What You Produce\n\nProduce the plan artifact by invoking `skill:sdlc-impl-strategy`.\nThe output is always `plans/\u003ctopic\u003e/plan.md` plus a `plans/\u003ctopic\u003e/lessons.md`\ninitialized by `skill:sdlc-lessons-learned` — the same shape\nthe user would get by running `skill:sdlc-impl-strategy` directly.\nThis skill's job is to make that plan deeply researched and batch-ready.\n\nThe sections below describe the content that goes **into** `plan.md`'s\n\"How We Are Doing It\" section and batch plan.\n\n### Section 2: How\n\n**What TO DO** — Numbered steps, each one:\n\n- Concrete (file paths, function signatures, not vague descriptions)\n- Verifiable (how do you know it's done?)\n- Ordered by dependency (what must exist before the next step)\n\n**What NOT TO DO** — Anti-patterns specific to this task:\n\n- What shortcuts would cause regressions?\n- What files should NOT be touched?\n- What patterns should be avoided?\n\n**Architecture Decisions** — For every non-obvious choice:\n\n- Document the decision\n- Explain why (not just what)\n- List what you considered and rejected\n\n### Batch Plan\n\nGroup the steps into logical batches:\n\n- Each batch should be independently reviewable\n- A batch should leave the codebase in a working state\n- Aim for 3-5 files per batch\n- Order batches by dependency\n\n## Planning Process\n\n1. **Explore** — Read the relevant codebase broadly. Understand what exists before proposing changes. Read adjacent code, not just the target files. When external behavior matters, verify it with web research or official documentation.\n2. **Sketch** — Draft a rough plan. Identify the critical path.\n3. **Detail** — Write the full specification. Be specific about file paths and function signatures.\n4. **Challenge** — Re-read your plan and ask: “Is there a simpler way?” If yes, rewrite. Consider what `skill:sdlc-council-lucas` will challenge — preemptively address the contrarian view in your spec.\n5. **Batch** — Group into batches. Each batch should be a logical unit a reviewer can assess.\n\n## Research Approach\n\n- **Ground decisions in evidence.** Don't recommend an approach unless you've verified it fits the existing codebase patterns.\n- **Verify external claims.** If another skill cites framework behavior, package semantics, security guidance, or API constraints, confirm it against primary sources on the web before building it into the spec.\n- **Flag uncertainties.** If you're 80% sure but not 100%, say so. `skill:sdlc-council` will escalate to the user.\n- **Consider the contrarian view.** What would `skill:sdlc-council-lucas` challenge? Address it in the spec.\n\n## Quality Checks\n\nBefore handing the plan back to `skill:sdlc-council`, verify:\n\n- [ ] Every step references a specific file or location\n- [ ] No step is vague (\"improve the code\" is not a step)\n- [ ] Batches are ordered by dependency\n- [ ] What NOT TO DO section prevents known pitfalls\n- [ ] Architecture decisions have rationale, not just choices\n- [ ] The plan could be executed by someone who wasn't in the planning session\n\n## In the Debate Pattern\n\nWhen `skill:sdlc-council` runs the consensus check before presenting a batch:\n\n- Verify the approach still aligns with the architecture\n- Check that `skill:sdlc-council-hephaestus`'s implementation didn't drift from the spec\n- If it drifted, determine whether the drift was an improvement or a regression\n\n## Re-Planning\n\nIf `skill:sdlc-council` sends you back to re-plan (because `skill:sdlc-council-lucas`\nor the user rejected the approach):\n\n1. Read the session log to understand what went wrong\n2. Read the specific feedback\n3. Produce a NEW plan, not a patch on the old one\n4. Explain what changed and why in the Architecture Decisions table\n",
+              "type": "skill.invoked"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "I'm operating as **Daedalus** — your architecture and specification skill. I explore codebases, research approaches, and produce concrete, batch-ready implementation plans.\n\nTo get started, I need the task context:\n\n1. **What are we building/changing?** (one-sentence description)\n2. **What's the acceptance criteria?** (how do we know it's done?)\n3. **Is there an existing codebase?** (or is this greenfield?)\n4. **Any constraints already decided?** (tech stack, patterns, out-of-scope items)\n\nWhat's the task?",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants assistance with sdlc-council-daedalus work. The skill has been loaded. I'm now acting as Daedalus - the architecture and specification skill. I need to understand what task the user wants me to plan/architect. Let me ask them what they need help with.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "I'm operating as **Daedalus** — your architecture and specification skill. I explore codebases, research approaches, and produce concrete, batch-ready implementation plans.\n\nTo get started, I need the task context:\n\n1. **What are we building/changing?** (one-sentence description)\n2. **What's the acceptance criteria?** (how do we know it's done?)\n3. **Is there an existing codebase?** (or is this greenfield?)\n4. **Any constraints already decided?** (tech stack, patterns, out-of-scope items)\n\nWhat's the task?",
+          "skill_invocations": [
+            {
+              "name": "sdlc-council-daedalus",
+              "path": "/workspaces/agentic-sdlc-wizard/templates/skills/sdlc-council-daedalus/SKILL.md"
+            }
+          ],
+          "workspace_dir": "/tmp/waza-1707548541"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.16666666666666666,
+        "avg_weighted_score": 0.16666666666666666,
+        "min_score": 0.16666666666666666,
+        "max_score": 0.16666666666666666,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 7965
+      }
+    }
+  ]
+}

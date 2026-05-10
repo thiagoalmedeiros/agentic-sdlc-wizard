@@ -1,0 +1,857 @@
+{
+  "eval_id": "run-1778441669",
+  "skill": "sdlc-devcontainer-setup",
+  "eval_name": "sdlc-devcontainer-setup-eval",
+  "timestamp": "2026-05-10T19:34:01.2133418Z",
+  "config": {
+    "runs_per_test": 1,
+    "model_id": "mock",
+    "engine_type": "copilot-sdk",
+    "timeout_sec": 300
+  },
+  "summary": {
+    "total_tests": 3,
+    "succeeded": 0,
+    "failed": 3,
+    "errors": 0,
+    "skipped": 0,
+    "success_rate": 0,
+    "aggregate_score": 0.27777777777777773,
+    "weighted_score": 0.27777777777777773,
+    "min_score": 0.16666666666666666,
+    "max_score": 0.5,
+    "std_dev": 0.15713484026367724,
+    "duration_ms": 28002,
+    "usage": {
+      "turns": 7,
+      "input_tokens": 147783,
+      "output_tokens": 1024,
+      "cache_read_tokens": 92500,
+      "cache_write_tokens": 0,
+      "premium_requests": 7
+    }
+  },
+  "metrics": {},
+  "tasks": [
+    {
+      "test_id": "negative-trigger-001",
+      "display_name": "Negative Trigger 1",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 2651,
+          "validations": {
+            "omits-skill-keywords": {
+              "identifier": "omits-skill-keywords",
+              "type": "text",
+              "score": 1,
+              "weight": 1,
+              "passed": true,
+              "feedback": "All text checks passed",
+              "details": {
+                "contains": null,
+                "contains_cs": null,
+                "failures": null,
+                "not_contains": [
+                  "devcontainer",
+                  "sdlc",
+                  "setup"
+                ],
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 19188 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 2651,
+                "failures": [
+                  "Token usage 19188 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 19188,
+                "tool_call_count": 0,
+                "tools_used": []
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 0,
+            "tools_used": [],
+            "errors": [],
+            "usage": {
+              "turns": 1,
+              "input_tokens": 19164,
+              "output_tokens": 24,
+              "cache_read_tokens": 0,
+              "cache_write_tokens": 0,
+              "premium_requests": 1
+            },
+            "session_id": "47874392-6a6a-4a83-83c5-157c25bd99e1"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "Tell me a short joke about coffee.",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "Why did the coffee file a police report?\n\nBecause it got **mugged**. ☕",
+              "type": "assistant.message"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "Why did the coffee file a police report?\n\nBecause it got **mugged**. ☕",
+          "workspace_dir": "/tmp/waza-1631812321"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.5,
+        "avg_weighted_score": 0.5,
+        "min_score": 0.5,
+        "max_score": 0.5,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 2651
+      }
+    },
+    {
+      "test_id": "positive-trigger-001",
+      "display_name": "Positive Trigger 1",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 12371,
+          "validations": {
+            "contains-keywords": {
+              "identifier": "contains-keywords",
+              "type": "text",
+              "score": 0.3333333333333333,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Missing expected substring: sdlc; Missing expected substring: setup",
+              "details": {
+                "contains": [
+                  "devcontainer",
+                  "sdlc",
+                  "setup"
+                ],
+                "contains_cs": null,
+                "failures": [
+                  "Missing expected substring: sdlc",
+                  "Missing expected substring: setup"
+                ],
+                "not_contains": null,
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 64838 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 12371,
+                "failures": [
+                  "Token usage 64838 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 64838,
+                "tool_call_count": 4,
+                "tools_used": [
+                  "skill",
+                  "bash",
+                  "glob",
+                  "glob"
+                ]
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 4,
+            "tools_used": [
+              "skill",
+              "bash",
+              "glob",
+              "glob"
+            ],
+            "tool_calls": [
+              {
+                "name": "skill",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": "sdlc-devcontainer-setup"
+                },
+                "result": {
+                  "content": "Skill \"sdlc-devcontainer-setup\" loaded successfully. Follow the instructions in the skill context.",
+                  "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-devcontainer-setup\ndescription: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'\n---\n\nYou are a DevOps and developer-experience expert. Set up or review a `.devcontainer` environment for this project.\n\nThe environment must be **polyglot-ready**: the base image should come from the official Microsoft devcontainers registry (`mcr.microsoft.com/devcontainers/`) so it ships with the standard non-root user, git integration, and VS Code server support already configured. Choose the variant that best matches the project's primary runtime (e.g., `base:ubuntu`, `javascript-node`, `python`, `universal`, etc.), but do **not** hard-code a specific language image as an example — infer it from the project context.\n\n---\n\n## Mode detection\n\nBefore doing anything else, determine whether the project already has a `.devcontainer` directory:\n\n- If `.devcontainer/` **does not exist** → follow the **New setup** flow below\n- If `.devcontainer/` **exists** → follow the **Audit existing configuration** flow below\n\n---\n\n## Prerequisites — verify before doing anything else (both flows)\n\nBefore creating or modifying any files, check that Docker is installed and the daemon is running:\n\n1. Run `docker info` in the terminal\n2. If the command **fails** or Docker is not found:\n   - Stop immediately\n   - Inform the user that Docker must be installed and running before proceeding\n   - Provide a link to the official install page: https://docs.docker.com/get-docker/\n   - Do **not** create any `.devcontainer` files\n3. If the command **succeeds**, proceed with creating the files below\n\n---\n\n## New setup flow\n\nWhen `.devcontainer/` does not exist, create the following three files.\n\n### Files to create\n\n### `.devcontainer/devcontainer.json`\n\n```jsonc\n{\n  \"name\": \"\u003cproject-name\u003e devcontainer\",\n  \"dockerComposeFile\": \"docker-compose.yml\",\n  \"service\": \"app\",\n  \"workspaceFolder\": \"/workspaces/${localWorkspaceFolderBasename}\",\n  \"customizations\": {\n    \"vscode\": {\n      \"settings\": {\n        \"editor.formatOnSave\": true,\n        \"editor.codeActionsOnSave\": {\n          // add language-appropriate fix-all actions, e.g. eslint, ruff, etc.\n        }\n      },\n      \"extensions\": [\n        // linter, formatter, language support, test runner extensions for the project's stack\n      ]\n    }\n  },\n  \"forwardPorts\": [/* infer relevant ports from the project */],\n  \"mounts\": [\n    // Always mount SSH keys and gitconfig from the host so git operations work seamlessly\n    \"source=${localEnv:HOME}/.ssh,target=/home/\u003cremoteUser\u003e/.ssh,type=bind,consistency=cached\",\n    \"source=${localEnv:HOME}/.gitconfig,target=/home/\u003cremoteUser\u003e/.gitconfig,type=bind,consistency=cached\"\n  ],\n  \"remoteUser\": \"\u003cnon-root user provided by the base image, e.g. node, vscode, etc.\u003e\"\n}\n```\n\n**Rules:**\n- Always use `dockerComposeFile` + `service` to reference the compose file — never use `build.dockerfile` directly; this makes it easy to add services (databases, caches, etc.) later without restructuring\n- `workspaceFolder` must point to `/workspaces/${localWorkspaceFolderBasename}` to align with the volume mount defined in `docker-compose.yml`\n- `forwardPorts` must list ports the app actually exposes (dev server, API, DB, etc.)\n- `mounts` must always include SSH keys and `.gitconfig` so the developer can push/pull and sign commits from inside the container\n- `remoteUser` must match the non-root user that ships with the chosen Microsoft devcontainers base image\n- Only add `postCreateCommand` for steps that must run after the workspace is mounted (e.g., `npm install`, `pip install -e .`); do not use it for tooling that belongs in the Dockerfile\n\n---\n\n### `.devcontainer/docker-compose.yml`\n\n```yaml\nservices:\n  app:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    volumes:\n      # Mount the workspace root into the container\n      # Use the actual folder name here — Docker Compose cannot resolve\n      # ${localWorkspaceFolderBasename} (only VS Code devcontainer.json can)\n      - ..:/workspaces/\u003cproject-folder-name\u003e:cached\n    # Keep the container running so VS Code can attach to it\n    command: sleep infinity\n    # Uncomment and add extra services (postgres, redis, etc.) as needed\n```\n\n**Rules:**\n- The service name must match the `service` field in `devcontainer.json` (default: `app`)\n- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/\u003cproject-folder-name\u003e` — **always hardcode the actual folder name here**; `${localWorkspaceFolderBasename}` is a VS Code-only variable that Docker Compose cannot resolve and will substitute with an empty string, causing a \"Workspace does not exist\" error when reopening in container\n- `command: sleep infinity` keeps the container alive for VS Code to attach; do not use an application start command here\n- Additional services (databases, message brokers, etc.) can be added as sibling services under `services:` when the project requires them\n\n---\n\n### `.devcontainer/Dockerfile`\n\n```dockerfile\nFROM mcr.microsoft.com/devcontainers/\u003cvariant\u003e:\u003ctag\u003e\n\n# Install all global development tools here so the container is self-contained.\n# Examples: package managers, CLI tools, task runners, linters, formatters.\n# Combine RUN steps and clean up package manager caches to keep the image lean.\n\n# Example pattern (adapt to the project stack):\n# RUN apt-get update \u0026\u0026 apt-get install -y --no-install-recommends \u003csystem-deps\u003e \\\n#     \u0026\u0026 rm -rf /var/lib/apt/lists/*\n\n# RUN \u003cruntime-package-manager\u003e install -g \u003ctool1\u003e \u003ctool2\u003e ...\n\n# Install a task runner (e.g., Taskfile) when the project uses one:\n# RUN sh -c \"$(curl --location https://taskfile.dev/install.sh)\" -- -d -b /usr/local/bin\n```\n\n**Rules:**\n- **All tooling must be installed in the Dockerfile** — the image must be fully usable immediately after build, without relying on any post-create scripts for tools\n- Do **not** install project dependencies (lock-file packages) in the Dockerfile; those belong in `postCreateCommand`\n- Prefer explicit, pinned versions for critical tools to ensure reproducible builds\n- Combine `RUN` instructions, avoid unnecessary packages, and remove caches to minimise image size\n- The non-root user and `WORKDIR` are already handled by the Microsoft base image; only override them if there is a specific reason\n\n---\n\n## General guidelines\n\n- Keep the `.devcontainer` folder minimal: `devcontainer.json` + `docker-compose.yml` + `Dockerfile` are the three required files — no more, unless the project demands it\n- Infer the correct base image variant, ports, extensions, and tooling from the project's language, framework, and existing config files (e.g., `package.json`, `pyproject.toml`, `Taskfile.yml`, `angular.json`)\n- Always include the SSH and gitconfig mounts — they are essential for a good developer experience\n- Add brief inline comments in the Dockerfile explaining non-obvious installation steps\n\n---\n\n## Post-creation verification\n\nAfter all three files have been created or modified, **dispatch a subagent** to validate the setup:\n\n1. `cd` into the project root (the parent of `.devcontainer/`)\n2. Run `docker compose -f .devcontainer/docker-compose.yml build` and verify the image builds without errors\n3. Run `docker compose -f .devcontainer/docker-compose.yml up -d` and verify the container starts successfully\n4. Run `docker compose -f .devcontainer/docker-compose.yml ps` and confirm the `app` service is in a **running** state\n5. Run `docker compose -f .devcontainer/docker-compose.yml down` to clean up after the test\n\nIf any step fails:\n- Read the error output carefully\n- Fix the relevant file (Dockerfile, docker-compose.yml, or devcontainer.json)\n- Re-run the verification from step 1\n\nOnly report success to the user once the container has been built, started, confirmed running, and cleaned up without errors.\n\n---\n\n## Audit existing configuration flow\n\nWhen `.devcontainer/` already exists, review the configuration against the standards above instead of creating files from scratch.\n\n### Step A1 — Read existing files\n\nRead all files inside `.devcontainer/` (at minimum look for `devcontainer.json`, `docker-compose.yml`, and `Dockerfile`).\n\n### Step A2 — Audit checklist\n\nCompare each file against the rules defined in the **New setup flow** section above. Use the following checklist:\n\n#### devcontainer.json\n\n| # | Check | Standard |\n|---|-------|----------|\n| 1 | Uses `dockerComposeFile` + `service` | Must reference a compose file — never use `build.dockerfile` directly |\n| 2 | `workspaceFolder` value | Must be `/workspaces/${localWorkspaceFolderBasename}` |\n| 3 | SSH key mount present | Must mount `${localEnv:HOME}/.ssh` into the container |\n| 4 | `.gitconfig` mount present | Must mount `${localEnv:HOME}/.gitconfig` into the container |\n| 5 | `remoteUser` set | Must match the non-root user from the Microsoft base image |\n| 6 | `forwardPorts` populated | Must list all ports the app actually exposes |\n| 7 | VS Code extensions listed | Should include linter, formatter, language support, and test runner extensions for the stack |\n| 8 | `editor.formatOnSave` enabled | Recommended in `customizations.vscode.settings` |\n| 9 | `postCreateCommand` usage | Verify it only installs project dependencies (e.g. `npm install`), not global tooling |\n\n#### docker-compose.yml\n\n| # | Check | Standard |\n|---|-------|----------|\n| 10 | Service name matches `service` field | Default: `app` — must be consistent with `devcontainer.json` |\n| 11 | Workspace volume source | Must use `..` (one level up from `.devcontainer/`) |\n| 12 | Workspace volume target | Must mount to `/workspaces/${localWorkspaceFolderBasename}` |\n| 13 | `command: sleep infinity` | Must be present to keep the container alive |\n\n#### Dockerfile\n\n| # | Check | Standard |\n|---|-------|----------|\n| 14 | Base image source | Must be from `mcr.microsoft.com/devcontainers/` and match the project stack |\n| 15 | Global tooling in Dockerfile | All global tools must be installed here, not in post-create scripts |\n| 16 | No project dependencies | Lock-file packages (`npm install`, `pip install`) must **not** be in the Dockerfile |\n| 17 | `RUN` instructions combined | Combine steps and clean up caches to minimize image size |\n| 18 | Tool versions pinned | Critical tools should use explicit, pinned versions |\n\n### Step A3 — Present findings\n\nPresent the audit results as a numbered list of suggestions grouped by file:\n- For each issue found, state the check number, what the current value/pattern is, what the standard requires, and the specific change proposed\n- Use ⚠️ for issues that should be fixed and ℹ️ for optional improvements\n- If a file passes all checks, mark it with ✅\n\n### Step A4 — Interactive selection\n\nAsk the user: \"Which suggestions would you like me to implement? (enter the numbers separated by commas, 'all' for everything, or 'none' to skip)\"\n\n### Step A5 — Apply selected changes\n\nIf the user selected suggestions:\n1. Modify **only** the parts of the existing files that correspond to the selected suggestions\n2. Preserve all configuration that was not flagged — do **not** rewrite files from scratch\n3. After applying changes, proceed to **Post-creation verification** above\n\nIf the user selected \"none\", skip verification and proceed to mark the step as done.\n"
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "docker info \u003e /dev/null 2\u003e\u00261 \u0026\u0026 echo \"DOCKER_OK\" || echo \"DOCKER_FAIL\"",
+                  "description": "Check if Docker daemon is running",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              },
+              {
+                "name": "glob",
+                "arguments": {
+                  "path": "/tmp/waza-1058501037",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "No files matched the pattern.",
+                  "detailedContent": "No files matched the pattern."
+                },
+                "success": true
+              },
+              {
+                "name": "glob",
+                "arguments": {
+                  "path": "/tmp/waza-1058501037",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "No files matched the pattern.",
+                  "detailedContent": "No files matched the pattern."
+                },
+                "success": true
+              }
+            ],
+            "errors": [],
+            "usage": {
+              "turns": 3,
+              "input_tokens": 64338,
+              "output_tokens": 500,
+              "cache_read_tokens": 46255,
+              "cache_write_tokens": 0,
+              "premium_requests": 3
+            },
+            "session_id": "c06d4873-a7fb-4725-ab93-599829075ced"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "Use sdlc-devcontainer-setup to help me complete this task",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants me to invoke the sdlc-devcontainer-setup skill.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "skill": "sdlc-devcontainer-setup"
+              },
+              "tool_call_id": "toolu_vrtx_01LwEv4SVdJGFt2bvZDfUAwM",
+              "tool_name": "skill"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01LwEv4SVdJGFt2bvZDfUAwM",
+              "tool_result": {
+                "content": "Skill \"sdlc-devcontainer-setup\" loaded successfully. Follow the instructions in the skill context.",
+                "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-devcontainer-setup\ndescription: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'\n---\n\nYou are a DevOps and developer-experience expert. Set up or review a `.devcontainer` environment for this project.\n\nThe environment must be **polyglot-ready**: the base image should come from the official Microsoft devcontainers registry (`mcr.microsoft.com/devcontainers/`) so it ships with the standard non-root user, git integration, and VS Code server support already configured. Choose the variant that best matches the project's primary runtime (e.g., `base:ubuntu`, `javascript-node`, `python`, `universal`, etc.), but do **not** hard-code a specific language image as an example — infer it from the project context.\n\n---\n\n## Mode detection\n\nBefore doing anything else, determine whether the project already has a `.devcontainer` directory:\n\n- If `.devcontainer/` **does not exist** → follow the **New setup** flow below\n- If `.devcontainer/` **exists** → follow the **Audit existing configuration** flow below\n\n---\n\n## Prerequisites — verify before doing anything else (both flows)\n\nBefore creating or modifying any files, check that Docker is installed and the daemon is running:\n\n1. Run `docker info` in the terminal\n2. If the command **fails** or Docker is not found:\n   - Stop immediately\n   - Inform the user that Docker must be installed and running before proceeding\n   - Provide a link to the official install page: https://docs.docker.com/get-docker/\n   - Do **not** create any `.devcontainer` files\n3. If the command **succeeds**, proceed with creating the files below\n\n---\n\n## New setup flow\n\nWhen `.devcontainer/` does not exist, create the following three files.\n\n### Files to create\n\n### `.devcontainer/devcontainer.json`\n\n```jsonc\n{\n  \"name\": \"\u003cproject-name\u003e devcontainer\",\n  \"dockerComposeFile\": \"docker-compose.yml\",\n  \"service\": \"app\",\n  \"workspaceFolder\": \"/workspaces/${localWorkspaceFolderBasename}\",\n  \"customizations\": {\n    \"vscode\": {\n      \"settings\": {\n        \"editor.formatOnSave\": true,\n        \"editor.codeActionsOnSave\": {\n          // add language-appropriate fix-all actions, e.g. eslint, ruff, etc.\n        }\n      },\n      \"extensions\": [\n        // linter, formatter, language support, test runner extensions for the project's stack\n      ]\n    }\n  },\n  \"forwardPorts\": [/* infer relevant ports from the project */],\n  \"mounts\": [\n    // Always mount SSH keys and gitconfig from the host so git operations work seamlessly\n    \"source=${localEnv:HOME}/.ssh,target=/home/\u003cremoteUser\u003e/.ssh,type=bind,consistency=cached\",\n    \"source=${localEnv:HOME}/.gitconfig,target=/home/\u003cremoteUser\u003e/.gitconfig,type=bind,consistency=cached\"\n  ],\n  \"remoteUser\": \"\u003cnon-root user provided by the base image, e.g. node, vscode, etc.\u003e\"\n}\n```\n\n**Rules:**\n- Always use `dockerComposeFile` + `service` to reference the compose file — never use `build.dockerfile` directly; this makes it easy to add services (databases, caches, etc.) later without restructuring\n- `workspaceFolder` must point to `/workspaces/${localWorkspaceFolderBasename}` to align with the volume mount defined in `docker-compose.yml`\n- `forwardPorts` must list ports the app actually exposes (dev server, API, DB, etc.)\n- `mounts` must always include SSH keys and `.gitconfig` so the developer can push/pull and sign commits from inside the container\n- `remoteUser` must match the non-root user that ships with the chosen Microsoft devcontainers base image\n- Only add `postCreateCommand` for steps that must run after the workspace is mounted (e.g., `npm install`, `pip install -e .`); do not use it for tooling that belongs in the Dockerfile\n\n---\n\n### `.devcontainer/docker-compose.yml`\n\n```yaml\nservices:\n  app:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    volumes:\n      # Mount the workspace root into the container\n      # Use the actual folder name here — Docker Compose cannot resolve\n      # ${localWorkspaceFolderBasename} (only VS Code devcontainer.json can)\n      - ..:/workspaces/\u003cproject-folder-name\u003e:cached\n    # Keep the container running so VS Code can attach to it\n    command: sleep infinity\n    # Uncomment and add extra services (postgres, redis, etc.) as needed\n```\n\n**Rules:**\n- The service name must match the `service` field in `devcontainer.json` (default: `app`)\n- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/\u003cproject-folder-name\u003e` — **always hardcode the actual folder name here**; `${localWorkspaceFolderBasename}` is a VS Code-only variable that Docker Compose cannot resolve and will substitute with an empty string, causing a \"Workspace does not exist\" error when reopening in container\n- `command: sleep infinity` keeps the container alive for VS Code to attach; do not use an application start command here\n- Additional services (databases, message brokers, etc.) can be added as sibling services under `services:` when the project requires them\n\n---\n\n### `.devcontainer/Dockerfile`\n\n```dockerfile\nFROM mcr.microsoft.com/devcontainers/\u003cvariant\u003e:\u003ctag\u003e\n\n# Install all global development tools here so the container is self-contained.\n# Examples: package managers, CLI tools, task runners, linters, formatters.\n# Combine RUN steps and clean up package manager caches to keep the image lean.\n\n# Example pattern (adapt to the project stack):\n# RUN apt-get update \u0026\u0026 apt-get install -y --no-install-recommends \u003csystem-deps\u003e \\\n#     \u0026\u0026 rm -rf /var/lib/apt/lists/*\n\n# RUN \u003cruntime-package-manager\u003e install -g \u003ctool1\u003e \u003ctool2\u003e ...\n\n# Install a task runner (e.g., Taskfile) when the project uses one:\n# RUN sh -c \"$(curl --location https://taskfile.dev/install.sh)\" -- -d -b /usr/local/bin\n```\n\n**Rules:**\n- **All tooling must be installed in the Dockerfile** — the image must be fully usable immediately after build, without relying on any post-create scripts for tools\n- Do **not** install project dependencies (lock-file packages) in the Dockerfile; those belong in `postCreateCommand`\n- Prefer explicit, pinned versions for critical tools to ensure reproducible builds\n- Combine `RUN` instructions, avoid unnecessary packages, and remove caches to minimise image size\n- The non-root user and `WORKDIR` are already handled by the Microsoft base image; only override them if there is a specific reason\n\n---\n\n## General guidelines\n\n- Keep the `.devcontainer` folder minimal: `devcontainer.json` + `docker-compose.yml` + `Dockerfile` are the three required files — no more, unless the project demands it\n- Infer the correct base image variant, ports, extensions, and tooling from the project's language, framework, and existing config files (e.g., `package.json`, `pyproject.toml`, `Taskfile.yml`, `angular.json`)\n- Always include the SSH and gitconfig mounts — they are essential for a good developer experience\n- Add brief inline comments in the Dockerfile explaining non-obvious installation steps\n\n---\n\n## Post-creation verification\n\nAfter all three files have been created or modified, **dispatch a subagent** to validate the setup:\n\n1. `cd` into the project root (the parent of `.devcontainer/`)\n2. Run `docker compose -f .devcontainer/docker-compose.yml build` and verify the image builds without errors\n3. Run `docker compose -f .devcontainer/docker-compose.yml up -d` and verify the container starts successfully\n4. Run `docker compose -f .devcontainer/docker-compose.yml ps` and confirm the `app` service is in a **running** state\n5. Run `docker compose -f .devcontainer/docker-compose.yml down` to clean up after the test\n\nIf any step fails:\n- Read the error output carefully\n- Fix the relevant file (Dockerfile, docker-compose.yml, or devcontainer.json)\n- Re-run the verification from step 1\n\nOnly report success to the user once the container has been built, started, confirmed running, and cleaned up without errors.\n\n---\n\n## Audit existing configuration flow\n\nWhen `.devcontainer/` already exists, review the configuration against the standards above instead of creating files from scratch.\n\n### Step A1 — Read existing files\n\nRead all files inside `.devcontainer/` (at minimum look for `devcontainer.json`, `docker-compose.yml`, and `Dockerfile`).\n\n### Step A2 — Audit checklist\n\nCompare each file against the rules defined in the **New setup flow** section above. Use the following checklist:\n\n#### devcontainer.json\n\n| # | Check | Standard |\n|---|-------|----------|\n| 1 | Uses `dockerComposeFile` + `service` | Must reference a compose file — never use `build.dockerfile` directly |\n| 2 | `workspaceFolder` value | Must be `/workspaces/${localWorkspaceFolderBasename}` |\n| 3 | SSH key mount present | Must mount `${localEnv:HOME}/.ssh` into the container |\n| 4 | `.gitconfig` mount present | Must mount `${localEnv:HOME}/.gitconfig` into the container |\n| 5 | `remoteUser` set | Must match the non-root user from the Microsoft base image |\n| 6 | `forwardPorts` populated | Must list all ports the app actually exposes |\n| 7 | VS Code extensions listed | Should include linter, formatter, language support, and test runner extensions for the stack |\n| 8 | `editor.formatOnSave` enabled | Recommended in `customizations.vscode.settings` |\n| 9 | `postCreateCommand` usage | Verify it only installs project dependencies (e.g. `npm install`), not global tooling |\n\n#### docker-compose.yml\n\n| # | Check | Standard |\n|---|-------|----------|\n| 10 | Service name matches `service` field | Default: `app` — must be consistent with `devcontainer.json` |\n| 11 | Workspace volume source | Must use `..` (one level up from `.devcontainer/`) |\n| 12 | Workspace volume target | Must mount to `/workspaces/${localWorkspaceFolderBasename}` |\n| 13 | `command: sleep infinity` | Must be present to keep the container alive |\n\n#### Dockerfile\n\n| # | Check | Standard |\n|---|-------|----------|\n| 14 | Base image source | Must be from `mcr.microsoft.com/devcontainers/` and match the project stack |\n| 15 | Global tooling in Dockerfile | All global tools must be installed here, not in post-create scripts |\n| 16 | No project dependencies | Lock-file packages (`npm install`, `pip install`) must **not** be in the Dockerfile |\n| 17 | `RUN` instructions combined | Combine steps and clean up caches to minimize image size |\n| 18 | Tool versions pinned | Critical tools should use explicit, pinned versions |\n\n### Step A3 — Present findings\n\nPresent the audit results as a numbered list of suggestions grouped by file:\n- For each issue found, state the check number, what the current value/pattern is, what the standard requires, and the specific change proposed\n- Use ⚠️ for issues that should be fixed and ℹ️ for optional improvements\n- If a file passes all checks, mark it with ✅\n\n### Step A4 — Interactive selection\n\nAsk the user: \"Which suggestions would you like me to implement? (enter the numbers separated by commas, 'all' for everything, or 'none' to skip)\"\n\n### Step A5 — Apply selected changes\n\nIf the user selected suggestions:\n1. Modify **only** the parts of the existing files that correspond to the selected suggestions\n2. Preserve all configuration that was not flagged — do **not** rewrite files from scratch\n3. After applying changes, proceed to **Post-creation verification** above\n\nIf the user selected \"none\", skip verification and proceed to mark the step as done.\n"
+              }
+            },
+            {
+              "content": "---\nname: sdlc-devcontainer-setup\ndescription: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'\n---\n\nYou are a DevOps and developer-experience expert. Set up or review a `.devcontainer` environment for this project.\n\nThe environment must be **polyglot-ready**: the base image should come from the official Microsoft devcontainers registry (`mcr.microsoft.com/devcontainers/`) so it ships with the standard non-root user, git integration, and VS Code server support already configured. Choose the variant that best matches the project's primary runtime (e.g., `base:ubuntu`, `javascript-node`, `python`, `universal`, etc.), but do **not** hard-code a specific language image as an example — infer it from the project context.\n\n---\n\n## Mode detection\n\nBefore doing anything else, determine whether the project already has a `.devcontainer` directory:\n\n- If `.devcontainer/` **does not exist** → follow the **New setup** flow below\n- If `.devcontainer/` **exists** → follow the **Audit existing configuration** flow below\n\n---\n\n## Prerequisites — verify before doing anything else (both flows)\n\nBefore creating or modifying any files, check that Docker is installed and the daemon is running:\n\n1. Run `docker info` in the terminal\n2. If the command **fails** or Docker is not found:\n   - Stop immediately\n   - Inform the user that Docker must be installed and running before proceeding\n   - Provide a link to the official install page: https://docs.docker.com/get-docker/\n   - Do **not** create any `.devcontainer` files\n3. If the command **succeeds**, proceed with creating the files below\n\n---\n\n## New setup flow\n\nWhen `.devcontainer/` does not exist, create the following three files.\n\n### Files to create\n\n### `.devcontainer/devcontainer.json`\n\n```jsonc\n{\n  \"name\": \"\u003cproject-name\u003e devcontainer\",\n  \"dockerComposeFile\": \"docker-compose.yml\",\n  \"service\": \"app\",\n  \"workspaceFolder\": \"/workspaces/${localWorkspaceFolderBasename}\",\n  \"customizations\": {\n    \"vscode\": {\n      \"settings\": {\n        \"editor.formatOnSave\": true,\n        \"editor.codeActionsOnSave\": {\n          // add language-appropriate fix-all actions, e.g. eslint, ruff, etc.\n        }\n      },\n      \"extensions\": [\n        // linter, formatter, language support, test runner extensions for the project's stack\n      ]\n    }\n  },\n  \"forwardPorts\": [/* infer relevant ports from the project */],\n  \"mounts\": [\n    // Always mount SSH keys and gitconfig from the host so git operations work seamlessly\n    \"source=${localEnv:HOME}/.ssh,target=/home/\u003cremoteUser\u003e/.ssh,type=bind,consistency=cached\",\n    \"source=${localEnv:HOME}/.gitconfig,target=/home/\u003cremoteUser\u003e/.gitconfig,type=bind,consistency=cached\"\n  ],\n  \"remoteUser\": \"\u003cnon-root user provided by the base image, e.g. node, vscode, etc.\u003e\"\n}\n```\n\n**Rules:**\n- Always use `dockerComposeFile` + `service` to reference the compose file — never use `build.dockerfile` directly; this makes it easy to add services (databases, caches, etc.) later without restructuring\n- `workspaceFolder` must point to `/workspaces/${localWorkspaceFolderBasename}` to align with the volume mount defined in `docker-compose.yml`\n- `forwardPorts` must list ports the app actually exposes (dev server, API, DB, etc.)\n- `mounts` must always include SSH keys and `.gitconfig` so the developer can push/pull and sign commits from inside the container\n- `remoteUser` must match the non-root user that ships with the chosen Microsoft devcontainers base image\n- Only add `postCreateCommand` for steps that must run after the workspace is mounted (e.g., `npm install`, `pip install -e .`); do not use it for tooling that belongs in the Dockerfile\n\n---\n\n### `.devcontainer/docker-compose.yml`\n\n```yaml\nservices:\n  app:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    volumes:\n      # Mount the workspace root into the container\n      # Use the actual folder name here — Docker Compose cannot resolve\n      # ${localWorkspaceFolderBasename} (only VS Code devcontainer.json can)\n      - ..:/workspaces/\u003cproject-folder-name\u003e:cached\n    # Keep the container running so VS Code can attach to it\n    command: sleep infinity\n    # Uncomment and add extra services (postgres, redis, etc.) as needed\n```\n\n**Rules:**\n- The service name must match the `service` field in `devcontainer.json` (default: `app`)\n- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/\u003cproject-folder-name\u003e` — **always hardcode the actual folder name here**; `${localWorkspaceFolderBasename}` is a VS Code-only variable that Docker Compose cannot resolve and will substitute with an empty string, causing a \"Workspace does not exist\" error when reopening in container\n- `command: sleep infinity` keeps the container alive for VS Code to attach; do not use an application start command here\n- Additional services (databases, message brokers, etc.) can be added as sibling services under `services:` when the project requires them\n\n---\n\n### `.devcontainer/Dockerfile`\n\n```dockerfile\nFROM mcr.microsoft.com/devcontainers/\u003cvariant\u003e:\u003ctag\u003e\n\n# Install all global development tools here so the container is self-contained.\n# Examples: package managers, CLI tools, task runners, linters, formatters.\n# Combine RUN steps and clean up package manager caches to keep the image lean.\n\n# Example pattern (adapt to the project stack):\n# RUN apt-get update \u0026\u0026 apt-get install -y --no-install-recommends \u003csystem-deps\u003e \\\n#     \u0026\u0026 rm -rf /var/lib/apt/lists/*\n\n# RUN \u003cruntime-package-manager\u003e install -g \u003ctool1\u003e \u003ctool2\u003e ...\n\n# Install a task runner (e.g., Taskfile) when the project uses one:\n# RUN sh -c \"$(curl --location https://taskfile.dev/install.sh)\" -- -d -b /usr/local/bin\n```\n\n**Rules:**\n- **All tooling must be installed in the Dockerfile** — the image must be fully usable immediately after build, without relying on any post-create scripts for tools\n- Do **not** install project dependencies (lock-file packages) in the Dockerfile; those belong in `postCreateCommand`\n- Prefer explicit, pinned versions for critical tools to ensure reproducible builds\n- Combine `RUN` instructions, avoid unnecessary packages, and remove caches to minimise image size\n- The non-root user and `WORKDIR` are already handled by the Microsoft base image; only override them if there is a specific reason\n\n---\n\n## General guidelines\n\n- Keep the `.devcontainer` folder minimal: `devcontainer.json` + `docker-compose.yml` + `Dockerfile` are the three required files — no more, unless the project demands it\n- Infer the correct base image variant, ports, extensions, and tooling from the project's language, framework, and existing config files (e.g., `package.json`, `pyproject.toml`, `Taskfile.yml`, `angular.json`)\n- Always include the SSH and gitconfig mounts — they are essential for a good developer experience\n- Add brief inline comments in the Dockerfile explaining non-obvious installation steps\n\n---\n\n## Post-creation verification\n\nAfter all three files have been created or modified, **dispatch a subagent** to validate the setup:\n\n1. `cd` into the project root (the parent of `.devcontainer/`)\n2. Run `docker compose -f .devcontainer/docker-compose.yml build` and verify the image builds without errors\n3. Run `docker compose -f .devcontainer/docker-compose.yml up -d` and verify the container starts successfully\n4. Run `docker compose -f .devcontainer/docker-compose.yml ps` and confirm the `app` service is in a **running** state\n5. Run `docker compose -f .devcontainer/docker-compose.yml down` to clean up after the test\n\nIf any step fails:\n- Read the error output carefully\n- Fix the relevant file (Dockerfile, docker-compose.yml, or devcontainer.json)\n- Re-run the verification from step 1\n\nOnly report success to the user once the container has been built, started, confirmed running, and cleaned up without errors.\n\n---\n\n## Audit existing configuration flow\n\nWhen `.devcontainer/` already exists, review the configuration against the standards above instead of creating files from scratch.\n\n### Step A1 — Read existing files\n\nRead all files inside `.devcontainer/` (at minimum look for `devcontainer.json`, `docker-compose.yml`, and `Dockerfile`).\n\n### Step A2 — Audit checklist\n\nCompare each file against the rules defined in the **New setup flow** section above. Use the following checklist:\n\n#### devcontainer.json\n\n| # | Check | Standard |\n|---|-------|----------|\n| 1 | Uses `dockerComposeFile` + `service` | Must reference a compose file — never use `build.dockerfile` directly |\n| 2 | `workspaceFolder` value | Must be `/workspaces/${localWorkspaceFolderBasename}` |\n| 3 | SSH key mount present | Must mount `${localEnv:HOME}/.ssh` into the container |\n| 4 | `.gitconfig` mount present | Must mount `${localEnv:HOME}/.gitconfig` into the container |\n| 5 | `remoteUser` set | Must match the non-root user from the Microsoft base image |\n| 6 | `forwardPorts` populated | Must list all ports the app actually exposes |\n| 7 | VS Code extensions listed | Should include linter, formatter, language support, and test runner extensions for the stack |\n| 8 | `editor.formatOnSave` enabled | Recommended in `customizations.vscode.settings` |\n| 9 | `postCreateCommand` usage | Verify it only installs project dependencies (e.g. `npm install`), not global tooling |\n\n#### docker-compose.yml\n\n| # | Check | Standard |\n|---|-------|----------|\n| 10 | Service name matches `service` field | Default: `app` — must be consistent with `devcontainer.json` |\n| 11 | Workspace volume source | Must use `..` (one level up from `.devcontainer/`) |\n| 12 | Workspace volume target | Must mount to `/workspaces/${localWorkspaceFolderBasename}` |\n| 13 | `command: sleep infinity` | Must be present to keep the container alive |\n\n#### Dockerfile\n\n| # | Check | Standard |\n|---|-------|----------|\n| 14 | Base image source | Must be from `mcr.microsoft.com/devcontainers/` and match the project stack |\n| 15 | Global tooling in Dockerfile | All global tools must be installed here, not in post-create scripts |\n| 16 | No project dependencies | Lock-file packages (`npm install`, `pip install`) must **not** be in the Dockerfile |\n| 17 | `RUN` instructions combined | Combine steps and clean up caches to minimize image size |\n| 18 | Tool versions pinned | Critical tools should use explicit, pinned versions |\n\n### Step A3 — Present findings\n\nPresent the audit results as a numbered list of suggestions grouped by file:\n- For each issue found, state the check number, what the current value/pattern is, what the standard requires, and the specific change proposed\n- Use ⚠️ for issues that should be fixed and ℹ️ for optional improvements\n- If a file passes all checks, mark it with ✅\n\n### Step A4 — Interactive selection\n\nAsk the user: \"Which suggestions would you like me to implement? (enter the numbers separated by commas, 'all' for everything, or 'none' to skip)\"\n\n### Step A5 — Apply selected changes\n\nIf the user selected suggestions:\n1. Modify **only** the parts of the existing files that correspond to the selected suggestions\n2. Preserve all configuration that was not flagged — do **not** rewrite files from scratch\n3. After applying changes, proceed to **Post-creation verification** above\n\nIf the user selected \"none\", skip verification and proceed to mark the step as done.\n",
+              "type": "skill.invoked"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "Let me start by checking if Docker is running and whether a `.devcontainer` directory already exists in the current working directory.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "docker info \u003e /dev/null 2\u003e\u00261 \u0026\u0026 echo \"DOCKER_OK\" || echo \"DOCKER_FAIL\"",
+                "description": "Check if Docker daemon is running"
+              },
+              "tool_call_id": "toolu_vrtx_01XsQpC5tngXqXHxCgdoVZeE",
+              "tool_name": "bash"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "path": "/tmp/waza-1058501037",
+                "pattern": ".devcontainer/**/*"
+              },
+              "tool_call_id": "toolu_vrtx_017xGiq9zYoy62R3DgQxrrxu",
+              "tool_name": "glob"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "path": "/tmp/waza-1058501037",
+                "pattern": "**/*"
+              },
+              "tool_call_id": "toolu_vrtx_01FQNe5fDgybpYFi3qAhoW4v",
+              "tool_name": "glob"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01FQNe5fDgybpYFi3qAhoW4v",
+              "tool_result": {
+                "content": "No files matched the pattern.",
+                "detailedContent": "No files matched the pattern."
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_017xGiq9zYoy62R3DgQxrrxu",
+              "tool_result": {
+                "content": "No files matched the pattern.",
+                "detailedContent": "No files matched the pattern."
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01XsQpC5tngXqXHxCgdoVZeE",
+              "tool_result": {
+                "content": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "⚠️ **Docker is not running (or not installed).**\n\nBefore I can create or validate any `.devcontainer` files, Docker must be installed and the daemon must be running.\n\nPlease install Docker and start it, then come back and I'll set everything up:\n\n👉 https://docs.docker.com/get-docker/\n\nOnce Docker is running, re-run this command to continue:\n```\ndocker info\n```",
+              "type": "assistant.message"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "⚠️ **Docker is not running (or not installed).**\n\nBefore I can create or validate any `.devcontainer` files, Docker must be installed and the daemon must be running.\n\nPlease install Docker and start it, then come back and I'll set everything up:\n\n👉 https://docs.docker.com/get-docker/\n\nOnce Docker is running, re-run this command to continue:\n```\ndocker info\n```",
+          "skill_invocations": [
+            {
+              "name": "sdlc-devcontainer-setup",
+              "path": "/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md"
+            }
+          ],
+          "workspace_dir": "/tmp/waza-1058501037"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.16666666666666666,
+        "avg_weighted_score": 0.16666666666666666,
+        "min_score": 0.16666666666666666,
+        "max_score": 0.16666666666666666,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 12371
+      }
+    },
+    {
+      "test_id": "positive-trigger-002",
+      "display_name": "Positive Trigger 2",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 12957,
+          "validations": {
+            "contains-keywords": {
+              "identifier": "contains-keywords",
+              "type": "text",
+              "score": 0.3333333333333333,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Missing expected substring: sdlc; Missing expected substring: setup",
+              "details": {
+                "contains": [
+                  "devcontainer",
+                  "sdlc",
+                  "setup"
+                ],
+                "contains_cs": null,
+                "failures": [
+                  "Missing expected substring: sdlc",
+                  "Missing expected substring: setup"
+                ],
+                "not_contains": null,
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 64781 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 12957,
+                "failures": [
+                  "Token usage 64781 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 64781,
+                "tool_call_count": 4,
+                "tools_used": [
+                  "skill",
+                  "bash",
+                  "glob",
+                  "view"
+                ]
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 4,
+            "tools_used": [
+              "skill",
+              "bash",
+              "glob",
+              "view"
+            ],
+            "tool_calls": [
+              {
+                "name": "skill",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": "sdlc-devcontainer-setup"
+                },
+                "result": {
+                  "content": "Skill \"sdlc-devcontainer-setup\" loaded successfully. Follow the instructions in the skill context.",
+                  "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-devcontainer-setup\ndescription: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'\n---\n\nYou are a DevOps and developer-experience expert. Set up or review a `.devcontainer` environment for this project.\n\nThe environment must be **polyglot-ready**: the base image should come from the official Microsoft devcontainers registry (`mcr.microsoft.com/devcontainers/`) so it ships with the standard non-root user, git integration, and VS Code server support already configured. Choose the variant that best matches the project's primary runtime (e.g., `base:ubuntu`, `javascript-node`, `python`, `universal`, etc.), but do **not** hard-code a specific language image as an example — infer it from the project context.\n\n---\n\n## Mode detection\n\nBefore doing anything else, determine whether the project already has a `.devcontainer` directory:\n\n- If `.devcontainer/` **does not exist** → follow the **New setup** flow below\n- If `.devcontainer/` **exists** → follow the **Audit existing configuration** flow below\n\n---\n\n## Prerequisites — verify before doing anything else (both flows)\n\nBefore creating or modifying any files, check that Docker is installed and the daemon is running:\n\n1. Run `docker info` in the terminal\n2. If the command **fails** or Docker is not found:\n   - Stop immediately\n   - Inform the user that Docker must be installed and running before proceeding\n   - Provide a link to the official install page: https://docs.docker.com/get-docker/\n   - Do **not** create any `.devcontainer` files\n3. If the command **succeeds**, proceed with creating the files below\n\n---\n\n## New setup flow\n\nWhen `.devcontainer/` does not exist, create the following three files.\n\n### Files to create\n\n### `.devcontainer/devcontainer.json`\n\n```jsonc\n{\n  \"name\": \"\u003cproject-name\u003e devcontainer\",\n  \"dockerComposeFile\": \"docker-compose.yml\",\n  \"service\": \"app\",\n  \"workspaceFolder\": \"/workspaces/${localWorkspaceFolderBasename}\",\n  \"customizations\": {\n    \"vscode\": {\n      \"settings\": {\n        \"editor.formatOnSave\": true,\n        \"editor.codeActionsOnSave\": {\n          // add language-appropriate fix-all actions, e.g. eslint, ruff, etc.\n        }\n      },\n      \"extensions\": [\n        // linter, formatter, language support, test runner extensions for the project's stack\n      ]\n    }\n  },\n  \"forwardPorts\": [/* infer relevant ports from the project */],\n  \"mounts\": [\n    // Always mount SSH keys and gitconfig from the host so git operations work seamlessly\n    \"source=${localEnv:HOME}/.ssh,target=/home/\u003cremoteUser\u003e/.ssh,type=bind,consistency=cached\",\n    \"source=${localEnv:HOME}/.gitconfig,target=/home/\u003cremoteUser\u003e/.gitconfig,type=bind,consistency=cached\"\n  ],\n  \"remoteUser\": \"\u003cnon-root user provided by the base image, e.g. node, vscode, etc.\u003e\"\n}\n```\n\n**Rules:**\n- Always use `dockerComposeFile` + `service` to reference the compose file — never use `build.dockerfile` directly; this makes it easy to add services (databases, caches, etc.) later without restructuring\n- `workspaceFolder` must point to `/workspaces/${localWorkspaceFolderBasename}` to align with the volume mount defined in `docker-compose.yml`\n- `forwardPorts` must list ports the app actually exposes (dev server, API, DB, etc.)\n- `mounts` must always include SSH keys and `.gitconfig` so the developer can push/pull and sign commits from inside the container\n- `remoteUser` must match the non-root user that ships with the chosen Microsoft devcontainers base image\n- Only add `postCreateCommand` for steps that must run after the workspace is mounted (e.g., `npm install`, `pip install -e .`); do not use it for tooling that belongs in the Dockerfile\n\n---\n\n### `.devcontainer/docker-compose.yml`\n\n```yaml\nservices:\n  app:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    volumes:\n      # Mount the workspace root into the container\n      # Use the actual folder name here — Docker Compose cannot resolve\n      # ${localWorkspaceFolderBasename} (only VS Code devcontainer.json can)\n      - ..:/workspaces/\u003cproject-folder-name\u003e:cached\n    # Keep the container running so VS Code can attach to it\n    command: sleep infinity\n    # Uncomment and add extra services (postgres, redis, etc.) as needed\n```\n\n**Rules:**\n- The service name must match the `service` field in `devcontainer.json` (default: `app`)\n- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/\u003cproject-folder-name\u003e` — **always hardcode the actual folder name here**; `${localWorkspaceFolderBasename}` is a VS Code-only variable that Docker Compose cannot resolve and will substitute with an empty string, causing a \"Workspace does not exist\" error when reopening in container\n- `command: sleep infinity` keeps the container alive for VS Code to attach; do not use an application start command here\n- Additional services (databases, message brokers, etc.) can be added as sibling services under `services:` when the project requires them\n\n---\n\n### `.devcontainer/Dockerfile`\n\n```dockerfile\nFROM mcr.microsoft.com/devcontainers/\u003cvariant\u003e:\u003ctag\u003e\n\n# Install all global development tools here so the container is self-contained.\n# Examples: package managers, CLI tools, task runners, linters, formatters.\n# Combine RUN steps and clean up package manager caches to keep the image lean.\n\n# Example pattern (adapt to the project stack):\n# RUN apt-get update \u0026\u0026 apt-get install -y --no-install-recommends \u003csystem-deps\u003e \\\n#     \u0026\u0026 rm -rf /var/lib/apt/lists/*\n\n# RUN \u003cruntime-package-manager\u003e install -g \u003ctool1\u003e \u003ctool2\u003e ...\n\n# Install a task runner (e.g., Taskfile) when the project uses one:\n# RUN sh -c \"$(curl --location https://taskfile.dev/install.sh)\" -- -d -b /usr/local/bin\n```\n\n**Rules:**\n- **All tooling must be installed in the Dockerfile** — the image must be fully usable immediately after build, without relying on any post-create scripts for tools\n- Do **not** install project dependencies (lock-file packages) in the Dockerfile; those belong in `postCreateCommand`\n- Prefer explicit, pinned versions for critical tools to ensure reproducible builds\n- Combine `RUN` instructions, avoid unnecessary packages, and remove caches to minimise image size\n- The non-root user and `WORKDIR` are already handled by the Microsoft base image; only override them if there is a specific reason\n\n---\n\n## General guidelines\n\n- Keep the `.devcontainer` folder minimal: `devcontainer.json` + `docker-compose.yml` + `Dockerfile` are the three required files — no more, unless the project demands it\n- Infer the correct base image variant, ports, extensions, and tooling from the project's language, framework, and existing config files (e.g., `package.json`, `pyproject.toml`, `Taskfile.yml`, `angular.json`)\n- Always include the SSH and gitconfig mounts — they are essential for a good developer experience\n- Add brief inline comments in the Dockerfile explaining non-obvious installation steps\n\n---\n\n## Post-creation verification\n\nAfter all three files have been created or modified, **dispatch a subagent** to validate the setup:\n\n1. `cd` into the project root (the parent of `.devcontainer/`)\n2. Run `docker compose -f .devcontainer/docker-compose.yml build` and verify the image builds without errors\n3. Run `docker compose -f .devcontainer/docker-compose.yml up -d` and verify the container starts successfully\n4. Run `docker compose -f .devcontainer/docker-compose.yml ps` and confirm the `app` service is in a **running** state\n5. Run `docker compose -f .devcontainer/docker-compose.yml down` to clean up after the test\n\nIf any step fails:\n- Read the error output carefully\n- Fix the relevant file (Dockerfile, docker-compose.yml, or devcontainer.json)\n- Re-run the verification from step 1\n\nOnly report success to the user once the container has been built, started, confirmed running, and cleaned up without errors.\n\n---\n\n## Audit existing configuration flow\n\nWhen `.devcontainer/` already exists, review the configuration against the standards above instead of creating files from scratch.\n\n### Step A1 — Read existing files\n\nRead all files inside `.devcontainer/` (at minimum look for `devcontainer.json`, `docker-compose.yml`, and `Dockerfile`).\n\n### Step A2 — Audit checklist\n\nCompare each file against the rules defined in the **New setup flow** section above. Use the following checklist:\n\n#### devcontainer.json\n\n| # | Check | Standard |\n|---|-------|----------|\n| 1 | Uses `dockerComposeFile` + `service` | Must reference a compose file — never use `build.dockerfile` directly |\n| 2 | `workspaceFolder` value | Must be `/workspaces/${localWorkspaceFolderBasename}` |\n| 3 | SSH key mount present | Must mount `${localEnv:HOME}/.ssh` into the container |\n| 4 | `.gitconfig` mount present | Must mount `${localEnv:HOME}/.gitconfig` into the container |\n| 5 | `remoteUser` set | Must match the non-root user from the Microsoft base image |\n| 6 | `forwardPorts` populated | Must list all ports the app actually exposes |\n| 7 | VS Code extensions listed | Should include linter, formatter, language support, and test runner extensions for the stack |\n| 8 | `editor.formatOnSave` enabled | Recommended in `customizations.vscode.settings` |\n| 9 | `postCreateCommand` usage | Verify it only installs project dependencies (e.g. `npm install`), not global tooling |\n\n#### docker-compose.yml\n\n| # | Check | Standard |\n|---|-------|----------|\n| 10 | Service name matches `service` field | Default: `app` — must be consistent with `devcontainer.json` |\n| 11 | Workspace volume source | Must use `..` (one level up from `.devcontainer/`) |\n| 12 | Workspace volume target | Must mount to `/workspaces/${localWorkspaceFolderBasename}` |\n| 13 | `command: sleep infinity` | Must be present to keep the container alive |\n\n#### Dockerfile\n\n| # | Check | Standard |\n|---|-------|----------|\n| 14 | Base image source | Must be from `mcr.microsoft.com/devcontainers/` and match the project stack |\n| 15 | Global tooling in Dockerfile | All global tools must be installed here, not in post-create scripts |\n| 16 | No project dependencies | Lock-file packages (`npm install`, `pip install`) must **not** be in the Dockerfile |\n| 17 | `RUN` instructions combined | Combine steps and clean up caches to minimize image size |\n| 18 | Tool versions pinned | Critical tools should use explicit, pinned versions |\n\n### Step A3 — Present findings\n\nPresent the audit results as a numbered list of suggestions grouped by file:\n- For each issue found, state the check number, what the current value/pattern is, what the standard requires, and the specific change proposed\n- Use ⚠️ for issues that should be fixed and ℹ️ for optional improvements\n- If a file passes all checks, mark it with ✅\n\n### Step A4 — Interactive selection\n\nAsk the user: \"Which suggestions would you like me to implement? (enter the numbers separated by commas, 'all' for everything, or 'none' to skip)\"\n\n### Step A5 — Apply selected changes\n\nIf the user selected suggestions:\n1. Modify **only** the parts of the existing files that correspond to the selected suggestions\n2. Preserve all configuration that was not flagged — do **not** rewrite files from scratch\n3. After applying changes, proceed to **Post-creation verification** above\n\nIf the user selected \"none\", skip verification and proceed to mark the step as done.\n"
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "docker info \u003e /dev/null 2\u003e\u00261 \u0026\u0026 echo \"DOCKER_OK\" || echo \"DOCKER_FAIL\"",
+                  "description": "Check if Docker daemon is running",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              },
+              {
+                "name": "glob",
+                "arguments": {
+                  "path": "/tmp/waza-3564808877",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "No files matched the pattern.",
+                  "detailedContent": "No files matched the pattern."
+                },
+                "success": true
+              },
+              {
+                "name": "view",
+                "arguments": {
+                  "path": "/tmp/waza-3564808877",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "\ndiff --git a/tmp/waza-3564808877 b/tmp/waza-3564808877\ncreate file mode 100644\nindex 0000000..0000000\n--- a/dev/null\n+++ b/tmp/waza-3564808877\n@@ -1,0 +1,0 @@\n\n",
+                  "detailedContent": "\ndiff --git a/tmp/waza-3564808877 b/tmp/waza-3564808877\ncreate file mode 100644\nindex 0000000..0000000\n--- a/dev/null\n+++ b/tmp/waza-3564808877\n@@ -1,0 +1,0 @@\n\n"
+                },
+                "success": true
+              }
+            ],
+            "errors": [],
+            "usage": {
+              "turns": 3,
+              "input_tokens": 64281,
+              "output_tokens": 500,
+              "cache_read_tokens": 46245,
+              "cache_write_tokens": 0,
+              "premium_requests": 3
+            },
+            "session_id": "9d78ac69-f9e1-4357-8bb3-b499fd874c5e"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "I need assistance with sdlc devcontainer setup-related work",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "skill": "sdlc-devcontainer-setup"
+              },
+              "tool_call_id": "toolu_vrtx_013cVxE6aDAJ12oBq5J3585U",
+              "tool_name": "skill"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_013cVxE6aDAJ12oBq5J3585U",
+              "tool_result": {
+                "content": "Skill \"sdlc-devcontainer-setup\" loaded successfully. Follow the instructions in the skill context.",
+                "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-devcontainer-setup\ndescription: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'\n---\n\nYou are a DevOps and developer-experience expert. Set up or review a `.devcontainer` environment for this project.\n\nThe environment must be **polyglot-ready**: the base image should come from the official Microsoft devcontainers registry (`mcr.microsoft.com/devcontainers/`) so it ships with the standard non-root user, git integration, and VS Code server support already configured. Choose the variant that best matches the project's primary runtime (e.g., `base:ubuntu`, `javascript-node`, `python`, `universal`, etc.), but do **not** hard-code a specific language image as an example — infer it from the project context.\n\n---\n\n## Mode detection\n\nBefore doing anything else, determine whether the project already has a `.devcontainer` directory:\n\n- If `.devcontainer/` **does not exist** → follow the **New setup** flow below\n- If `.devcontainer/` **exists** → follow the **Audit existing configuration** flow below\n\n---\n\n## Prerequisites — verify before doing anything else (both flows)\n\nBefore creating or modifying any files, check that Docker is installed and the daemon is running:\n\n1. Run `docker info` in the terminal\n2. If the command **fails** or Docker is not found:\n   - Stop immediately\n   - Inform the user that Docker must be installed and running before proceeding\n   - Provide a link to the official install page: https://docs.docker.com/get-docker/\n   - Do **not** create any `.devcontainer` files\n3. If the command **succeeds**, proceed with creating the files below\n\n---\n\n## New setup flow\n\nWhen `.devcontainer/` does not exist, create the following three files.\n\n### Files to create\n\n### `.devcontainer/devcontainer.json`\n\n```jsonc\n{\n  \"name\": \"\u003cproject-name\u003e devcontainer\",\n  \"dockerComposeFile\": \"docker-compose.yml\",\n  \"service\": \"app\",\n  \"workspaceFolder\": \"/workspaces/${localWorkspaceFolderBasename}\",\n  \"customizations\": {\n    \"vscode\": {\n      \"settings\": {\n        \"editor.formatOnSave\": true,\n        \"editor.codeActionsOnSave\": {\n          // add language-appropriate fix-all actions, e.g. eslint, ruff, etc.\n        }\n      },\n      \"extensions\": [\n        // linter, formatter, language support, test runner extensions for the project's stack\n      ]\n    }\n  },\n  \"forwardPorts\": [/* infer relevant ports from the project */],\n  \"mounts\": [\n    // Always mount SSH keys and gitconfig from the host so git operations work seamlessly\n    \"source=${localEnv:HOME}/.ssh,target=/home/\u003cremoteUser\u003e/.ssh,type=bind,consistency=cached\",\n    \"source=${localEnv:HOME}/.gitconfig,target=/home/\u003cremoteUser\u003e/.gitconfig,type=bind,consistency=cached\"\n  ],\n  \"remoteUser\": \"\u003cnon-root user provided by the base image, e.g. node, vscode, etc.\u003e\"\n}\n```\n\n**Rules:**\n- Always use `dockerComposeFile` + `service` to reference the compose file — never use `build.dockerfile` directly; this makes it easy to add services (databases, caches, etc.) later without restructuring\n- `workspaceFolder` must point to `/workspaces/${localWorkspaceFolderBasename}` to align with the volume mount defined in `docker-compose.yml`\n- `forwardPorts` must list ports the app actually exposes (dev server, API, DB, etc.)\n- `mounts` must always include SSH keys and `.gitconfig` so the developer can push/pull and sign commits from inside the container\n- `remoteUser` must match the non-root user that ships with the chosen Microsoft devcontainers base image\n- Only add `postCreateCommand` for steps that must run after the workspace is mounted (e.g., `npm install`, `pip install -e .`); do not use it for tooling that belongs in the Dockerfile\n\n---\n\n### `.devcontainer/docker-compose.yml`\n\n```yaml\nservices:\n  app:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    volumes:\n      # Mount the workspace root into the container\n      # Use the actual folder name here — Docker Compose cannot resolve\n      # ${localWorkspaceFolderBasename} (only VS Code devcontainer.json can)\n      - ..:/workspaces/\u003cproject-folder-name\u003e:cached\n    # Keep the container running so VS Code can attach to it\n    command: sleep infinity\n    # Uncomment and add extra services (postgres, redis, etc.) as needed\n```\n\n**Rules:**\n- The service name must match the `service` field in `devcontainer.json` (default: `app`)\n- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/\u003cproject-folder-name\u003e` — **always hardcode the actual folder name here**; `${localWorkspaceFolderBasename}` is a VS Code-only variable that Docker Compose cannot resolve and will substitute with an empty string, causing a \"Workspace does not exist\" error when reopening in container\n- `command: sleep infinity` keeps the container alive for VS Code to attach; do not use an application start command here\n- Additional services (databases, message brokers, etc.) can be added as sibling services under `services:` when the project requires them\n\n---\n\n### `.devcontainer/Dockerfile`\n\n```dockerfile\nFROM mcr.microsoft.com/devcontainers/\u003cvariant\u003e:\u003ctag\u003e\n\n# Install all global development tools here so the container is self-contained.\n# Examples: package managers, CLI tools, task runners, linters, formatters.\n# Combine RUN steps and clean up package manager caches to keep the image lean.\n\n# Example pattern (adapt to the project stack):\n# RUN apt-get update \u0026\u0026 apt-get install -y --no-install-recommends \u003csystem-deps\u003e \\\n#     \u0026\u0026 rm -rf /var/lib/apt/lists/*\n\n# RUN \u003cruntime-package-manager\u003e install -g \u003ctool1\u003e \u003ctool2\u003e ...\n\n# Install a task runner (e.g., Taskfile) when the project uses one:\n# RUN sh -c \"$(curl --location https://taskfile.dev/install.sh)\" -- -d -b /usr/local/bin\n```\n\n**Rules:**\n- **All tooling must be installed in the Dockerfile** — the image must be fully usable immediately after build, without relying on any post-create scripts for tools\n- Do **not** install project dependencies (lock-file packages) in the Dockerfile; those belong in `postCreateCommand`\n- Prefer explicit, pinned versions for critical tools to ensure reproducible builds\n- Combine `RUN` instructions, avoid unnecessary packages, and remove caches to minimise image size\n- The non-root user and `WORKDIR` are already handled by the Microsoft base image; only override them if there is a specific reason\n\n---\n\n## General guidelines\n\n- Keep the `.devcontainer` folder minimal: `devcontainer.json` + `docker-compose.yml` + `Dockerfile` are the three required files — no more, unless the project demands it\n- Infer the correct base image variant, ports, extensions, and tooling from the project's language, framework, and existing config files (e.g., `package.json`, `pyproject.toml`, `Taskfile.yml`, `angular.json`)\n- Always include the SSH and gitconfig mounts — they are essential for a good developer experience\n- Add brief inline comments in the Dockerfile explaining non-obvious installation steps\n\n---\n\n## Post-creation verification\n\nAfter all three files have been created or modified, **dispatch a subagent** to validate the setup:\n\n1. `cd` into the project root (the parent of `.devcontainer/`)\n2. Run `docker compose -f .devcontainer/docker-compose.yml build` and verify the image builds without errors\n3. Run `docker compose -f .devcontainer/docker-compose.yml up -d` and verify the container starts successfully\n4. Run `docker compose -f .devcontainer/docker-compose.yml ps` and confirm the `app` service is in a **running** state\n5. Run `docker compose -f .devcontainer/docker-compose.yml down` to clean up after the test\n\nIf any step fails:\n- Read the error output carefully\n- Fix the relevant file (Dockerfile, docker-compose.yml, or devcontainer.json)\n- Re-run the verification from step 1\n\nOnly report success to the user once the container has been built, started, confirmed running, and cleaned up without errors.\n\n---\n\n## Audit existing configuration flow\n\nWhen `.devcontainer/` already exists, review the configuration against the standards above instead of creating files from scratch.\n\n### Step A1 — Read existing files\n\nRead all files inside `.devcontainer/` (at minimum look for `devcontainer.json`, `docker-compose.yml`, and `Dockerfile`).\n\n### Step A2 — Audit checklist\n\nCompare each file against the rules defined in the **New setup flow** section above. Use the following checklist:\n\n#### devcontainer.json\n\n| # | Check | Standard |\n|---|-------|----------|\n| 1 | Uses `dockerComposeFile` + `service` | Must reference a compose file — never use `build.dockerfile` directly |\n| 2 | `workspaceFolder` value | Must be `/workspaces/${localWorkspaceFolderBasename}` |\n| 3 | SSH key mount present | Must mount `${localEnv:HOME}/.ssh` into the container |\n| 4 | `.gitconfig` mount present | Must mount `${localEnv:HOME}/.gitconfig` into the container |\n| 5 | `remoteUser` set | Must match the non-root user from the Microsoft base image |\n| 6 | `forwardPorts` populated | Must list all ports the app actually exposes |\n| 7 | VS Code extensions listed | Should include linter, formatter, language support, and test runner extensions for the stack |\n| 8 | `editor.formatOnSave` enabled | Recommended in `customizations.vscode.settings` |\n| 9 | `postCreateCommand` usage | Verify it only installs project dependencies (e.g. `npm install`), not global tooling |\n\n#### docker-compose.yml\n\n| # | Check | Standard |\n|---|-------|----------|\n| 10 | Service name matches `service` field | Default: `app` — must be consistent with `devcontainer.json` |\n| 11 | Workspace volume source | Must use `..` (one level up from `.devcontainer/`) |\n| 12 | Workspace volume target | Must mount to `/workspaces/${localWorkspaceFolderBasename}` |\n| 13 | `command: sleep infinity` | Must be present to keep the container alive |\n\n#### Dockerfile\n\n| # | Check | Standard |\n|---|-------|----------|\n| 14 | Base image source | Must be from `mcr.microsoft.com/devcontainers/` and match the project stack |\n| 15 | Global tooling in Dockerfile | All global tools must be installed here, not in post-create scripts |\n| 16 | No project dependencies | Lock-file packages (`npm install`, `pip install`) must **not** be in the Dockerfile |\n| 17 | `RUN` instructions combined | Combine steps and clean up caches to minimize image size |\n| 18 | Tool versions pinned | Critical tools should use explicit, pinned versions |\n\n### Step A3 — Present findings\n\nPresent the audit results as a numbered list of suggestions grouped by file:\n- For each issue found, state the check number, what the current value/pattern is, what the standard requires, and the specific change proposed\n- Use ⚠️ for issues that should be fixed and ℹ️ for optional improvements\n- If a file passes all checks, mark it with ✅\n\n### Step A4 — Interactive selection\n\nAsk the user: \"Which suggestions would you like me to implement? (enter the numbers separated by commas, 'all' for everything, or 'none' to skip)\"\n\n### Step A5 — Apply selected changes\n\nIf the user selected suggestions:\n1. Modify **only** the parts of the existing files that correspond to the selected suggestions\n2. Preserve all configuration that was not flagged — do **not** rewrite files from scratch\n3. After applying changes, proceed to **Post-creation verification** above\n\nIf the user selected \"none\", skip verification and proceed to mark the step as done.\n"
+              }
+            },
+            {
+              "content": "---\nname: sdlc-devcontainer-setup\ndescription: 'Set up or review a .devcontainer environment with Docker Compose, Dockerfile, and devcontainer.json for any project stack.'\n---\n\nYou are a DevOps and developer-experience expert. Set up or review a `.devcontainer` environment for this project.\n\nThe environment must be **polyglot-ready**: the base image should come from the official Microsoft devcontainers registry (`mcr.microsoft.com/devcontainers/`) so it ships with the standard non-root user, git integration, and VS Code server support already configured. Choose the variant that best matches the project's primary runtime (e.g., `base:ubuntu`, `javascript-node`, `python`, `universal`, etc.), but do **not** hard-code a specific language image as an example — infer it from the project context.\n\n---\n\n## Mode detection\n\nBefore doing anything else, determine whether the project already has a `.devcontainer` directory:\n\n- If `.devcontainer/` **does not exist** → follow the **New setup** flow below\n- If `.devcontainer/` **exists** → follow the **Audit existing configuration** flow below\n\n---\n\n## Prerequisites — verify before doing anything else (both flows)\n\nBefore creating or modifying any files, check that Docker is installed and the daemon is running:\n\n1. Run `docker info` in the terminal\n2. If the command **fails** or Docker is not found:\n   - Stop immediately\n   - Inform the user that Docker must be installed and running before proceeding\n   - Provide a link to the official install page: https://docs.docker.com/get-docker/\n   - Do **not** create any `.devcontainer` files\n3. If the command **succeeds**, proceed with creating the files below\n\n---\n\n## New setup flow\n\nWhen `.devcontainer/` does not exist, create the following three files.\n\n### Files to create\n\n### `.devcontainer/devcontainer.json`\n\n```jsonc\n{\n  \"name\": \"\u003cproject-name\u003e devcontainer\",\n  \"dockerComposeFile\": \"docker-compose.yml\",\n  \"service\": \"app\",\n  \"workspaceFolder\": \"/workspaces/${localWorkspaceFolderBasename}\",\n  \"customizations\": {\n    \"vscode\": {\n      \"settings\": {\n        \"editor.formatOnSave\": true,\n        \"editor.codeActionsOnSave\": {\n          // add language-appropriate fix-all actions, e.g. eslint, ruff, etc.\n        }\n      },\n      \"extensions\": [\n        // linter, formatter, language support, test runner extensions for the project's stack\n      ]\n    }\n  },\n  \"forwardPorts\": [/* infer relevant ports from the project */],\n  \"mounts\": [\n    // Always mount SSH keys and gitconfig from the host so git operations work seamlessly\n    \"source=${localEnv:HOME}/.ssh,target=/home/\u003cremoteUser\u003e/.ssh,type=bind,consistency=cached\",\n    \"source=${localEnv:HOME}/.gitconfig,target=/home/\u003cremoteUser\u003e/.gitconfig,type=bind,consistency=cached\"\n  ],\n  \"remoteUser\": \"\u003cnon-root user provided by the base image, e.g. node, vscode, etc.\u003e\"\n}\n```\n\n**Rules:**\n- Always use `dockerComposeFile` + `service` to reference the compose file — never use `build.dockerfile` directly; this makes it easy to add services (databases, caches, etc.) later without restructuring\n- `workspaceFolder` must point to `/workspaces/${localWorkspaceFolderBasename}` to align with the volume mount defined in `docker-compose.yml`\n- `forwardPorts` must list ports the app actually exposes (dev server, API, DB, etc.)\n- `mounts` must always include SSH keys and `.gitconfig` so the developer can push/pull and sign commits from inside the container\n- `remoteUser` must match the non-root user that ships with the chosen Microsoft devcontainers base image\n- Only add `postCreateCommand` for steps that must run after the workspace is mounted (e.g., `npm install`, `pip install -e .`); do not use it for tooling that belongs in the Dockerfile\n\n---\n\n### `.devcontainer/docker-compose.yml`\n\n```yaml\nservices:\n  app:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    volumes:\n      # Mount the workspace root into the container\n      # Use the actual folder name here — Docker Compose cannot resolve\n      # ${localWorkspaceFolderBasename} (only VS Code devcontainer.json can)\n      - ..:/workspaces/\u003cproject-folder-name\u003e:cached\n    # Keep the container running so VS Code can attach to it\n    command: sleep infinity\n    # Uncomment and add extra services (postgres, redis, etc.) as needed\n```\n\n**Rules:**\n- The service name must match the `service` field in `devcontainer.json` (default: `app`)\n- The workspace volume must use `..` as the source (one level up from `.devcontainer/`) and mount to `/workspaces/\u003cproject-folder-name\u003e` — **always hardcode the actual folder name here**; `${localWorkspaceFolderBasename}` is a VS Code-only variable that Docker Compose cannot resolve and will substitute with an empty string, causing a \"Workspace does not exist\" error when reopening in container\n- `command: sleep infinity` keeps the container alive for VS Code to attach; do not use an application start command here\n- Additional services (databases, message brokers, etc.) can be added as sibling services under `services:` when the project requires them\n\n---\n\n### `.devcontainer/Dockerfile`\n\n```dockerfile\nFROM mcr.microsoft.com/devcontainers/\u003cvariant\u003e:\u003ctag\u003e\n\n# Install all global development tools here so the container is self-contained.\n# Examples: package managers, CLI tools, task runners, linters, formatters.\n# Combine RUN steps and clean up package manager caches to keep the image lean.\n\n# Example pattern (adapt to the project stack):\n# RUN apt-get update \u0026\u0026 apt-get install -y --no-install-recommends \u003csystem-deps\u003e \\\n#     \u0026\u0026 rm -rf /var/lib/apt/lists/*\n\n# RUN \u003cruntime-package-manager\u003e install -g \u003ctool1\u003e \u003ctool2\u003e ...\n\n# Install a task runner (e.g., Taskfile) when the project uses one:\n# RUN sh -c \"$(curl --location https://taskfile.dev/install.sh)\" -- -d -b /usr/local/bin\n```\n\n**Rules:**\n- **All tooling must be installed in the Dockerfile** — the image must be fully usable immediately after build, without relying on any post-create scripts for tools\n- Do **not** install project dependencies (lock-file packages) in the Dockerfile; those belong in `postCreateCommand`\n- Prefer explicit, pinned versions for critical tools to ensure reproducible builds\n- Combine `RUN` instructions, avoid unnecessary packages, and remove caches to minimise image size\n- The non-root user and `WORKDIR` are already handled by the Microsoft base image; only override them if there is a specific reason\n\n---\n\n## General guidelines\n\n- Keep the `.devcontainer` folder minimal: `devcontainer.json` + `docker-compose.yml` + `Dockerfile` are the three required files — no more, unless the project demands it\n- Infer the correct base image variant, ports, extensions, and tooling from the project's language, framework, and existing config files (e.g., `package.json`, `pyproject.toml`, `Taskfile.yml`, `angular.json`)\n- Always include the SSH and gitconfig mounts — they are essential for a good developer experience\n- Add brief inline comments in the Dockerfile explaining non-obvious installation steps\n\n---\n\n## Post-creation verification\n\nAfter all three files have been created or modified, **dispatch a subagent** to validate the setup:\n\n1. `cd` into the project root (the parent of `.devcontainer/`)\n2. Run `docker compose -f .devcontainer/docker-compose.yml build` and verify the image builds without errors\n3. Run `docker compose -f .devcontainer/docker-compose.yml up -d` and verify the container starts successfully\n4. Run `docker compose -f .devcontainer/docker-compose.yml ps` and confirm the `app` service is in a **running** state\n5. Run `docker compose -f .devcontainer/docker-compose.yml down` to clean up after the test\n\nIf any step fails:\n- Read the error output carefully\n- Fix the relevant file (Dockerfile, docker-compose.yml, or devcontainer.json)\n- Re-run the verification from step 1\n\nOnly report success to the user once the container has been built, started, confirmed running, and cleaned up without errors.\n\n---\n\n## Audit existing configuration flow\n\nWhen `.devcontainer/` already exists, review the configuration against the standards above instead of creating files from scratch.\n\n### Step A1 — Read existing files\n\nRead all files inside `.devcontainer/` (at minimum look for `devcontainer.json`, `docker-compose.yml`, and `Dockerfile`).\n\n### Step A2 — Audit checklist\n\nCompare each file against the rules defined in the **New setup flow** section above. Use the following checklist:\n\n#### devcontainer.json\n\n| # | Check | Standard |\n|---|-------|----------|\n| 1 | Uses `dockerComposeFile` + `service` | Must reference a compose file — never use `build.dockerfile` directly |\n| 2 | `workspaceFolder` value | Must be `/workspaces/${localWorkspaceFolderBasename}` |\n| 3 | SSH key mount present | Must mount `${localEnv:HOME}/.ssh` into the container |\n| 4 | `.gitconfig` mount present | Must mount `${localEnv:HOME}/.gitconfig` into the container |\n| 5 | `remoteUser` set | Must match the non-root user from the Microsoft base image |\n| 6 | `forwardPorts` populated | Must list all ports the app actually exposes |\n| 7 | VS Code extensions listed | Should include linter, formatter, language support, and test runner extensions for the stack |\n| 8 | `editor.formatOnSave` enabled | Recommended in `customizations.vscode.settings` |\n| 9 | `postCreateCommand` usage | Verify it only installs project dependencies (e.g. `npm install`), not global tooling |\n\n#### docker-compose.yml\n\n| # | Check | Standard |\n|---|-------|----------|\n| 10 | Service name matches `service` field | Default: `app` — must be consistent with `devcontainer.json` |\n| 11 | Workspace volume source | Must use `..` (one level up from `.devcontainer/`) |\n| 12 | Workspace volume target | Must mount to `/workspaces/${localWorkspaceFolderBasename}` |\n| 13 | `command: sleep infinity` | Must be present to keep the container alive |\n\n#### Dockerfile\n\n| # | Check | Standard |\n|---|-------|----------|\n| 14 | Base image source | Must be from `mcr.microsoft.com/devcontainers/` and match the project stack |\n| 15 | Global tooling in Dockerfile | All global tools must be installed here, not in post-create scripts |\n| 16 | No project dependencies | Lock-file packages (`npm install`, `pip install`) must **not** be in the Dockerfile |\n| 17 | `RUN` instructions combined | Combine steps and clean up caches to minimize image size |\n| 18 | Tool versions pinned | Critical tools should use explicit, pinned versions |\n\n### Step A3 — Present findings\n\nPresent the audit results as a numbered list of suggestions grouped by file:\n- For each issue found, state the check number, what the current value/pattern is, what the standard requires, and the specific change proposed\n- Use ⚠️ for issues that should be fixed and ℹ️ for optional improvements\n- If a file passes all checks, mark it with ✅\n\n### Step A4 — Interactive selection\n\nAsk the user: \"Which suggestions would you like me to implement? (enter the numbers separated by commas, 'all' for everything, or 'none' to skip)\"\n\n### Step A5 — Apply selected changes\n\nIf the user selected suggestions:\n1. Modify **only** the parts of the existing files that correspond to the selected suggestions\n2. Preserve all configuration that was not flagged — do **not** rewrite files from scratch\n3. After applying changes, proceed to **Post-creation verification** above\n\nIf the user selected \"none\", skip verification and proceed to mark the step as done.\n",
+              "type": "skill.invoked"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "Let me start by checking Docker availability and whether a `.devcontainer` directory exists in the current working directory.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "docker info \u003e /dev/null 2\u003e\u00261 \u0026\u0026 echo \"DOCKER_OK\" || echo \"DOCKER_FAIL\"",
+                "description": "Check if Docker daemon is running"
+              },
+              "tool_call_id": "toolu_vrtx_01YPdLwkTirbjUZunDP1iH3z",
+              "tool_name": "bash"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "path": "/tmp/waza-3564808877",
+                "pattern": ".devcontainer/**"
+              },
+              "tool_call_id": "toolu_vrtx_01Ms7ERhKmVR1dHY6eJAs4i4",
+              "tool_name": "glob"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "path": "/tmp/waza-3564808877"
+              },
+              "tool_call_id": "toolu_vrtx_01Nyophv2QZRCGM4Yybc5StY",
+              "tool_name": "view"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01Nyophv2QZRCGM4Yybc5StY",
+              "tool_result": {
+                "content": "\ndiff --git a/tmp/waza-3564808877 b/tmp/waza-3564808877\ncreate file mode 100644\nindex 0000000..0000000\n--- a/dev/null\n+++ b/tmp/waza-3564808877\n@@ -1,0 +1,0 @@\n\n",
+                "detailedContent": "\ndiff --git a/tmp/waza-3564808877 b/tmp/waza-3564808877\ncreate file mode 100644\nindex 0000000..0000000\n--- a/dev/null\n+++ b/tmp/waza-3564808877\n@@ -1,0 +1,0 @@\n\n"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01Ms7ERhKmVR1dHY6eJAs4i4",
+              "tool_result": {
+                "content": "No files matched the pattern.",
+                "detailedContent": "No files matched the pattern."
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01YPdLwkTirbjUZunDP1iH3z",
+              "tool_result": {
+                "content": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "DOCKER_FAIL\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "⚠️ **Docker is not available** in this environment. Before I can create or validate any `.devcontainer` files, Docker must be installed and the daemon must be running.\n\nPlease install Docker and start the daemon, then come back:\n👉 https://docs.docker.com/get-docker/\n\nOnce Docker is running (`docker info` succeeds), I'll be able to set up the full `.devcontainer` environment for your project.",
+              "type": "assistant.message"
+            },
+            {
+              "content": "Docker is not running/available. I need to inform the user about this and stop. Also, the .devcontainer directory doesn't exist, and the project directory appears to be empty.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "⚠️ **Docker is not available** in this environment. Before I can create or validate any `.devcontainer` files, Docker must be installed and the daemon must be running.\n\nPlease install Docker and start the daemon, then come back:\n👉 https://docs.docker.com/get-docker/\n\nOnce Docker is running (`docker info` succeeds), I'll be able to set up the full `.devcontainer` environment for your project.",
+          "skill_invocations": [
+            {
+              "name": "sdlc-devcontainer-setup",
+              "path": "/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md"
+            }
+          ],
+          "workspace_dir": "/tmp/waza-3564808877"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.16666666666666666,
+        "avg_weighted_score": 0.16666666666666666,
+        "min_score": 0.16666666666666666,
+        "max_score": 0.16666666666666666,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 12957
+      }
+    }
+  ]
+}

@@ -62,7 +62,7 @@ For Implementation Plan, the skill is already installed by
 > For a richer, multi-skill workflow (orchestrated planning, coding, review,
 > validation, and debate), run `skill:sdlc-council` instead — it produces
 > the same artifact shape, only shaped by `skill:sdlc-council-daedalus`,
-> `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-lucas` in combination,
+> `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-critic` in combination,
 > with `skill:sdlc-thomas` as the mandatory verification gate after every batch."
 
 ## Step 3 — Update `.wizard.json`

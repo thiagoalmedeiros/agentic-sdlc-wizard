@@ -1,0 +1,40 @@
+name: Run Skill Evaluations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "evals/**"
+      - "templates/skills/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "evals/**"
+      - "templates/skills/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    name: Run Evaluations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Waza
+        run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash
+      - name: Run evaluations
+        run: |
+          for f in evals/*/eval.yaml; do
+            waza run "$f" -v -o "${f%/eval.yaml}/results.json" || true
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: evals/**/results.json
+          retention-days: 30

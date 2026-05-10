@@ -1,0 +1,1245 @@
+{
+  "eval_id": "run-1778442061",
+  "skill": "sdlc-wizard-eval",
+  "eval_name": "sdlc-wizard-eval-eval",
+  "timestamp": "2026-05-10T19:39:49.507613461Z",
+  "config": {
+    "runs_per_test": 1,
+    "model_id": "mock",
+    "engine_type": "copilot-sdk",
+    "timeout_sec": 300
+  },
+  "summary": {
+    "total_tests": 3,
+    "succeeded": 0,
+    "failed": 3,
+    "errors": 0,
+    "skipped": 0,
+    "success_rate": 0,
+    "aggregate_score": 0.20833333333333334,
+    "weighted_score": 0.20833333333333334,
+    "min_score": 0.125,
+    "max_score": 0.375,
+    "std_dev": 0.11785113019775792,
+    "duration_ms": 72385,
+    "usage": {
+      "turns": 13,
+      "input_tokens": 313721,
+      "output_tokens": 3334,
+      "cache_read_tokens": 251608,
+      "cache_write_tokens": 0,
+      "premium_requests": 13
+    }
+  },
+  "metrics": {},
+  "tasks": [
+    {
+      "test_id": "negative-trigger-001",
+      "display_name": "Negative Trigger 1",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 13115,
+          "validations": {
+            "omits-skill-keywords": {
+              "identifier": "omits-skill-keywords",
+              "type": "text",
+              "score": 0.75,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Found forbidden substring: skill",
+              "details": {
+                "contains": null,
+                "contains_cs": null,
+                "failures": [
+                  "Found forbidden substring: skill"
+                ],
+                "not_contains": [
+                  "evaluating",
+                  "existing",
+                  "files",
+                  "skill"
+                ],
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 64932 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 13115,
+                "failures": [
+                  "Token usage 64932 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 64932,
+                "tool_call_count": 2,
+                "tools_used": [
+                  "skill",
+                  "bash"
+                ]
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 2,
+            "tools_used": [
+              "skill",
+              "bash"
+            ],
+            "tool_calls": [
+              {
+                "name": "skill",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": "sdlc-wizard"
+                },
+                "result": {
+                  "content": "Skill \"sdlc-wizard\" loaded successfully. Follow the instructions in the skill context.",
+                  "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-wizard\ndescription: \u003e\n  Interactive configuration wizard for your development environment.\n  Dispatches to the matching setup skill (DevContainer, Graphify,\n  Implementation Plan) and tracks progress in `.wizard.json`. USE FOR:\n  initial project setup, adding new SDLC capabilities, auditing existing\n  configuration. DO NOT USE FOR: direct code changes, task execution, or\n  planning.\nargument-hint: 'Optional: specify a step number to jump directly to that configuration'\n---\n\n# SDLC Wizard\n\nThis skill presents the available SDLC setup steps, dispatches the\nrelevant sub-skill, and updates `.wizard.json` once the sub-skill reports\nsuccess. It does **not** re-implement the sub-skills' logic — each one\nalready handles its own \"new setup vs. audit\" mode.\n\n## Step 1 — Choose a step\n\nRead `.wizard.json` at the project root. If it does not exist, treat all\nsteps as incomplete. Present **only the steps not yet in `completedSteps`**\nas a numbered list:\n\n| # | Step | What it does |\n|---|------|--------------|\n| 1 | **DevContainer** | Set up or audit a `.devcontainer/` environment (Docker Compose + Dockerfile + `devcontainer.json`) |\n| 2 | **Graphify** | Install and configure the graphify knowledge-graph skill |\n| 3 | **Implementation Plan** | Confirm the standalone planning skill is available and explain its usage |\n\nIf `completedSteps` already contains every step, tell the user: \"All SDLC\nWizard steps are already configured. Nothing left to set up!\" and stop.\n\nOtherwise ask: \"Which step would you like to configure? (enter the number)\"\n\n## Step 2 — Dispatch the sub-skill\n\nBased on the user’s choice, **dispatch a subagent** that invokes the\ncorresponding skill and performs the setup end-to-end. Pass through the\nuser’s confirmations; do not paraphrase the skill’s rules.\n\n| Choice | Skill |\n|--------|-------|\n| DevContainer | `skill:sdlc-devcontainer-setup` |\n| Graphify | `skill:sdlc-graphify-setup` |\n| Implementation Plan | `skill:sdlc-impl-strategy` |\n\nFor DevContainer and Graphify, the sub-skill detects whether the component\nis already configured and runs either its new-setup flow or its audit flow\nautomatically. Do not pre-branch here.\n\nFor Implementation Plan, the skill is already installed by\n`wizard install`. Verify that `skill:sdlc-impl-strategy` is available, then tell the user:\n\n\u003e \"The `skill:sdlc-impl-strategy` skill is ready. Ask your IDE chat to run it\n\u003e whenever you want to produce a `plans/\u003ctopic\u003e/plan.md` + `lessons.md`\n\u003e pair before implementation starts. `skill:sdlc-thomas` is also\n\u003e installed — it runs every verification check itself and issues an\n\u003e **APPROVED** or **NOT APPROVED** verdict after each batch; it is called\n\u003e automatically when `skill:sdlc-impl-strategy` or `skill:sdlc-council` executes a plan.\n\u003e For a richer, multi-skill workflow (orchestrated planning, coding, review,\n\u003e validation, and debate), run `skill:sdlc-council` instead — it produces\n\u003e the same artifact shape, only shaped by `skill:sdlc-council-daedalus`,\n\u003e `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-lucas` in combination,\n\u003e with `skill:sdlc-thomas` as the mandatory verification gate after every batch.\"\n\n## Step 3 — Update `.wizard.json`\n\nAfter the sub-skill reports success, append the step key to\n`completedSteps` in `.wizard.json`:\n\n- DevContainer → `\"devcontainer\"`\n- Graphify → `\"graphify\"`\n- Implementation Plan → `\"impl-strategy\"`\n\nReport success to the user and, when relevant, point them at `skill:sdlc-council`\nfor end-to-end task orchestration:\n\n\u003e \"Run `skill:sdlc-council` in your IDE chat (Copilot or Claude Code) to\n\u003e begin a new task with orchestrated planning, coding, and review.\"\n"
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "cat /tmp/waza-2745584688/.wizard.json 2\u003e/dev/null || echo \"NOT_FOUND\"",
+                  "description": "Check wizard.json status",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "NOT_FOUND\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "NOT_FOUND\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              }
+            ],
+            "errors": [],
+            "usage": {
+              "turns": 3,
+              "input_tokens": 64458,
+              "output_tokens": 474,
+              "cache_read_tokens": 49206,
+              "cache_write_tokens": 0,
+              "premium_requests": 3
+            },
+            "session_id": "01fa02fa-576a-4c53-9914-a660dc143f7f"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "creating new skills from scratch",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants to create new skills from scratch. According to the available skills, I should use the `sdlc-wizard` skill for this task.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "skill": "sdlc-wizard"
+              },
+              "tool_call_id": "toolu_vrtx_01Q2s8HKEQqeauHKHvaDfzFQ",
+              "tool_name": "skill"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01Q2s8HKEQqeauHKHvaDfzFQ",
+              "tool_result": {
+                "content": "Skill \"sdlc-wizard\" loaded successfully. Follow the instructions in the skill context.",
+                "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-wizard\ndescription: \u003e\n  Interactive configuration wizard for your development environment.\n  Dispatches to the matching setup skill (DevContainer, Graphify,\n  Implementation Plan) and tracks progress in `.wizard.json`. USE FOR:\n  initial project setup, adding new SDLC capabilities, auditing existing\n  configuration. DO NOT USE FOR: direct code changes, task execution, or\n  planning.\nargument-hint: 'Optional: specify a step number to jump directly to that configuration'\n---\n\n# SDLC Wizard\n\nThis skill presents the available SDLC setup steps, dispatches the\nrelevant sub-skill, and updates `.wizard.json` once the sub-skill reports\nsuccess. It does **not** re-implement the sub-skills' logic — each one\nalready handles its own \"new setup vs. audit\" mode.\n\n## Step 1 — Choose a step\n\nRead `.wizard.json` at the project root. If it does not exist, treat all\nsteps as incomplete. Present **only the steps not yet in `completedSteps`**\nas a numbered list:\n\n| # | Step | What it does |\n|---|------|--------------|\n| 1 | **DevContainer** | Set up or audit a `.devcontainer/` environment (Docker Compose + Dockerfile + `devcontainer.json`) |\n| 2 | **Graphify** | Install and configure the graphify knowledge-graph skill |\n| 3 | **Implementation Plan** | Confirm the standalone planning skill is available and explain its usage |\n\nIf `completedSteps` already contains every step, tell the user: \"All SDLC\nWizard steps are already configured. Nothing left to set up!\" and stop.\n\nOtherwise ask: \"Which step would you like to configure? (enter the number)\"\n\n## Step 2 — Dispatch the sub-skill\n\nBased on the user’s choice, **dispatch a subagent** that invokes the\ncorresponding skill and performs the setup end-to-end. Pass through the\nuser’s confirmations; do not paraphrase the skill’s rules.\n\n| Choice | Skill |\n|--------|-------|\n| DevContainer | `skill:sdlc-devcontainer-setup` |\n| Graphify | `skill:sdlc-graphify-setup` |\n| Implementation Plan | `skill:sdlc-impl-strategy` |\n\nFor DevContainer and Graphify, the sub-skill detects whether the component\nis already configured and runs either its new-setup flow or its audit flow\nautomatically. Do not pre-branch here.\n\nFor Implementation Plan, the skill is already installed by\n`wizard install`. Verify that `skill:sdlc-impl-strategy` is available, then tell the user:\n\n\u003e \"The `skill:sdlc-impl-strategy` skill is ready. Ask your IDE chat to run it\n\u003e whenever you want to produce a `plans/\u003ctopic\u003e/plan.md` + `lessons.md`\n\u003e pair before implementation starts. `skill:sdlc-thomas` is also\n\u003e installed — it runs every verification check itself and issues an\n\u003e **APPROVED** or **NOT APPROVED** verdict after each batch; it is called\n\u003e automatically when `skill:sdlc-impl-strategy` or `skill:sdlc-council` executes a plan.\n\u003e For a richer, multi-skill workflow (orchestrated planning, coding, review,\n\u003e validation, and debate), run `skill:sdlc-council` instead — it produces\n\u003e the same artifact shape, only shaped by `skill:sdlc-council-daedalus`,\n\u003e `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-lucas` in combination,\n\u003e with `skill:sdlc-thomas` as the mandatory verification gate after every batch.\"\n\n## Step 3 — Update `.wizard.json`\n\nAfter the sub-skill reports success, append the step key to\n`completedSteps` in `.wizard.json`:\n\n- DevContainer → `\"devcontainer\"`\n- Graphify → `\"graphify\"`\n- Implementation Plan → `\"impl-strategy\"`\n\nReport success to the user and, when relevant, point them at `skill:sdlc-council`\nfor end-to-end task orchestration:\n\n\u003e \"Run `skill:sdlc-council` in your IDE chat (Copilot or Claude Code) to\n\u003e begin a new task with orchestrated planning, coding, and review.\"\n"
+              }
+            },
+            {
+              "content": "---\nname: sdlc-wizard\ndescription: \u003e\n  Interactive configuration wizard for your development environment.\n  Dispatches to the matching setup skill (DevContainer, Graphify,\n  Implementation Plan) and tracks progress in `.wizard.json`. USE FOR:\n  initial project setup, adding new SDLC capabilities, auditing existing\n  configuration. DO NOT USE FOR: direct code changes, task execution, or\n  planning.\nargument-hint: 'Optional: specify a step number to jump directly to that configuration'\n---\n\n# SDLC Wizard\n\nThis skill presents the available SDLC setup steps, dispatches the\nrelevant sub-skill, and updates `.wizard.json` once the sub-skill reports\nsuccess. It does **not** re-implement the sub-skills' logic — each one\nalready handles its own \"new setup vs. audit\" mode.\n\n## Step 1 — Choose a step\n\nRead `.wizard.json` at the project root. If it does not exist, treat all\nsteps as incomplete. Present **only the steps not yet in `completedSteps`**\nas a numbered list:\n\n| # | Step | What it does |\n|---|------|--------------|\n| 1 | **DevContainer** | Set up or audit a `.devcontainer/` environment (Docker Compose + Dockerfile + `devcontainer.json`) |\n| 2 | **Graphify** | Install and configure the graphify knowledge-graph skill |\n| 3 | **Implementation Plan** | Confirm the standalone planning skill is available and explain its usage |\n\nIf `completedSteps` already contains every step, tell the user: \"All SDLC\nWizard steps are already configured. Nothing left to set up!\" and stop.\n\nOtherwise ask: \"Which step would you like to configure? (enter the number)\"\n\n## Step 2 — Dispatch the sub-skill\n\nBased on the user’s choice, **dispatch a subagent** that invokes the\ncorresponding skill and performs the setup end-to-end. Pass through the\nuser’s confirmations; do not paraphrase the skill’s rules.\n\n| Choice | Skill |\n|--------|-------|\n| DevContainer | `skill:sdlc-devcontainer-setup` |\n| Graphify | `skill:sdlc-graphify-setup` |\n| Implementation Plan | `skill:sdlc-impl-strategy` |\n\nFor DevContainer and Graphify, the sub-skill detects whether the component\nis already configured and runs either its new-setup flow or its audit flow\nautomatically. Do not pre-branch here.\n\nFor Implementation Plan, the skill is already installed by\n`wizard install`. Verify that `skill:sdlc-impl-strategy` is available, then tell the user:\n\n\u003e \"The `skill:sdlc-impl-strategy` skill is ready. Ask your IDE chat to run it\n\u003e whenever you want to produce a `plans/\u003ctopic\u003e/plan.md` + `lessons.md`\n\u003e pair before implementation starts. `skill:sdlc-thomas` is also\n\u003e installed — it runs every verification check itself and issues an\n\u003e **APPROVED** or **NOT APPROVED** verdict after each batch; it is called\n\u003e automatically when `skill:sdlc-impl-strategy` or `skill:sdlc-council` executes a plan.\n\u003e For a richer, multi-skill workflow (orchestrated planning, coding, review,\n\u003e validation, and debate), run `skill:sdlc-council` instead — it produces\n\u003e the same artifact shape, only shaped by `skill:sdlc-council-daedalus`,\n\u003e `skill:sdlc-council-hephaestus`, and `skill:sdlc-council-lucas` in combination,\n\u003e with `skill:sdlc-thomas` as the mandatory verification gate after every batch.\"\n\n## Step 3 — Update `.wizard.json`\n\nAfter the sub-skill reports success, append the step key to\n`completedSteps` in `.wizard.json`:\n\n- DevContainer → `\"devcontainer\"`\n- Graphify → `\"graphify\"`\n- Implementation Plan → `\"impl-strategy\"`\n\nReport success to the user and, when relevant, point them at `skill:sdlc-council`\nfor end-to-end task orchestration:\n\n\u003e \"Run `skill:sdlc-council` in your IDE chat (Copilot or Claude Code) to\n\u003e begin a new task with orchestrated planning, coding, and review.\"\n",
+              "type": "skill.invoked"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants to create new skills from scratch. The sdlc-wizard skill is now loaded. Let me present the wizard menu to the user.\n\nFirst, I need to check if `.wizard.json` exists at the project root (which is `/tmp/waza-2745584688`).",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "cat /tmp/waza-2745584688/.wizard.json 2\u003e/dev/null || echo \"NOT_FOUND\"",
+                "description": "Check wizard.json status"
+              },
+              "tool_call_id": "toolu_vrtx_01EfUP8yN3tPcKFSos8NxznU",
+              "tool_name": "bash"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01EfUP8yN3tPcKFSos8NxznU",
+              "tool_result": {
+                "content": "NOT_FOUND\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "NOT_FOUND\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "## 🧙 SDLC Wizard\n\nNo `.wizard.json` found — all steps are available.\n\nWhich step would you like to configure?\n\n| # | Step | What it does |\n|---|------|--------------|\n| **1** | **DevContainer** | Set up a `.devcontainer/` environment (Docker Compose + Dockerfile + `devcontainer.json`) |\n| **2** | **Graphify** | Install and configure the graphify knowledge-graph skill |\n| **3** | **Implementation Plan** | Confirm the planning skill is available and explain its usage |\n\n**Enter the number of the step you'd like to configure:**",
+              "type": "assistant.message"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "## 🧙 SDLC Wizard\n\nNo `.wizard.json` found — all steps are available.\n\nWhich step would you like to configure?\n\n| # | Step | What it does |\n|---|------|--------------|\n| **1** | **DevContainer** | Set up a `.devcontainer/` environment (Docker Compose + Dockerfile + `devcontainer.json`) |\n| **2** | **Graphify** | Install and configure the graphify knowledge-graph skill |\n| **3** | **Implementation Plan** | Confirm the planning skill is available and explain its usage |\n\n**Enter the number of the step you'd like to configure:**",
+          "skill_invocations": [
+            {
+              "name": "sdlc-wizard",
+              "path": "/home/node/.claude/skills/sdlc-wizard/SKILL.md"
+            }
+          ],
+          "workspace_dir": "/tmp/waza-2745584688"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.375,
+        "avg_weighted_score": 0.375,
+        "min_score": 0.375,
+        "max_score": 0.375,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 13115
+      }
+    },
+    {
+      "test_id": "positive-trigger-001",
+      "display_name": "Positive Trigger 1",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 25085,
+          "validations": {
+            "contains-keywords": {
+              "identifier": "contains-keywords",
+              "type": "text",
+              "score": 0.25,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Missing expected substring: evaluating; Missing expected substring: existing; Missing expected substring: files",
+              "details": {
+                "contains": [
+                  "evaluating",
+                  "existing",
+                  "files",
+                  "skill"
+                ],
+                "contains_cs": null,
+                "failures": [
+                  "Missing expected substring: evaluating",
+                  "Missing expected substring: existing",
+                  "Missing expected substring: files"
+                ],
+                "not_contains": null,
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 124687 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 25085,
+                "failures": [
+                  "Token usage 124687 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 124687,
+                "tool_call_count": 6,
+                "tools_used": [
+                  "skill",
+                  "bash",
+                  "glob",
+                  "glob",
+                  "bash",
+                  "bash"
+                ]
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 6,
+            "tools_used": [
+              "skill",
+              "bash",
+              "glob",
+              "glob",
+              "bash",
+              "bash"
+            ],
+            "tool_calls": [
+              {
+                "name": "skill",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": "sdlc-wizard-eval"
+                },
+                "result": {
+                  "content": "Skill \"sdlc-wizard-eval\" loaded successfully. Follow the instructions in the skill context.",
+                  "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-wizard-eval\ndescription: \u003e\n  Interactive Waza evaluation wizard for AI agent skills. Guides you step-by-step\n  through installing Waza, scaffolding eval suites, running benchmarks, checking\n  skill readiness, improving quality, and viewing results. USE FOR: evaluating\n  existing SKILL.md files with Waza, scaffolding eval suites from SKILL.md,\n  running skill benchmarks, checking skill compliance and token budgets, improving\n  skill frontmatter, grading agent output, viewing evaluation dashboards, CI/CD\n  eval integration. DO NOT USE FOR: creating new skills from scratch (use\n  sdlc-wizard), implementing features (use sdlc-council), planning (use\n  sdlc-impl-strategy).\nargument-hint: \"Optional: skill name or path to jump directly to evaluating that skill\"\n---\n\n# SDLC Wizard — Eval\n\nThis skill interactively guides you through the full Waza evaluation lifecycle\nfor skills that already exist in your workspace. It does **not** run commands\nautomatically — it asks what you want to do at each step, shows you the exact\ncommand, and confirms the outcome.\n\n---\n\n## Step 0 — Detect context\n\nBefore presenting the menu, silently gather workspace context:\n\n1. Check whether `waza` is on the `PATH`:\n   ```bash\n   which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"\n   ```\n2. Scan for existing `SKILL.md` files and list their paths.\n3. Scan for existing `eval.yaml` files under `evals/` and note which skills\n   already have coverage.\n\nUse this context to pre-fill answers and highlight recommended actions.\n\nIf an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), skip the main\nmenu and jump directly to **Step 2** for that skill.\n\n---\n\n## Step 1 — Present the main menu\n\nGreet the user with a brief summary of what was found:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound X skill(s)  |  Y already have evals  |  Waza: [installed / NOT installed]\n═══════════════════════════════════════════\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\nAsk: **\"Enter a number (or the name of a skill to evaluate it end-to-end):\"**\n\n---\n\n## Step 2 — Execute the chosen action\n\n### Quick Reference: Step 2 Decision Tree\n\n| Option | Task                | Key Input                 | Output                                    |\n| ------ | ------------------- | ------------------------- | ----------------------------------------- |\n| **1**  | Install Waza        | Confirm                   | Verify with `waza --version`              |\n| **2**  | Scaffold eval suite | Select skill              | Creates `evals/\u003cskill\u003e/eval.yaml` + tasks |\n| **3**  | AI-generate eval    | Select skill + mode       | Preview or apply generated tasks          |\n| **4**  | Run evaluations     | Select eval(s) + executor | Exit code: 0=pass, 1=fail, 2=config error |\n| **5**  | Check readiness     | Select skill              | Compliance score + detailed report        |\n| **6a** | Improve frontmatter | Select skill + target     | Interactive or one-pass report            |\n| **6b** | Score quality       | Select skill + model      | 5-dimension quality breakdown             |\n| **7**  | Coverage report     | Select format             | Grid showing eval coverage by skill       |\n| **8**  | View dashboard      | Provide port/directory    | Browser-based results viewer              |\n| **9**  | CI/CD setup         | Select skills             | GitHub Actions workflow file              |\n\n---\n\n### Option 1 — Install / verify Waza\n\n**Action**: Show and confirm install command.\n\n```bash\ncurl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n```\n\n**After confirmation**, verify the install:\n\n```bash\nwaza --version\n```\n\n**If it fails**, suggest the source-build alternative (requires Go 1.26+):\n\n```bash\ngit clone https://github.com/microsoft/waza.git\ncd waza \u0026\u0026 git lfs install \u0026\u0026 git lfs pull\ngo build -o waza ./cmd/waza \u0026\u0026 sudo mv waza /usr/local/bin/\n```\n\nMark Waza as installed and return to the main menu.\n\n---\n\n### Option 2 — Scaffold an eval suite (waza new eval)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                        |\n| ---- | ------------------------------- | ----------------------------------------------------------------------------- |\n| 1    | List unevaluated skills         | Display numbered list                                                         |\n| 2    | \"Which skill? (number or path)\" | Get user input                                                                |\n| 3    | Show command                    | `waza new eval \u003cskill-path\u003e`                                                  |\n| 4    | Explain outputs                 | `eval.yaml`, `tasks/positive-trigger-1.yaml`, `tasks/negative-trigger-1.yaml` |\n| 5    | Confirm                         | \"Run this command? (yes/no)\"                                                  |\n| 6    | Execute \u0026 show output           | Run command and display results                                               |\n| 7    | Offer next steps                | Edit manually / AI-suggest / Run now                                          |\n\n---\n\n### Option 3 — AI-suggested eval suite (waza suggest)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                            |\n| ---- | --------------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills without full coverage | Display numbered list                                             |\n| 2    | \"Which skill to target?\"          | Get user input                                                    |\n| 3    | \"Preview only or write files?\"    | Choose `--dry-run` (safe) or `--apply`                            |\n| 4    | \"Model override? (optional)\"      | Optional: specify model ID                                        |\n| 5    | Show command                      | `waza suggest \u003cskill-path\u003e [--dry-run \\| --apply] [--model \u003cid\u003e]` |\n| 6    | Execute \u0026 display output          | Run and show suggested YAML                                       |\n| 7    | If `--dry-run`: confirm apply     | \"Apply these files? (yes/no)\" → re-run with `--apply`             |\n\n---\n\n### Option 4 — Run evaluations (waza run)\n\n**Workflow:**\n\n| Step | Prompt               | Action                                                                                                           |\n| ---- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |\n| 1    | List available evals | Display numbered list with skill names                                                                           |\n| 2    | \"Which eval to run?\" | Number, or 'all' to auto-discover                                                                                |\n| 3    | \"Executor type?\"     | `mock` (fast, no API key) or `copilot-sdk` (requires GITHUB_TOKEN)                                               |\n| 4    | \"Verbose output?\"    | -v flag for detailed logs                                                                                        |\n| 5    | \"Save results?\"      | -o results.json to persist output                                                                                |\n| 6    | \"Run in parallel?\"   | --parallel flag for concurrent execution                                                                         |\n| 7    | Show final command   | Single: `waza run \u003ceval.yaml\u003e [-v] [-o results.json]` / All: `waza run --discover evals/ [-v] [-o results.json]` |\n| 8    | Execute              | Run command and display results                                                                                  |\n| 9    | Interpret exit code  | 0=✅ passed, 1=❌ failed, 2=⚠️ config error                                                                      |\n| 10   | Offer next steps     | Compare results / Open dashboard / Fix failing tasks                                                             |\n\n---\n\n### Option 5 — Check skill readiness (waza check)\n\n**Workflow:**\n\n| Step | Prompt                              | Action                                                              |\n| ---- | ----------------------------------- | ------------------------------------------------------------------- |\n| 1    | List all skills (flag known issues) | Display numbered list                                               |\n| 2    | \"Which skill to check?\"             | Number, or 'all'                                                    |\n| 3    | Show command                        | `waza check \u003cskill-path\u003e`                                           |\n| 4    | Execute                             | Run and display readiness report                                    |\n| 5    | Explain report sections             | Compliance / Token Budget / Eval Suite / Spec Compliance / Advisory |\n| 6    | Remediation                         | For each failure, explain what it means and suggest fix             |\n| 7    | Offer improvement                   | \"Would you like to improve this skill? (yes/no)\" → go to Option 6   |\n\n**Report sections explained:**\n\n- **Compliance Score** — Frontmatter adherence (Low / Medium / Medium-High / High)\n- **Token Budget** — Whether `SKILL.md` is within limits\n- **Evaluation Suite** — Whether `eval.yaml` exists\n- **Spec Compliance** — agentskills.io spec checks\n- **Advisory Checks** — Quality and maintainability heuristics\n\n---\n\n### Option 6a — Improve skill quality: Frontmatter (waza dev)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                                                                 |\n| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |\n| 1    | List skills to improve          | Display numbered list                                                                                                  |\n| 2    | \"Which skill?\"                  | Get user input                                                                                                         |\n| 3    | \"Improvement mode?\"             | Interactive (iterative) or Copilot report (single-pass)                                                                |\n| 4    | If interactive: \"Target level?\" | low / medium / medium-high / high (default: medium-high)                                                               |\n| 5    | Show command                    | Interactive: `waza dev \u003cskill-path\u003e [--target medium-high]` / Report: `waza dev \u003cskill-path\u003e --copilot [--model \u003cid\u003e]` |\n| 6    | Execute                         | Run and display improvements                                                                                           |\n| 7    | Follow-up                       | Suggest running `waza check` again                                                                                     |\n\n---\n\n### Option 6b — Improve skill quality: LLM judge (waza quality)\n\n**Workflow:**\n\n| Step | Prompt                    | Action                                                            |\n| ---- | ------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills to evaluate   | Display numbered list                                             |\n| 2    | \"Which skill?\"            | Get user input                                                    |\n| 3    | \"Judge model? (optional)\" | Optional: specify model ID                                        |\n| 4    | \"Output format?\"          | table (default), json                                             |\n| 5    | Show command              | `waza quality \u003cskill-path\u003e [--model \u003cid\u003e] [--format table\\|json]` |\n| 6    | Execute                   | Run and display five quality dimensions                           |\n| 7    | Explain scoring           | Each dimension: score 1–5, explanation, and suggested fix         |\n\n**Five quality dimensions:**\n\n- **Clarity** — Is the skill description clear and unambiguous?\n- **Completeness** — Does it cover all relevant scenarios?\n- **Trigger Precision** — Will the agent invoke it at the right times?\n- **Scope Coverage** — Is the workflow fully described?\n- **Anti-patterns** — Any patterns that hurt effectiveness?\n\n---\n\n### Option 7 — Coverage report (waza coverage)\n\n**Workflow:**\n\n| Step | Prompt                  | Action                                               |\n| ---- | ----------------------- | ---------------------------------------------------- |\n| 1    | \"Output format?\"        | text (default), markdown, or json                    |\n| 2    | Show command            | `waza coverage [--format markdown]`                  |\n| 3    | Execute                 | Run and display grid                                 |\n| 4    | Explain coverage levels | Full / Partial / None                                |\n| 5    | Recommend actions       | For uncovered skills, offer to scaffold (→ Option 2) |\n\n**Coverage levels:**\n\n- **Full** — Has tasks + 2+ grader types\n- **Partial** — Has eval.yaml but missing tasks or grader variety\n- **None** — No eval suite at all\n\n---\n\n### Option 8 — Results dashboard (waza serve)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                           |\n| ---- | --------------------------------- | ---------------------------------------------------------------- |\n| 1    | \"Results directory? (default: .)\" | Get path or accept default                                       |\n| 2    | \"Port? (default: 3000)\"           | Get port or accept default                                       |\n| 3    | Show command                      | `waza serve [--port 3000] [--results-dir ./results]`             |\n| 4    | Execute                           | Run server and open browser                                      |\n| 5    | Explain dashboard                 | Task pass/fail / Scores / Model comparisons / Aggregated metrics |\n| 6    | Cleanup reminder                  | \"Stop the server with Ctrl+C when done.\"                         |\n\n---\n\n### Option 9 — CI/CD integration\n\n**Workflow:**\n\n| Step | Prompt                        | Action                                                          |\n| ---- | ----------------------------- | --------------------------------------------------------------- |\n| 1    | \"Which skill(s) to include?\"  | List and select skills                                          |\n| 2    | Generate scaffold             | Create `.github/workflows/eval.yml`                             |\n| 3    | Explain exit codes            | 0=pass, 1=fail, 2=config error                                  |\n| 4    | Optional: token budget gating | Add `waza tokens compare main --skills --threshold 10 --strict` |\n| 5    | Confirm                       | \"Write workflow file? (yes/no)\"                                 |\n| 6    | Finalize                      | Write file and show path                                        |\n\n**Generated workflow scaffold:**\n\n```yaml\nname: Skill Evaluation\non:\n  pull_request:\n    paths:\n      - \"skills/**\"\n      - \"evals/**\"\n\njobs:\n  evaluate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Install Waza\n        run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n      - name: Run evaluations\n        run: waza run --discover evals/ -v -o results.json\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n      - name: Upload results\n        uses: actions/upload-artifact@v4\n        with:\n          name: eval-results\n          path: results.json\n```\n\n---\n\n## Step 3 — After each action\n\nAfter every action completes:\n\n1. Show a brief **summary** of what was done and whether it succeeded.\n2. Update the user's awareness of overall eval coverage (X of Y skills covered).\n3. Ask: **\"What would you like to do next?\"** and re-present the menu.\n\nPersist a lightweight session state so the wizard remembers:\n\n- Which skills have been checked this session\n- Whether Waza is confirmed installed\n- Results file paths generated this session\n\n---\n\n## Reference: Waza Command Cheatsheet\n\n| Goal                        | Command                                                                                   |\n| --------------------------- | ----------------------------------------------------------------------------------------- |\n| Install                     | `curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh \\| bash`     |\n| Scaffold eval from SKILL.md | `waza new eval \u003cskill-path\u003e`                                                              |\n| AI-generate eval            | `waza suggest \u003cskill-path\u003e --apply`                                                       |\n| Run single eval             | `waza run evals/\u003cskill\u003e/eval.yaml -v`                                                     |\n| Run all evals               | `waza run --discover evals/ -v`                                                           |\n| Check readiness             | `waza check \u003cskill-path\u003e`                                                                 |\n| Improve frontmatter         | `waza dev \u003cskill-path\u003e`                                                                   |\n| LLM quality score           | `waza quality \u003cskill-path\u003e`                                                               |\n| Coverage grid               | `waza coverage --format markdown`                                                         |\n| Token count                 | `waza tokens count skills/`                                                               |\n| Token budget CI             | `waza tokens compare main --skills --threshold 10`                                        |\n| Results dashboard           | `waza serve --results-dir ./results`                                                      |\n| Compare runs                | `waza compare results-a.json results-b.json`                                              |\n| Save results                | `waza run eval.yaml -o results.json`                                                      |\n| Grade previous run          | `waza run eval.yaml --output results.json \u0026\u0026 waza grade eval.yaml --results results.json` |\n| List models                 | `waza models`                                                                             |\n| Clear cache                 | `waza cache clear`                                                                        |\n"
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"",
+                  "description": "Check if waza is installed",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              },
+              {
+                "name": "glob",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "No files matched the pattern.",
+                  "detailedContent": "No files matched the pattern."
+                },
+                "success": true
+              },
+              {
+                "name": "glob",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "No files matched the pattern.",
+                  "detailedContent": "No files matched the pattern."
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "find /home/node -name \"SKILL.md\" 2\u003e/dev/null | head -30; find /tmp -name \"SKILL.md\" 2\u003e/dev/null | head -30",
+                  "description": "Find SKILL.md files in home and tmp directories",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.vscode-server/extensions/ms-vscode.vscode-chat-customizations-evaluations-1.0.2/skills/fix-customization-evaluation-diagnostics/SKILL.md\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.vscode-server/extensions/ms-vscode.vscode-chat-customizations-evaluations-1.0.2/skills/fix-customization-evaluation-diagnostics/SKILL.md\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "find /home/node/.claude/skills -name \"eval.yaml\" 2\u003e/dev/null | head -30",
+                  "description": "Find eval.yaml files in skills directory",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              }
+            ],
+            "errors": [],
+            "usage": {
+              "turns": 5,
+              "input_tokens": 123651,
+              "output_tokens": 1036,
+              "cache_read_tokens": 100828,
+              "cache_write_tokens": 0,
+              "premium_requests": 5
+            },
+            "session_id": "acff91a7-4542-4739-a678-0d36e8a9a779"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "evaluating existing SKILL.md files with Waza",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants to evaluate existing SKILL.md files with Waza. This matches the `sdlc-wizard-eval` skill perfectly. Let me invoke it.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "skill": "sdlc-wizard-eval"
+              },
+              "tool_call_id": "toolu_vrtx_01J86qKBRK262JCcQByDVfYy",
+              "tool_name": "skill"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01J86qKBRK262JCcQByDVfYy",
+              "tool_result": {
+                "content": "Skill \"sdlc-wizard-eval\" loaded successfully. Follow the instructions in the skill context.",
+                "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-wizard-eval\ndescription: \u003e\n  Interactive Waza evaluation wizard for AI agent skills. Guides you step-by-step\n  through installing Waza, scaffolding eval suites, running benchmarks, checking\n  skill readiness, improving quality, and viewing results. USE FOR: evaluating\n  existing SKILL.md files with Waza, scaffolding eval suites from SKILL.md,\n  running skill benchmarks, checking skill compliance and token budgets, improving\n  skill frontmatter, grading agent output, viewing evaluation dashboards, CI/CD\n  eval integration. DO NOT USE FOR: creating new skills from scratch (use\n  sdlc-wizard), implementing features (use sdlc-council), planning (use\n  sdlc-impl-strategy).\nargument-hint: \"Optional: skill name or path to jump directly to evaluating that skill\"\n---\n\n# SDLC Wizard — Eval\n\nThis skill interactively guides you through the full Waza evaluation lifecycle\nfor skills that already exist in your workspace. It does **not** run commands\nautomatically — it asks what you want to do at each step, shows you the exact\ncommand, and confirms the outcome.\n\n---\n\n## Step 0 — Detect context\n\nBefore presenting the menu, silently gather workspace context:\n\n1. Check whether `waza` is on the `PATH`:\n   ```bash\n   which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"\n   ```\n2. Scan for existing `SKILL.md` files and list their paths.\n3. Scan for existing `eval.yaml` files under `evals/` and note which skills\n   already have coverage.\n\nUse this context to pre-fill answers and highlight recommended actions.\n\nIf an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), skip the main\nmenu and jump directly to **Step 2** for that skill.\n\n---\n\n## Step 1 — Present the main menu\n\nGreet the user with a brief summary of what was found:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound X skill(s)  |  Y already have evals  |  Waza: [installed / NOT installed]\n═══════════════════════════════════════════\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\nAsk: **\"Enter a number (or the name of a skill to evaluate it end-to-end):\"**\n\n---\n\n## Step 2 — Execute the chosen action\n\n### Quick Reference: Step 2 Decision Tree\n\n| Option | Task                | Key Input                 | Output                                    |\n| ------ | ------------------- | ------------------------- | ----------------------------------------- |\n| **1**  | Install Waza        | Confirm                   | Verify with `waza --version`              |\n| **2**  | Scaffold eval suite | Select skill              | Creates `evals/\u003cskill\u003e/eval.yaml` + tasks |\n| **3**  | AI-generate eval    | Select skill + mode       | Preview or apply generated tasks          |\n| **4**  | Run evaluations     | Select eval(s) + executor | Exit code: 0=pass, 1=fail, 2=config error |\n| **5**  | Check readiness     | Select skill              | Compliance score + detailed report        |\n| **6a** | Improve frontmatter | Select skill + target     | Interactive or one-pass report            |\n| **6b** | Score quality       | Select skill + model      | 5-dimension quality breakdown             |\n| **7**  | Coverage report     | Select format             | Grid showing eval coverage by skill       |\n| **8**  | View dashboard      | Provide port/directory    | Browser-based results viewer              |\n| **9**  | CI/CD setup         | Select skills             | GitHub Actions workflow file              |\n\n---\n\n### Option 1 — Install / verify Waza\n\n**Action**: Show and confirm install command.\n\n```bash\ncurl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n```\n\n**After confirmation**, verify the install:\n\n```bash\nwaza --version\n```\n\n**If it fails**, suggest the source-build alternative (requires Go 1.26+):\n\n```bash\ngit clone https://github.com/microsoft/waza.git\ncd waza \u0026\u0026 git lfs install \u0026\u0026 git lfs pull\ngo build -o waza ./cmd/waza \u0026\u0026 sudo mv waza /usr/local/bin/\n```\n\nMark Waza as installed and return to the main menu.\n\n---\n\n### Option 2 — Scaffold an eval suite (waza new eval)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                        |\n| ---- | ------------------------------- | ----------------------------------------------------------------------------- |\n| 1    | List unevaluated skills         | Display numbered list                                                         |\n| 2    | \"Which skill? (number or path)\" | Get user input                                                                |\n| 3    | Show command                    | `waza new eval \u003cskill-path\u003e`                                                  |\n| 4    | Explain outputs                 | `eval.yaml`, `tasks/positive-trigger-1.yaml`, `tasks/negative-trigger-1.yaml` |\n| 5    | Confirm                         | \"Run this command? (yes/no)\"                                                  |\n| 6    | Execute \u0026 show output           | Run command and display results                                               |\n| 7    | Offer next steps                | Edit manually / AI-suggest / Run now                                          |\n\n---\n\n### Option 3 — AI-suggested eval suite (waza suggest)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                            |\n| ---- | --------------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills without full coverage | Display numbered list                                             |\n| 2    | \"Which skill to target?\"          | Get user input                                                    |\n| 3    | \"Preview only or write files?\"    | Choose `--dry-run` (safe) or `--apply`                            |\n| 4    | \"Model override? (optional)\"      | Optional: specify model ID                                        |\n| 5    | Show command                      | `waza suggest \u003cskill-path\u003e [--dry-run \\| --apply] [--model \u003cid\u003e]` |\n| 6    | Execute \u0026 display output          | Run and show suggested YAML                                       |\n| 7    | If `--dry-run`: confirm apply     | \"Apply these files? (yes/no)\" → re-run with `--apply`             |\n\n---\n\n### Option 4 — Run evaluations (waza run)\n\n**Workflow:**\n\n| Step | Prompt               | Action                                                                                                           |\n| ---- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |\n| 1    | List available evals | Display numbered list with skill names                                                                           |\n| 2    | \"Which eval to run?\" | Number, or 'all' to auto-discover                                                                                |\n| 3    | \"Executor type?\"     | `mock` (fast, no API key) or `copilot-sdk` (requires GITHUB_TOKEN)                                               |\n| 4    | \"Verbose output?\"    | -v flag for detailed logs                                                                                        |\n| 5    | \"Save results?\"      | -o results.json to persist output                                                                                |\n| 6    | \"Run in parallel?\"   | --parallel flag for concurrent execution                                                                         |\n| 7    | Show final command   | Single: `waza run \u003ceval.yaml\u003e [-v] [-o results.json]` / All: `waza run --discover evals/ [-v] [-o results.json]` |\n| 8    | Execute              | Run command and display results                                                                                  |\n| 9    | Interpret exit code  | 0=✅ passed, 1=❌ failed, 2=⚠️ config error                                                                      |\n| 10   | Offer next steps     | Compare results / Open dashboard / Fix failing tasks                                                             |\n\n---\n\n### Option 5 — Check skill readiness (waza check)\n\n**Workflow:**\n\n| Step | Prompt                              | Action                                                              |\n| ---- | ----------------------------------- | ------------------------------------------------------------------- |\n| 1    | List all skills (flag known issues) | Display numbered list                                               |\n| 2    | \"Which skill to check?\"             | Number, or 'all'                                                    |\n| 3    | Show command                        | `waza check \u003cskill-path\u003e`                                           |\n| 4    | Execute                             | Run and display readiness report                                    |\n| 5    | Explain report sections             | Compliance / Token Budget / Eval Suite / Spec Compliance / Advisory |\n| 6    | Remediation                         | For each failure, explain what it means and suggest fix             |\n| 7    | Offer improvement                   | \"Would you like to improve this skill? (yes/no)\" → go to Option 6   |\n\n**Report sections explained:**\n\n- **Compliance Score** — Frontmatter adherence (Low / Medium / Medium-High / High)\n- **Token Budget** — Whether `SKILL.md` is within limits\n- **Evaluation Suite** — Whether `eval.yaml` exists\n- **Spec Compliance** — agentskills.io spec checks\n- **Advisory Checks** — Quality and maintainability heuristics\n\n---\n\n### Option 6a — Improve skill quality: Frontmatter (waza dev)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                                                                 |\n| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |\n| 1    | List skills to improve          | Display numbered list                                                                                                  |\n| 2    | \"Which skill?\"                  | Get user input                                                                                                         |\n| 3    | \"Improvement mode?\"             | Interactive (iterative) or Copilot report (single-pass)                                                                |\n| 4    | If interactive: \"Target level?\" | low / medium / medium-high / high (default: medium-high)                                                               |\n| 5    | Show command                    | Interactive: `waza dev \u003cskill-path\u003e [--target medium-high]` / Report: `waza dev \u003cskill-path\u003e --copilot [--model \u003cid\u003e]` |\n| 6    | Execute                         | Run and display improvements                                                                                           |\n| 7    | Follow-up                       | Suggest running `waza check` again                                                                                     |\n\n---\n\n### Option 6b — Improve skill quality: LLM judge (waza quality)\n\n**Workflow:**\n\n| Step | Prompt                    | Action                                                            |\n| ---- | ------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills to evaluate   | Display numbered list                                             |\n| 2    | \"Which skill?\"            | Get user input                                                    |\n| 3    | \"Judge model? (optional)\" | Optional: specify model ID                                        |\n| 4    | \"Output format?\"          | table (default), json                                             |\n| 5    | Show command              | `waza quality \u003cskill-path\u003e [--model \u003cid\u003e] [--format table\\|json]` |\n| 6    | Execute                   | Run and display five quality dimensions                           |\n| 7    | Explain scoring           | Each dimension: score 1–5, explanation, and suggested fix         |\n\n**Five quality dimensions:**\n\n- **Clarity** — Is the skill description clear and unambiguous?\n- **Completeness** — Does it cover all relevant scenarios?\n- **Trigger Precision** — Will the agent invoke it at the right times?\n- **Scope Coverage** — Is the workflow fully described?\n- **Anti-patterns** — Any patterns that hurt effectiveness?\n\n---\n\n### Option 7 — Coverage report (waza coverage)\n\n**Workflow:**\n\n| Step | Prompt                  | Action                                               |\n| ---- | ----------------------- | ---------------------------------------------------- |\n| 1    | \"Output format?\"        | text (default), markdown, or json                    |\n| 2    | Show command            | `waza coverage [--format markdown]`                  |\n| 3    | Execute                 | Run and display grid                                 |\n| 4    | Explain coverage levels | Full / Partial / None                                |\n| 5    | Recommend actions       | For uncovered skills, offer to scaffold (→ Option 2) |\n\n**Coverage levels:**\n\n- **Full** — Has tasks + 2+ grader types\n- **Partial** — Has eval.yaml but missing tasks or grader variety\n- **None** — No eval suite at all\n\n---\n\n### Option 8 — Results dashboard (waza serve)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                           |\n| ---- | --------------------------------- | ---------------------------------------------------------------- |\n| 1    | \"Results directory? (default: .)\" | Get path or accept default                                       |\n| 2    | \"Port? (default: 3000)\"           | Get port or accept default                                       |\n| 3    | Show command                      | `waza serve [--port 3000] [--results-dir ./results]`             |\n| 4    | Execute                           | Run server and open browser                                      |\n| 5    | Explain dashboard                 | Task pass/fail / Scores / Model comparisons / Aggregated metrics |\n| 6    | Cleanup reminder                  | \"Stop the server with Ctrl+C when done.\"                         |\n\n---\n\n### Option 9 — CI/CD integration\n\n**Workflow:**\n\n| Step | Prompt                        | Action                                                          |\n| ---- | ----------------------------- | --------------------------------------------------------------- |\n| 1    | \"Which skill(s) to include?\"  | List and select skills                                          |\n| 2    | Generate scaffold             | Create `.github/workflows/eval.yml`                             |\n| 3    | Explain exit codes            | 0=pass, 1=fail, 2=config error                                  |\n| 4    | Optional: token budget gating | Add `waza tokens compare main --skills --threshold 10 --strict` |\n| 5    | Confirm                       | \"Write workflow file? (yes/no)\"                                 |\n| 6    | Finalize                      | Write file and show path                                        |\n\n**Generated workflow scaffold:**\n\n```yaml\nname: Skill Evaluation\non:\n  pull_request:\n    paths:\n      - \"skills/**\"\n      - \"evals/**\"\n\njobs:\n  evaluate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Install Waza\n        run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n      - name: Run evaluations\n        run: waza run --discover evals/ -v -o results.json\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n      - name: Upload results\n        uses: actions/upload-artifact@v4\n        with:\n          name: eval-results\n          path: results.json\n```\n\n---\n\n## Step 3 — After each action\n\nAfter every action completes:\n\n1. Show a brief **summary** of what was done and whether it succeeded.\n2. Update the user's awareness of overall eval coverage (X of Y skills covered).\n3. Ask: **\"What would you like to do next?\"** and re-present the menu.\n\nPersist a lightweight session state so the wizard remembers:\n\n- Which skills have been checked this session\n- Whether Waza is confirmed installed\n- Results file paths generated this session\n\n---\n\n## Reference: Waza Command Cheatsheet\n\n| Goal                        | Command                                                                                   |\n| --------------------------- | ----------------------------------------------------------------------------------------- |\n| Install                     | `curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh \\| bash`     |\n| Scaffold eval from SKILL.md | `waza new eval \u003cskill-path\u003e`                                                              |\n| AI-generate eval            | `waza suggest \u003cskill-path\u003e --apply`                                                       |\n| Run single eval             | `waza run evals/\u003cskill\u003e/eval.yaml -v`                                                     |\n| Run all evals               | `waza run --discover evals/ -v`                                                           |\n| Check readiness             | `waza check \u003cskill-path\u003e`                                                                 |\n| Improve frontmatter         | `waza dev \u003cskill-path\u003e`                                                                   |\n| LLM quality score           | `waza quality \u003cskill-path\u003e`                                                               |\n| Coverage grid               | `waza coverage --format markdown`                                                         |\n| Token count                 | `waza tokens count skills/`                                                               |\n| Token budget CI             | `waza tokens compare main --skills --threshold 10`                                        |\n| Results dashboard           | `waza serve --results-dir ./results`                                                      |\n| Compare runs                | `waza compare results-a.json results-b.json`                                              |\n| Save results                | `waza run eval.yaml -o results.json`                                                      |\n| Grade previous run          | `waza run eval.yaml --output results.json \u0026\u0026 waza grade eval.yaml --results results.json` |\n| List models                 | `waza models`                                                                             |\n| Clear cache                 | `waza cache clear`                                                                        |\n"
+              }
+            },
+            {
+              "content": "---\nname: sdlc-wizard-eval\ndescription: \u003e\n  Interactive Waza evaluation wizard for AI agent skills. Guides you step-by-step\n  through installing Waza, scaffolding eval suites, running benchmarks, checking\n  skill readiness, improving quality, and viewing results. USE FOR: evaluating\n  existing SKILL.md files with Waza, scaffolding eval suites from SKILL.md,\n  running skill benchmarks, checking skill compliance and token budgets, improving\n  skill frontmatter, grading agent output, viewing evaluation dashboards, CI/CD\n  eval integration. DO NOT USE FOR: creating new skills from scratch (use\n  sdlc-wizard), implementing features (use sdlc-council), planning (use\n  sdlc-impl-strategy).\nargument-hint: \"Optional: skill name or path to jump directly to evaluating that skill\"\n---\n\n# SDLC Wizard — Eval\n\nThis skill interactively guides you through the full Waza evaluation lifecycle\nfor skills that already exist in your workspace. It does **not** run commands\nautomatically — it asks what you want to do at each step, shows you the exact\ncommand, and confirms the outcome.\n\n---\n\n## Step 0 — Detect context\n\nBefore presenting the menu, silently gather workspace context:\n\n1. Check whether `waza` is on the `PATH`:\n   ```bash\n   which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"\n   ```\n2. Scan for existing `SKILL.md` files and list their paths.\n3. Scan for existing `eval.yaml` files under `evals/` and note which skills\n   already have coverage.\n\nUse this context to pre-fill answers and highlight recommended actions.\n\nIf an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), skip the main\nmenu and jump directly to **Step 2** for that skill.\n\n---\n\n## Step 1 — Present the main menu\n\nGreet the user with a brief summary of what was found:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound X skill(s)  |  Y already have evals  |  Waza: [installed / NOT installed]\n═══════════════════════════════════════════\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\nAsk: **\"Enter a number (or the name of a skill to evaluate it end-to-end):\"**\n\n---\n\n## Step 2 — Execute the chosen action\n\n### Quick Reference: Step 2 Decision Tree\n\n| Option | Task                | Key Input                 | Output                                    |\n| ------ | ------------------- | ------------------------- | ----------------------------------------- |\n| **1**  | Install Waza        | Confirm                   | Verify with `waza --version`              |\n| **2**  | Scaffold eval suite | Select skill              | Creates `evals/\u003cskill\u003e/eval.yaml` + tasks |\n| **3**  | AI-generate eval    | Select skill + mode       | Preview or apply generated tasks          |\n| **4**  | Run evaluations     | Select eval(s) + executor | Exit code: 0=pass, 1=fail, 2=config error |\n| **5**  | Check readiness     | Select skill              | Compliance score + detailed report        |\n| **6a** | Improve frontmatter | Select skill + target     | Interactive or one-pass report            |\n| **6b** | Score quality       | Select skill + model      | 5-dimension quality breakdown             |\n| **7**  | Coverage report     | Select format             | Grid showing eval coverage by skill       |\n| **8**  | View dashboard      | Provide port/directory    | Browser-based results viewer              |\n| **9**  | CI/CD setup         | Select skills             | GitHub Actions workflow file              |\n\n---\n\n### Option 1 — Install / verify Waza\n\n**Action**: Show and confirm install command.\n\n```bash\ncurl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n```\n\n**After confirmation**, verify the install:\n\n```bash\nwaza --version\n```\n\n**If it fails**, suggest the source-build alternative (requires Go 1.26+):\n\n```bash\ngit clone https://github.com/microsoft/waza.git\ncd waza \u0026\u0026 git lfs install \u0026\u0026 git lfs pull\ngo build -o waza ./cmd/waza \u0026\u0026 sudo mv waza /usr/local/bin/\n```\n\nMark Waza as installed and return to the main menu.\n\n---\n\n### Option 2 — Scaffold an eval suite (waza new eval)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                        |\n| ---- | ------------------------------- | ----------------------------------------------------------------------------- |\n| 1    | List unevaluated skills         | Display numbered list                                                         |\n| 2    | \"Which skill? (number or path)\" | Get user input                                                                |\n| 3    | Show command                    | `waza new eval \u003cskill-path\u003e`                                                  |\n| 4    | Explain outputs                 | `eval.yaml`, `tasks/positive-trigger-1.yaml`, `tasks/negative-trigger-1.yaml` |\n| 5    | Confirm                         | \"Run this command? (yes/no)\"                                                  |\n| 6    | Execute \u0026 show output           | Run command and display results                                               |\n| 7    | Offer next steps                | Edit manually / AI-suggest / Run now                                          |\n\n---\n\n### Option 3 — AI-suggested eval suite (waza suggest)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                            |\n| ---- | --------------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills without full coverage | Display numbered list                                             |\n| 2    | \"Which skill to target?\"          | Get user input                                                    |\n| 3    | \"Preview only or write files?\"    | Choose `--dry-run` (safe) or `--apply`                            |\n| 4    | \"Model override? (optional)\"      | Optional: specify model ID                                        |\n| 5    | Show command                      | `waza suggest \u003cskill-path\u003e [--dry-run \\| --apply] [--model \u003cid\u003e]` |\n| 6    | Execute \u0026 display output          | Run and show suggested YAML                                       |\n| 7    | If `--dry-run`: confirm apply     | \"Apply these files? (yes/no)\" → re-run with `--apply`             |\n\n---\n\n### Option 4 — Run evaluations (waza run)\n\n**Workflow:**\n\n| Step | Prompt               | Action                                                                                                           |\n| ---- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |\n| 1    | List available evals | Display numbered list with skill names                                                                           |\n| 2    | \"Which eval to run?\" | Number, or 'all' to auto-discover                                                                                |\n| 3    | \"Executor type?\"     | `mock` (fast, no API key) or `copilot-sdk` (requires GITHUB_TOKEN)                                               |\n| 4    | \"Verbose output?\"    | -v flag for detailed logs                                                                                        |\n| 5    | \"Save results?\"      | -o results.json to persist output                                                                                |\n| 6    | \"Run in parallel?\"   | --parallel flag for concurrent execution                                                                         |\n| 7    | Show final command   | Single: `waza run \u003ceval.yaml\u003e [-v] [-o results.json]` / All: `waza run --discover evals/ [-v] [-o results.json]` |\n| 8    | Execute              | Run command and display results                                                                                  |\n| 9    | Interpret exit code  | 0=✅ passed, 1=❌ failed, 2=⚠️ config error                                                                      |\n| 10   | Offer next steps     | Compare results / Open dashboard / Fix failing tasks                                                             |\n\n---\n\n### Option 5 — Check skill readiness (waza check)\n\n**Workflow:**\n\n| Step | Prompt                              | Action                                                              |\n| ---- | ----------------------------------- | ------------------------------------------------------------------- |\n| 1    | List all skills (flag known issues) | Display numbered list                                               |\n| 2    | \"Which skill to check?\"             | Number, or 'all'                                                    |\n| 3    | Show command                        | `waza check \u003cskill-path\u003e`                                           |\n| 4    | Execute                             | Run and display readiness report                                    |\n| 5    | Explain report sections             | Compliance / Token Budget / Eval Suite / Spec Compliance / Advisory |\n| 6    | Remediation                         | For each failure, explain what it means and suggest fix             |\n| 7    | Offer improvement                   | \"Would you like to improve this skill? (yes/no)\" → go to Option 6   |\n\n**Report sections explained:**\n\n- **Compliance Score** — Frontmatter adherence (Low / Medium / Medium-High / High)\n- **Token Budget** — Whether `SKILL.md` is within limits\n- **Evaluation Suite** — Whether `eval.yaml` exists\n- **Spec Compliance** — agentskills.io spec checks\n- **Advisory Checks** — Quality and maintainability heuristics\n\n---\n\n### Option 6a — Improve skill quality: Frontmatter (waza dev)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                                                                 |\n| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |\n| 1    | List skills to improve          | Display numbered list                                                                                                  |\n| 2    | \"Which skill?\"                  | Get user input                                                                                                         |\n| 3    | \"Improvement mode?\"             | Interactive (iterative) or Copilot report (single-pass)                                                                |\n| 4    | If interactive: \"Target level?\" | low / medium / medium-high / high (default: medium-high)                                                               |\n| 5    | Show command                    | Interactive: `waza dev \u003cskill-path\u003e [--target medium-high]` / Report: `waza dev \u003cskill-path\u003e --copilot [--model \u003cid\u003e]` |\n| 6    | Execute                         | Run and display improvements                                                                                           |\n| 7    | Follow-up                       | Suggest running `waza check` again                                                                                     |\n\n---\n\n### Option 6b — Improve skill quality: LLM judge (waza quality)\n\n**Workflow:**\n\n| Step | Prompt                    | Action                                                            |\n| ---- | ------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills to evaluate   | Display numbered list                                             |\n| 2    | \"Which skill?\"            | Get user input                                                    |\n| 3    | \"Judge model? (optional)\" | Optional: specify model ID                                        |\n| 4    | \"Output format?\"          | table (default), json                                             |\n| 5    | Show command              | `waza quality \u003cskill-path\u003e [--model \u003cid\u003e] [--format table\\|json]` |\n| 6    | Execute                   | Run and display five quality dimensions                           |\n| 7    | Explain scoring           | Each dimension: score 1–5, explanation, and suggested fix         |\n\n**Five quality dimensions:**\n\n- **Clarity** — Is the skill description clear and unambiguous?\n- **Completeness** — Does it cover all relevant scenarios?\n- **Trigger Precision** — Will the agent invoke it at the right times?\n- **Scope Coverage** — Is the workflow fully described?\n- **Anti-patterns** — Any patterns that hurt effectiveness?\n\n---\n\n### Option 7 — Coverage report (waza coverage)\n\n**Workflow:**\n\n| Step | Prompt                  | Action                                               |\n| ---- | ----------------------- | ---------------------------------------------------- |\n| 1    | \"Output format?\"        | text (default), markdown, or json                    |\n| 2    | Show command            | `waza coverage [--format markdown]`                  |\n| 3    | Execute                 | Run and display grid                                 |\n| 4    | Explain coverage levels | Full / Partial / None                                |\n| 5    | Recommend actions       | For uncovered skills, offer to scaffold (→ Option 2) |\n\n**Coverage levels:**\n\n- **Full** — Has tasks + 2+ grader types\n- **Partial** — Has eval.yaml but missing tasks or grader variety\n- **None** — No eval suite at all\n\n---\n\n### Option 8 — Results dashboard (waza serve)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                           |\n| ---- | --------------------------------- | ---------------------------------------------------------------- |\n| 1    | \"Results directory? (default: .)\" | Get path or accept default                                       |\n| 2    | \"Port? (default: 3000)\"           | Get port or accept default                                       |\n| 3    | Show command                      | `waza serve [--port 3000] [--results-dir ./results]`             |\n| 4    | Execute                           | Run server and open browser                                      |\n| 5    | Explain dashboard                 | Task pass/fail / Scores / Model comparisons / Aggregated metrics |\n| 6    | Cleanup reminder                  | \"Stop the server with Ctrl+C when done.\"                         |\n\n---\n\n### Option 9 — CI/CD integration\n\n**Workflow:**\n\n| Step | Prompt                        | Action                                                          |\n| ---- | ----------------------------- | --------------------------------------------------------------- |\n| 1    | \"Which skill(s) to include?\"  | List and select skills                                          |\n| 2    | Generate scaffold             | Create `.github/workflows/eval.yml`                             |\n| 3    | Explain exit codes            | 0=pass, 1=fail, 2=config error                                  |\n| 4    | Optional: token budget gating | Add `waza tokens compare main --skills --threshold 10 --strict` |\n| 5    | Confirm                       | \"Write workflow file? (yes/no)\"                                 |\n| 6    | Finalize                      | Write file and show path                                        |\n\n**Generated workflow scaffold:**\n\n```yaml\nname: Skill Evaluation\non:\n  pull_request:\n    paths:\n      - \"skills/**\"\n      - \"evals/**\"\n\njobs:\n  evaluate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Install Waza\n        run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n      - name: Run evaluations\n        run: waza run --discover evals/ -v -o results.json\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n      - name: Upload results\n        uses: actions/upload-artifact@v4\n        with:\n          name: eval-results\n          path: results.json\n```\n\n---\n\n## Step 3 — After each action\n\nAfter every action completes:\n\n1. Show a brief **summary** of what was done and whether it succeeded.\n2. Update the user's awareness of overall eval coverage (X of Y skills covered).\n3. Ask: **\"What would you like to do next?\"** and re-present the menu.\n\nPersist a lightweight session state so the wizard remembers:\n\n- Which skills have been checked this session\n- Whether Waza is confirmed installed\n- Results file paths generated this session\n\n---\n\n## Reference: Waza Command Cheatsheet\n\n| Goal                        | Command                                                                                   |\n| --------------------------- | ----------------------------------------------------------------------------------------- |\n| Install                     | `curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh \\| bash`     |\n| Scaffold eval from SKILL.md | `waza new eval \u003cskill-path\u003e`                                                              |\n| AI-generate eval            | `waza suggest \u003cskill-path\u003e --apply`                                                       |\n| Run single eval             | `waza run evals/\u003cskill\u003e/eval.yaml -v`                                                     |\n| Run all evals               | `waza run --discover evals/ -v`                                                           |\n| Check readiness             | `waza check \u003cskill-path\u003e`                                                                 |\n| Improve frontmatter         | `waza dev \u003cskill-path\u003e`                                                                   |\n| LLM quality score           | `waza quality \u003cskill-path\u003e`                                                               |\n| Coverage grid               | `waza coverage --format markdown`                                                         |\n| Token count                 | `waza tokens count skills/`                                                               |\n| Token budget CI             | `waza tokens compare main --skills --threshold 10`                                        |\n| Results dashboard           | `waza serve --results-dir ./results`                                                      |\n| Compare runs                | `waza compare results-a.json results-b.json`                                              |\n| Save results                | `waza run eval.yaml -o results.json`                                                      |\n| Grade previous run          | `waza run eval.yaml --output results.json \u0026\u0026 waza grade eval.yaml --results results.json` |\n| List models                 | `waza models`                                                                             |\n| Clear cache                 | `waza cache clear`                                                                        |\n",
+              "type": "skill.invoked"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "Let me gather workspace context as per Step 0 of the skill instructions.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"",
+                "description": "Check if waza is installed"
+              },
+              "tool_call_id": "toolu_vrtx_01DzCg9MGUU84woXAZ7ACr9A",
+              "tool_name": "bash"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "pattern": "**/SKILL.md"
+              },
+              "tool_call_id": "toolu_vrtx_01PdcyYgcxfXaDJdczregeDo",
+              "tool_name": "glob"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "pattern": "**/eval.yaml"
+              },
+              "tool_call_id": "toolu_vrtx_01PPmGpgq3h7ibGysoGoTsCV",
+              "tool_name": "glob"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01PPmGpgq3h7ibGysoGoTsCV",
+              "tool_result": {
+                "content": "No files matched the pattern.",
+                "detailedContent": "No files matched the pattern."
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01PdcyYgcxfXaDJdczregeDo",
+              "tool_result": {
+                "content": "No files matched the pattern.",
+                "detailedContent": "No files matched the pattern."
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01DzCg9MGUU84woXAZ7ACr9A",
+              "tool_result": {
+                "content": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "Let me search more broadly for SKILL.md files, maybe in the home directory or other locations.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "find /home/node -name \"SKILL.md\" 2\u003e/dev/null | head -30; find /tmp -name \"SKILL.md\" 2\u003e/dev/null | head -30",
+                "description": "Find SKILL.md files in home and tmp directories"
+              },
+              "tool_call_id": "toolu_vrtx_01GNpuELifnLc35YygGo4fRM",
+              "tool_name": "bash"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01GNpuELifnLc35YygGo4fRM",
+              "tool_result": {
+                "content": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.vscode-server/extensions/ms-vscode.vscode-chat-customizations-evaluations-1.0.2/skills/fix-customization-evaluation-diagnostics/SKILL.md\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.vscode-server/extensions/ms-vscode.vscode-chat-customizations-evaluations-1.0.2/skills/fix-customization-evaluation-diagnostics/SKILL.md\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "find /home/node/.claude/skills -name \"eval.yaml\" 2\u003e/dev/null | head -30",
+                "description": "Find eval.yaml files in skills directory"
+              },
+              "tool_call_id": "toolu_vrtx_018NzwkNfh646xFM2P3F8L6X",
+              "tool_name": "bash"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_018NzwkNfh646xFM2P3F8L6X",
+              "tool_result": {
+                "content": "\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "Here's the workspace summary:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound 16 skill(s)  |  0 already have evals  |  Waza: ✅ installed (v0.31.0)\n═══════════════════════════════════════════\n\nSkills found (all lack eval coverage):\n  1   sdlc-wizard-eval\n  2   graphify\n  3   sdlc-council-lucas\n  4   sdlc-thomas\n  5   sdlc-devcontainer-setup\n  6   sdlc-graphify-setup\n  7   sdlc-lessons-learned\n  8   docs-sync\n  9   sdlc-council-daedalus\n  10  sdlc-council-sherlock\n  11  sdlc-council\n  12  sdlc-wizard\n  13  sdlc-impl-strategy\n  14  sdlc-council-hephaestus\n  15  sdlc-strategy-debate\n  16  jira-fetch\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\n**Enter a number (or the name of a skill to evaluate it end-to-end):**",
+              "type": "assistant.message"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "Here's the workspace summary:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound 16 skill(s)  |  0 already have evals  |  Waza: ✅ installed (v0.31.0)\n═══════════════════════════════════════════\n\nSkills found (all lack eval coverage):\n  1   sdlc-wizard-eval\n  2   graphify\n  3   sdlc-council-lucas\n  4   sdlc-thomas\n  5   sdlc-devcontainer-setup\n  6   sdlc-graphify-setup\n  7   sdlc-lessons-learned\n  8   docs-sync\n  9   sdlc-council-daedalus\n  10  sdlc-council-sherlock\n  11  sdlc-council\n  12  sdlc-wizard\n  13  sdlc-impl-strategy\n  14  sdlc-council-hephaestus\n  15  sdlc-strategy-debate\n  16  jira-fetch\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\n**Enter a number (or the name of a skill to evaluate it end-to-end):**",
+          "skill_invocations": [
+            {
+              "name": "sdlc-wizard-eval",
+              "path": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md"
+            }
+          ],
+          "workspace_dir": "/tmp/waza-2240499201"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.125,
+        "avg_weighted_score": 0.125,
+        "min_score": 0.125,
+        "max_score": 0.125,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 25085
+      }
+    },
+    {
+      "test_id": "positive-trigger-002",
+      "display_name": "Positive Trigger 2",
+      "status": "failed",
+      "runs": [
+        {
+          "run_number": 1,
+          "attempts": 1,
+          "status": "failed",
+          "duration_ms": 34167,
+          "validations": {
+            "contains-keywords": {
+              "identifier": "contains-keywords",
+              "type": "text",
+              "score": 0.25,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Missing expected substring: evaluating; Missing expected substring: existing; Missing expected substring: files",
+              "details": {
+                "contains": [
+                  "evaluating",
+                  "existing",
+                  "files",
+                  "skill"
+                ],
+                "contains_cs": null,
+                "failures": [
+                  "Missing expected substring: evaluating",
+                  "Missing expected substring: existing",
+                  "Missing expected substring: files"
+                ],
+                "not_contains": null,
+                "not_contains_cs": null,
+                "regex_match": null,
+                "regex_not_match": null
+              },
+              "duration_ms": 0
+            },
+            "token-budget": {
+              "identifier": "token-budget",
+              "type": "behavior",
+              "score": 0,
+              "weight": 1,
+              "passed": false,
+              "feedback": "Token usage 127436 exceeds max allowed 1200",
+              "details": {
+                "actual_duration": 34167,
+                "failures": [
+                  "Token usage 127436 exceeds max allowed 1200"
+                ],
+                "forbidden_tools": null,
+                "max_duration_ms": 0,
+                "max_tokens": 1200,
+                "max_tool_calls": 0,
+                "required_tools": null,
+                "tokens_total": 127436,
+                "tool_call_count": 6,
+                "tools_used": [
+                  "skill",
+                  "bash",
+                  "glob",
+                  "glob",
+                  "bash",
+                  "bash"
+                ]
+              },
+              "duration_ms": 0
+            }
+          },
+          "session_digest": {
+            "tool_call_count": 6,
+            "tools_used": [
+              "skill",
+              "bash",
+              "glob",
+              "glob",
+              "bash",
+              "bash"
+            ],
+            "tool_calls": [
+              {
+                "name": "skill",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": "sdlc-wizard-eval"
+                },
+                "result": {
+                  "content": "Skill \"sdlc-wizard-eval\" loaded successfully. Follow the instructions in the skill context.",
+                  "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-wizard-eval\ndescription: \u003e\n  Interactive Waza evaluation wizard for AI agent skills. Guides you step-by-step\n  through installing Waza, scaffolding eval suites, running benchmarks, checking\n  skill readiness, improving quality, and viewing results. USE FOR: evaluating\n  existing SKILL.md files with Waza, scaffolding eval suites from SKILL.md,\n  running skill benchmarks, checking skill compliance and token budgets, improving\n  skill frontmatter, grading agent output, viewing evaluation dashboards, CI/CD\n  eval integration. DO NOT USE FOR: creating new skills from scratch (use\n  sdlc-wizard), implementing features (use sdlc-council), planning (use\n  sdlc-impl-strategy).\nargument-hint: \"Optional: skill name or path to jump directly to evaluating that skill\"\n---\n\n# SDLC Wizard — Eval\n\nThis skill interactively guides you through the full Waza evaluation lifecycle\nfor skills that already exist in your workspace. It does **not** run commands\nautomatically — it asks what you want to do at each step, shows you the exact\ncommand, and confirms the outcome.\n\n---\n\n## Step 0 — Detect context\n\nBefore presenting the menu, silently gather workspace context:\n\n1. Check whether `waza` is on the `PATH`:\n   ```bash\n   which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"\n   ```\n2. Scan for existing `SKILL.md` files and list their paths.\n3. Scan for existing `eval.yaml` files under `evals/` and note which skills\n   already have coverage.\n\nUse this context to pre-fill answers and highlight recommended actions.\n\nIf an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), skip the main\nmenu and jump directly to **Step 2** for that skill.\n\n---\n\n## Step 1 — Present the main menu\n\nGreet the user with a brief summary of what was found:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound X skill(s)  |  Y already have evals  |  Waza: [installed / NOT installed]\n═══════════════════════════════════════════\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\nAsk: **\"Enter a number (or the name of a skill to evaluate it end-to-end):\"**\n\n---\n\n## Step 2 — Execute the chosen action\n\n### Quick Reference: Step 2 Decision Tree\n\n| Option | Task                | Key Input                 | Output                                    |\n| ------ | ------------------- | ------------------------- | ----------------------------------------- |\n| **1**  | Install Waza        | Confirm                   | Verify with `waza --version`              |\n| **2**  | Scaffold eval suite | Select skill              | Creates `evals/\u003cskill\u003e/eval.yaml` + tasks |\n| **3**  | AI-generate eval    | Select skill + mode       | Preview or apply generated tasks          |\n| **4**  | Run evaluations     | Select eval(s) + executor | Exit code: 0=pass, 1=fail, 2=config error |\n| **5**  | Check readiness     | Select skill              | Compliance score + detailed report        |\n| **6a** | Improve frontmatter | Select skill + target     | Interactive or one-pass report            |\n| **6b** | Score quality       | Select skill + model      | 5-dimension quality breakdown             |\n| **7**  | Coverage report     | Select format             | Grid showing eval coverage by skill       |\n| **8**  | View dashboard      | Provide port/directory    | Browser-based results viewer              |\n| **9**  | CI/CD setup         | Select skills             | GitHub Actions workflow file              |\n\n---\n\n### Option 1 — Install / verify Waza\n\n**Action**: Show and confirm install command.\n\n```bash\ncurl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n```\n\n**After confirmation**, verify the install:\n\n```bash\nwaza --version\n```\n\n**If it fails**, suggest the source-build alternative (requires Go 1.26+):\n\n```bash\ngit clone https://github.com/microsoft/waza.git\ncd waza \u0026\u0026 git lfs install \u0026\u0026 git lfs pull\ngo build -o waza ./cmd/waza \u0026\u0026 sudo mv waza /usr/local/bin/\n```\n\nMark Waza as installed and return to the main menu.\n\n---\n\n### Option 2 — Scaffold an eval suite (waza new eval)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                        |\n| ---- | ------------------------------- | ----------------------------------------------------------------------------- |\n| 1    | List unevaluated skills         | Display numbered list                                                         |\n| 2    | \"Which skill? (number or path)\" | Get user input                                                                |\n| 3    | Show command                    | `waza new eval \u003cskill-path\u003e`                                                  |\n| 4    | Explain outputs                 | `eval.yaml`, `tasks/positive-trigger-1.yaml`, `tasks/negative-trigger-1.yaml` |\n| 5    | Confirm                         | \"Run this command? (yes/no)\"                                                  |\n| 6    | Execute \u0026 show output           | Run command and display results                                               |\n| 7    | Offer next steps                | Edit manually / AI-suggest / Run now                                          |\n\n---\n\n### Option 3 — AI-suggested eval suite (waza suggest)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                            |\n| ---- | --------------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills without full coverage | Display numbered list                                             |\n| 2    | \"Which skill to target?\"          | Get user input                                                    |\n| 3    | \"Preview only or write files?\"    | Choose `--dry-run` (safe) or `--apply`                            |\n| 4    | \"Model override? (optional)\"      | Optional: specify model ID                                        |\n| 5    | Show command                      | `waza suggest \u003cskill-path\u003e [--dry-run \\| --apply] [--model \u003cid\u003e]` |\n| 6    | Execute \u0026 display output          | Run and show suggested YAML                                       |\n| 7    | If `--dry-run`: confirm apply     | \"Apply these files? (yes/no)\" → re-run with `--apply`             |\n\n---\n\n### Option 4 — Run evaluations (waza run)\n\n**Workflow:**\n\n| Step | Prompt               | Action                                                                                                           |\n| ---- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |\n| 1    | List available evals | Display numbered list with skill names                                                                           |\n| 2    | \"Which eval to run?\" | Number, or 'all' to auto-discover                                                                                |\n| 3    | \"Executor type?\"     | `mock` (fast, no API key) or `copilot-sdk` (requires GITHUB_TOKEN)                                               |\n| 4    | \"Verbose output?\"    | -v flag for detailed logs                                                                                        |\n| 5    | \"Save results?\"      | -o results.json to persist output                                                                                |\n| 6    | \"Run in parallel?\"   | --parallel flag for concurrent execution                                                                         |\n| 7    | Show final command   | Single: `waza run \u003ceval.yaml\u003e [-v] [-o results.json]` / All: `waza run --discover evals/ [-v] [-o results.json]` |\n| 8    | Execute              | Run command and display results                                                                                  |\n| 9    | Interpret exit code  | 0=✅ passed, 1=❌ failed, 2=⚠️ config error                                                                      |\n| 10   | Offer next steps     | Compare results / Open dashboard / Fix failing tasks                                                             |\n\n---\n\n### Option 5 — Check skill readiness (waza check)\n\n**Workflow:**\n\n| Step | Prompt                              | Action                                                              |\n| ---- | ----------------------------------- | ------------------------------------------------------------------- |\n| 1    | List all skills (flag known issues) | Display numbered list                                               |\n| 2    | \"Which skill to check?\"             | Number, or 'all'                                                    |\n| 3    | Show command                        | `waza check \u003cskill-path\u003e`                                           |\n| 4    | Execute                             | Run and display readiness report                                    |\n| 5    | Explain report sections             | Compliance / Token Budget / Eval Suite / Spec Compliance / Advisory |\n| 6    | Remediation                         | For each failure, explain what it means and suggest fix             |\n| 7    | Offer improvement                   | \"Would you like to improve this skill? (yes/no)\" → go to Option 6   |\n\n**Report sections explained:**\n\n- **Compliance Score** — Frontmatter adherence (Low / Medium / Medium-High / High)\n- **Token Budget** — Whether `SKILL.md` is within limits\n- **Evaluation Suite** — Whether `eval.yaml` exists\n- **Spec Compliance** — agentskills.io spec checks\n- **Advisory Checks** — Quality and maintainability heuristics\n\n---\n\n### Option 6a — Improve skill quality: Frontmatter (waza dev)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                                                                 |\n| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |\n| 1    | List skills to improve          | Display numbered list                                                                                                  |\n| 2    | \"Which skill?\"                  | Get user input                                                                                                         |\n| 3    | \"Improvement mode?\"             | Interactive (iterative) or Copilot report (single-pass)                                                                |\n| 4    | If interactive: \"Target level?\" | low / medium / medium-high / high (default: medium-high)                                                               |\n| 5    | Show command                    | Interactive: `waza dev \u003cskill-path\u003e [--target medium-high]` / Report: `waza dev \u003cskill-path\u003e --copilot [--model \u003cid\u003e]` |\n| 6    | Execute                         | Run and display improvements                                                                                           |\n| 7    | Follow-up                       | Suggest running `waza check` again                                                                                     |\n\n---\n\n### Option 6b — Improve skill quality: LLM judge (waza quality)\n\n**Workflow:**\n\n| Step | Prompt                    | Action                                                            |\n| ---- | ------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills to evaluate   | Display numbered list                                             |\n| 2    | \"Which skill?\"            | Get user input                                                    |\n| 3    | \"Judge model? (optional)\" | Optional: specify model ID                                        |\n| 4    | \"Output format?\"          | table (default), json                                             |\n| 5    | Show command              | `waza quality \u003cskill-path\u003e [--model \u003cid\u003e] [--format table\\|json]` |\n| 6    | Execute                   | Run and display five quality dimensions                           |\n| 7    | Explain scoring           | Each dimension: score 1–5, explanation, and suggested fix         |\n\n**Five quality dimensions:**\n\n- **Clarity** — Is the skill description clear and unambiguous?\n- **Completeness** — Does it cover all relevant scenarios?\n- **Trigger Precision** — Will the agent invoke it at the right times?\n- **Scope Coverage** — Is the workflow fully described?\n- **Anti-patterns** — Any patterns that hurt effectiveness?\n\n---\n\n### Option 7 — Coverage report (waza coverage)\n\n**Workflow:**\n\n| Step | Prompt                  | Action                                               |\n| ---- | ----------------------- | ---------------------------------------------------- |\n| 1    | \"Output format?\"        | text (default), markdown, or json                    |\n| 2    | Show command            | `waza coverage [--format markdown]`                  |\n| 3    | Execute                 | Run and display grid                                 |\n| 4    | Explain coverage levels | Full / Partial / None                                |\n| 5    | Recommend actions       | For uncovered skills, offer to scaffold (→ Option 2) |\n\n**Coverage levels:**\n\n- **Full** — Has tasks + 2+ grader types\n- **Partial** — Has eval.yaml but missing tasks or grader variety\n- **None** — No eval suite at all\n\n---\n\n### Option 8 — Results dashboard (waza serve)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                           |\n| ---- | --------------------------------- | ---------------------------------------------------------------- |\n| 1    | \"Results directory? (default: .)\" | Get path or accept default                                       |\n| 2    | \"Port? (default: 3000)\"           | Get port or accept default                                       |\n| 3    | Show command                      | `waza serve [--port 3000] [--results-dir ./results]`             |\n| 4    | Execute                           | Run server and open browser                                      |\n| 5    | Explain dashboard                 | Task pass/fail / Scores / Model comparisons / Aggregated metrics |\n| 6    | Cleanup reminder                  | \"Stop the server with Ctrl+C when done.\"                         |\n\n---\n\n### Option 9 — CI/CD integration\n\n**Workflow:**\n\n| Step | Prompt                        | Action                                                          |\n| ---- | ----------------------------- | --------------------------------------------------------------- |\n| 1    | \"Which skill(s) to include?\"  | List and select skills                                          |\n| 2    | Generate scaffold             | Create `.github/workflows/eval.yml`                             |\n| 3    | Explain exit codes            | 0=pass, 1=fail, 2=config error                                  |\n| 4    | Optional: token budget gating | Add `waza tokens compare main --skills --threshold 10 --strict` |\n| 5    | Confirm                       | \"Write workflow file? (yes/no)\"                                 |\n| 6    | Finalize                      | Write file and show path                                        |\n\n**Generated workflow scaffold:**\n\n```yaml\nname: Skill Evaluation\non:\n  pull_request:\n    paths:\n      - \"skills/**\"\n      - \"evals/**\"\n\njobs:\n  evaluate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Install Waza\n        run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n      - name: Run evaluations\n        run: waza run --discover evals/ -v -o results.json\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n      - name: Upload results\n        uses: actions/upload-artifact@v4\n        with:\n          name: eval-results\n          path: results.json\n```\n\n---\n\n## Step 3 — After each action\n\nAfter every action completes:\n\n1. Show a brief **summary** of what was done and whether it succeeded.\n2. Update the user's awareness of overall eval coverage (X of Y skills covered).\n3. Ask: **\"What would you like to do next?\"** and re-present the menu.\n\nPersist a lightweight session state so the wizard remembers:\n\n- Which skills have been checked this session\n- Whether Waza is confirmed installed\n- Results file paths generated this session\n\n---\n\n## Reference: Waza Command Cheatsheet\n\n| Goal                        | Command                                                                                   |\n| --------------------------- | ----------------------------------------------------------------------------------------- |\n| Install                     | `curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh \\| bash`     |\n| Scaffold eval from SKILL.md | `waza new eval \u003cskill-path\u003e`                                                              |\n| AI-generate eval            | `waza suggest \u003cskill-path\u003e --apply`                                                       |\n| Run single eval             | `waza run evals/\u003cskill\u003e/eval.yaml -v`                                                     |\n| Run all evals               | `waza run --discover evals/ -v`                                                           |\n| Check readiness             | `waza check \u003cskill-path\u003e`                                                                 |\n| Improve frontmatter         | `waza dev \u003cskill-path\u003e`                                                                   |\n| LLM quality score           | `waza quality \u003cskill-path\u003e`                                                               |\n| Coverage grid               | `waza coverage --format markdown`                                                         |\n| Token count                 | `waza tokens count skills/`                                                               |\n| Token budget CI             | `waza tokens compare main --skills --threshold 10`                                        |\n| Results dashboard           | `waza serve --results-dir ./results`                                                      |\n| Compare runs                | `waza compare results-a.json results-b.json`                                              |\n| Save results                | `waza run eval.yaml -o results.json`                                                      |\n| Grade previous run          | `waza run eval.yaml --output results.json \u0026\u0026 waza grade eval.yaml --results results.json` |\n| List models                 | `waza models`                                                                             |\n| Clear cache                 | `waza cache clear`                                                                        |\n"
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"",
+                  "description": "Check if waza is installed",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              },
+              {
+                "name": "glob",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "No files matched the pattern.",
+                  "detailedContent": "No files matched the pattern."
+                },
+                "success": true
+              },
+              {
+                "name": "glob",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "",
+                  "description": "",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "No files matched the pattern.",
+                  "detailedContent": "No files matched the pattern."
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "find /home/node/.claude/skills -name \"SKILL.md\" 2\u003e/dev/null; find /home/node/.copilot -name \"SKILL.md\" 2\u003e/dev/null; find / -maxdepth 6 -name \"SKILL.md\" 2\u003e/dev/null | head -30",
+                  "description": "Search broader paths for SKILL.md files",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-lucas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-graphify-setup/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/docs-sync/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-impl-strategy/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-lessons-learned/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-thomas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard-eval/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-strategy-debate/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-daedalus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-sherlock/SKILL.md\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-lucas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-graphify-setup/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/docs-sync/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-impl-strategy/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-lessons-learned/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-thomas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard-eval/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-strategy-debate/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-daedalus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-sherlock/SKILL.md\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              },
+              {
+                "name": "bash",
+                "arguments": {
+                  "path": "",
+                  "file_text": "",
+                  "command": "find /workspaces/agentic-sdlc-wizard -name \"eval.yaml\" 2\u003e/dev/null | head -20; find /home/node/.claude/skills -name \"eval.yaml\" 2\u003e/dev/null | head -20",
+                  "description": "Check for existing eval.yaml files",
+                  "skill": ""
+                },
+                "result": {
+                  "content": "/workspaces/agentic-sdlc-wizard/evals/sdlc-council/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-lucas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/jira-fetch/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-graphify-setup/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/docs-sync/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-impl-strategy/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-lessons-learned/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-thomas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard-eval/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-strategy-debate/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-daedalus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-hephaestus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-sherlock/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-devcontainer-setup/eval.yaml\n\u003cexited with exit code 0\u003e",
+                  "detailedContent": "/workspaces/agentic-sdlc-wizard/evals/sdlc-council/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-lucas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/jira-fetch/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-graphify-setup/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/docs-sync/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-impl-strategy/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-lessons-learned/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-thomas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard-eval/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-strategy-debate/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-daedalus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-hephaestus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-sherlock/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-devcontainer-setup/eval.yaml\n\u003cexited with exit code 0\u003e"
+                },
+                "success": true
+              }
+            ],
+            "errors": [],
+            "usage": {
+              "turns": 5,
+              "input_tokens": 125612,
+              "output_tokens": 1824,
+              "cache_read_tokens": 101574,
+              "cache_write_tokens": 0,
+              "premium_requests": 5
+            },
+            "session_id": "ac9adc9e-3972-4e9d-ba27-2b916e92614a"
+          },
+          "transcript": [
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "type": "pending_messages.modified"
+            },
+            {
+              "content": "scaffolding eval suites from SKILL.md",
+              "type": "user.message"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "The user wants to scaffold eval suites from SKILL.md files. This matches the sdlc-wizard-eval skill. Let me invoke it.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "skill": "sdlc-wizard-eval"
+              },
+              "tool_call_id": "toolu_vrtx_014wRiWDTT7P7Nug2SUD75e6",
+              "tool_name": "skill"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_014wRiWDTT7P7Nug2SUD75e6",
+              "tool_result": {
+                "content": "Skill \"sdlc-wizard-eval\" loaded successfully. Follow the instructions in the skill context.",
+                "detailedContent": "Skill loaded successfully ✅\n\n---\nname: sdlc-wizard-eval\ndescription: \u003e\n  Interactive Waza evaluation wizard for AI agent skills. Guides you step-by-step\n  through installing Waza, scaffolding eval suites, running benchmarks, checking\n  skill readiness, improving quality, and viewing results. USE FOR: evaluating\n  existing SKILL.md files with Waza, scaffolding eval suites from SKILL.md,\n  running skill benchmarks, checking skill compliance and token budgets, improving\n  skill frontmatter, grading agent output, viewing evaluation dashboards, CI/CD\n  eval integration. DO NOT USE FOR: creating new skills from scratch (use\n  sdlc-wizard), implementing features (use sdlc-council), planning (use\n  sdlc-impl-strategy).\nargument-hint: \"Optional: skill name or path to jump directly to evaluating that skill\"\n---\n\n# SDLC Wizard — Eval\n\nThis skill interactively guides you through the full Waza evaluation lifecycle\nfor skills that already exist in your workspace. It does **not** run commands\nautomatically — it asks what you want to do at each step, shows you the exact\ncommand, and confirms the outcome.\n\n---\n\n## Step 0 — Detect context\n\nBefore presenting the menu, silently gather workspace context:\n\n1. Check whether `waza` is on the `PATH`:\n   ```bash\n   which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"\n   ```\n2. Scan for existing `SKILL.md` files and list their paths.\n3. Scan for existing `eval.yaml` files under `evals/` and note which skills\n   already have coverage.\n\nUse this context to pre-fill answers and highlight recommended actions.\n\nIf an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), skip the main\nmenu and jump directly to **Step 2** for that skill.\n\n---\n\n## Step 1 — Present the main menu\n\nGreet the user with a brief summary of what was found:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound X skill(s)  |  Y already have evals  |  Waza: [installed / NOT installed]\n═══════════════════════════════════════════\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\nAsk: **\"Enter a number (or the name of a skill to evaluate it end-to-end):\"**\n\n---\n\n## Step 2 — Execute the chosen action\n\n### Quick Reference: Step 2 Decision Tree\n\n| Option | Task                | Key Input                 | Output                                    |\n| ------ | ------------------- | ------------------------- | ----------------------------------------- |\n| **1**  | Install Waza        | Confirm                   | Verify with `waza --version`              |\n| **2**  | Scaffold eval suite | Select skill              | Creates `evals/\u003cskill\u003e/eval.yaml` + tasks |\n| **3**  | AI-generate eval    | Select skill + mode       | Preview or apply generated tasks          |\n| **4**  | Run evaluations     | Select eval(s) + executor | Exit code: 0=pass, 1=fail, 2=config error |\n| **5**  | Check readiness     | Select skill              | Compliance score + detailed report        |\n| **6a** | Improve frontmatter | Select skill + target     | Interactive or one-pass report            |\n| **6b** | Score quality       | Select skill + model      | 5-dimension quality breakdown             |\n| **7**  | Coverage report     | Select format             | Grid showing eval coverage by skill       |\n| **8**  | View dashboard      | Provide port/directory    | Browser-based results viewer              |\n| **9**  | CI/CD setup         | Select skills             | GitHub Actions workflow file              |\n\n---\n\n### Option 1 — Install / verify Waza\n\n**Action**: Show and confirm install command.\n\n```bash\ncurl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n```\n\n**After confirmation**, verify the install:\n\n```bash\nwaza --version\n```\n\n**If it fails**, suggest the source-build alternative (requires Go 1.26+):\n\n```bash\ngit clone https://github.com/microsoft/waza.git\ncd waza \u0026\u0026 git lfs install \u0026\u0026 git lfs pull\ngo build -o waza ./cmd/waza \u0026\u0026 sudo mv waza /usr/local/bin/\n```\n\nMark Waza as installed and return to the main menu.\n\n---\n\n### Option 2 — Scaffold an eval suite (waza new eval)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                        |\n| ---- | ------------------------------- | ----------------------------------------------------------------------------- |\n| 1    | List unevaluated skills         | Display numbered list                                                         |\n| 2    | \"Which skill? (number or path)\" | Get user input                                                                |\n| 3    | Show command                    | `waza new eval \u003cskill-path\u003e`                                                  |\n| 4    | Explain outputs                 | `eval.yaml`, `tasks/positive-trigger-1.yaml`, `tasks/negative-trigger-1.yaml` |\n| 5    | Confirm                         | \"Run this command? (yes/no)\"                                                  |\n| 6    | Execute \u0026 show output           | Run command and display results                                               |\n| 7    | Offer next steps                | Edit manually / AI-suggest / Run now                                          |\n\n---\n\n### Option 3 — AI-suggested eval suite (waza suggest)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                            |\n| ---- | --------------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills without full coverage | Display numbered list                                             |\n| 2    | \"Which skill to target?\"          | Get user input                                                    |\n| 3    | \"Preview only or write files?\"    | Choose `--dry-run` (safe) or `--apply`                            |\n| 4    | \"Model override? (optional)\"      | Optional: specify model ID                                        |\n| 5    | Show command                      | `waza suggest \u003cskill-path\u003e [--dry-run \\| --apply] [--model \u003cid\u003e]` |\n| 6    | Execute \u0026 display output          | Run and show suggested YAML                                       |\n| 7    | If `--dry-run`: confirm apply     | \"Apply these files? (yes/no)\" → re-run with `--apply`             |\n\n---\n\n### Option 4 — Run evaluations (waza run)\n\n**Workflow:**\n\n| Step | Prompt               | Action                                                                                                           |\n| ---- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |\n| 1    | List available evals | Display numbered list with skill names                                                                           |\n| 2    | \"Which eval to run?\" | Number, or 'all' to auto-discover                                                                                |\n| 3    | \"Executor type?\"     | `mock` (fast, no API key) or `copilot-sdk` (requires GITHUB_TOKEN)                                               |\n| 4    | \"Verbose output?\"    | -v flag for detailed logs                                                                                        |\n| 5    | \"Save results?\"      | -o results.json to persist output                                                                                |\n| 6    | \"Run in parallel?\"   | --parallel flag for concurrent execution                                                                         |\n| 7    | Show final command   | Single: `waza run \u003ceval.yaml\u003e [-v] [-o results.json]` / All: `waza run --discover evals/ [-v] [-o results.json]` |\n| 8    | Execute              | Run command and display results                                                                                  |\n| 9    | Interpret exit code  | 0=✅ passed, 1=❌ failed, 2=⚠️ config error                                                                      |\n| 10   | Offer next steps     | Compare results / Open dashboard / Fix failing tasks                                                             |\n\n---\n\n### Option 5 — Check skill readiness (waza check)\n\n**Workflow:**\n\n| Step | Prompt                              | Action                                                              |\n| ---- | ----------------------------------- | ------------------------------------------------------------------- |\n| 1    | List all skills (flag known issues) | Display numbered list                                               |\n| 2    | \"Which skill to check?\"             | Number, or 'all'                                                    |\n| 3    | Show command                        | `waza check \u003cskill-path\u003e`                                           |\n| 4    | Execute                             | Run and display readiness report                                    |\n| 5    | Explain report sections             | Compliance / Token Budget / Eval Suite / Spec Compliance / Advisory |\n| 6    | Remediation                         | For each failure, explain what it means and suggest fix             |\n| 7    | Offer improvement                   | \"Would you like to improve this skill? (yes/no)\" → go to Option 6   |\n\n**Report sections explained:**\n\n- **Compliance Score** — Frontmatter adherence (Low / Medium / Medium-High / High)\n- **Token Budget** — Whether `SKILL.md` is within limits\n- **Evaluation Suite** — Whether `eval.yaml` exists\n- **Spec Compliance** — agentskills.io spec checks\n- **Advisory Checks** — Quality and maintainability heuristics\n\n---\n\n### Option 6a — Improve skill quality: Frontmatter (waza dev)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                                                                 |\n| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |\n| 1    | List skills to improve          | Display numbered list                                                                                                  |\n| 2    | \"Which skill?\"                  | Get user input                                                                                                         |\n| 3    | \"Improvement mode?\"             | Interactive (iterative) or Copilot report (single-pass)                                                                |\n| 4    | If interactive: \"Target level?\" | low / medium / medium-high / high (default: medium-high)                                                               |\n| 5    | Show command                    | Interactive: `waza dev \u003cskill-path\u003e [--target medium-high]` / Report: `waza dev \u003cskill-path\u003e --copilot [--model \u003cid\u003e]` |\n| 6    | Execute                         | Run and display improvements                                                                                           |\n| 7    | Follow-up                       | Suggest running `waza check` again                                                                                     |\n\n---\n\n### Option 6b — Improve skill quality: LLM judge (waza quality)\n\n**Workflow:**\n\n| Step | Prompt                    | Action                                                            |\n| ---- | ------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills to evaluate   | Display numbered list                                             |\n| 2    | \"Which skill?\"            | Get user input                                                    |\n| 3    | \"Judge model? (optional)\" | Optional: specify model ID                                        |\n| 4    | \"Output format?\"          | table (default), json                                             |\n| 5    | Show command              | `waza quality \u003cskill-path\u003e [--model \u003cid\u003e] [--format table\\|json]` |\n| 6    | Execute                   | Run and display five quality dimensions                           |\n| 7    | Explain scoring           | Each dimension: score 1–5, explanation, and suggested fix         |\n\n**Five quality dimensions:**\n\n- **Clarity** — Is the skill description clear and unambiguous?\n- **Completeness** — Does it cover all relevant scenarios?\n- **Trigger Precision** — Will the agent invoke it at the right times?\n- **Scope Coverage** — Is the workflow fully described?\n- **Anti-patterns** — Any patterns that hurt effectiveness?\n\n---\n\n### Option 7 — Coverage report (waza coverage)\n\n**Workflow:**\n\n| Step | Prompt                  | Action                                               |\n| ---- | ----------------------- | ---------------------------------------------------- |\n| 1    | \"Output format?\"        | text (default), markdown, or json                    |\n| 2    | Show command            | `waza coverage [--format markdown]`                  |\n| 3    | Execute                 | Run and display grid                                 |\n| 4    | Explain coverage levels | Full / Partial / None                                |\n| 5    | Recommend actions       | For uncovered skills, offer to scaffold (→ Option 2) |\n\n**Coverage levels:**\n\n- **Full** — Has tasks + 2+ grader types\n- **Partial** — Has eval.yaml but missing tasks or grader variety\n- **None** — No eval suite at all\n\n---\n\n### Option 8 — Results dashboard (waza serve)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                           |\n| ---- | --------------------------------- | ---------------------------------------------------------------- |\n| 1    | \"Results directory? (default: .)\" | Get path or accept default                                       |\n| 2    | \"Port? (default: 3000)\"           | Get port or accept default                                       |\n| 3    | Show command                      | `waza serve [--port 3000] [--results-dir ./results]`             |\n| 4    | Execute                           | Run server and open browser                                      |\n| 5    | Explain dashboard                 | Task pass/fail / Scores / Model comparisons / Aggregated metrics |\n| 6    | Cleanup reminder                  | \"Stop the server with Ctrl+C when done.\"                         |\n\n---\n\n### Option 9 — CI/CD integration\n\n**Workflow:**\n\n| Step | Prompt                        | Action                                                          |\n| ---- | ----------------------------- | --------------------------------------------------------------- |\n| 1    | \"Which skill(s) to include?\"  | List and select skills                                          |\n| 2    | Generate scaffold             | Create `.github/workflows/eval.yml`                             |\n| 3    | Explain exit codes            | 0=pass, 1=fail, 2=config error                                  |\n| 4    | Optional: token budget gating | Add `waza tokens compare main --skills --threshold 10 --strict` |\n| 5    | Confirm                       | \"Write workflow file? (yes/no)\"                                 |\n| 6    | Finalize                      | Write file and show path                                        |\n\n**Generated workflow scaffold:**\n\n```yaml\nname: Skill Evaluation\non:\n  pull_request:\n    paths:\n      - \"skills/**\"\n      - \"evals/**\"\n\njobs:\n  evaluate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Install Waza\n        run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n      - name: Run evaluations\n        run: waza run --discover evals/ -v -o results.json\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n      - name: Upload results\n        uses: actions/upload-artifact@v4\n        with:\n          name: eval-results\n          path: results.json\n```\n\n---\n\n## Step 3 — After each action\n\nAfter every action completes:\n\n1. Show a brief **summary** of what was done and whether it succeeded.\n2. Update the user's awareness of overall eval coverage (X of Y skills covered).\n3. Ask: **\"What would you like to do next?\"** and re-present the menu.\n\nPersist a lightweight session state so the wizard remembers:\n\n- Which skills have been checked this session\n- Whether Waza is confirmed installed\n- Results file paths generated this session\n\n---\n\n## Reference: Waza Command Cheatsheet\n\n| Goal                        | Command                                                                                   |\n| --------------------------- | ----------------------------------------------------------------------------------------- |\n| Install                     | `curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh \\| bash`     |\n| Scaffold eval from SKILL.md | `waza new eval \u003cskill-path\u003e`                                                              |\n| AI-generate eval            | `waza suggest \u003cskill-path\u003e --apply`                                                       |\n| Run single eval             | `waza run evals/\u003cskill\u003e/eval.yaml -v`                                                     |\n| Run all evals               | `waza run --discover evals/ -v`                                                           |\n| Check readiness             | `waza check \u003cskill-path\u003e`                                                                 |\n| Improve frontmatter         | `waza dev \u003cskill-path\u003e`                                                                   |\n| LLM quality score           | `waza quality \u003cskill-path\u003e`                                                               |\n| Coverage grid               | `waza coverage --format markdown`                                                         |\n| Token count                 | `waza tokens count skills/`                                                               |\n| Token budget CI             | `waza tokens compare main --skills --threshold 10`                                        |\n| Results dashboard           | `waza serve --results-dir ./results`                                                      |\n| Compare runs                | `waza compare results-a.json results-b.json`                                              |\n| Save results                | `waza run eval.yaml -o results.json`                                                      |\n| Grade previous run          | `waza run eval.yaml --output results.json \u0026\u0026 waza grade eval.yaml --results results.json` |\n| List models                 | `waza models`                                                                             |\n| Clear cache                 | `waza cache clear`                                                                        |\n"
+              }
+            },
+            {
+              "content": "---\nname: sdlc-wizard-eval\ndescription: \u003e\n  Interactive Waza evaluation wizard for AI agent skills. Guides you step-by-step\n  through installing Waza, scaffolding eval suites, running benchmarks, checking\n  skill readiness, improving quality, and viewing results. USE FOR: evaluating\n  existing SKILL.md files with Waza, scaffolding eval suites from SKILL.md,\n  running skill benchmarks, checking skill compliance and token budgets, improving\n  skill frontmatter, grading agent output, viewing evaluation dashboards, CI/CD\n  eval integration. DO NOT USE FOR: creating new skills from scratch (use\n  sdlc-wizard), implementing features (use sdlc-council), planning (use\n  sdlc-impl-strategy).\nargument-hint: \"Optional: skill name or path to jump directly to evaluating that skill\"\n---\n\n# SDLC Wizard — Eval\n\nThis skill interactively guides you through the full Waza evaluation lifecycle\nfor skills that already exist in your workspace. It does **not** run commands\nautomatically — it asks what you want to do at each step, shows you the exact\ncommand, and confirms the outcome.\n\n---\n\n## Step 0 — Detect context\n\nBefore presenting the menu, silently gather workspace context:\n\n1. Check whether `waza` is on the `PATH`:\n   ```bash\n   which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"\n   ```\n2. Scan for existing `SKILL.md` files and list their paths.\n3. Scan for existing `eval.yaml` files under `evals/` and note which skills\n   already have coverage.\n\nUse this context to pre-fill answers and highlight recommended actions.\n\nIf an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), skip the main\nmenu and jump directly to **Step 2** for that skill.\n\n---\n\n## Step 1 — Present the main menu\n\nGreet the user with a brief summary of what was found:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound X skill(s)  |  Y already have evals  |  Waza: [installed / NOT installed]\n═══════════════════════════════════════════\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill (waza new eval)\n  3  Suggest an eval suite with AI  (waza suggest)\n  4  Run evaluations                (waza run)\n  5  Check skill readiness          (waza check)\n  6  Improve skill quality          (waza dev / waza quality)\n  7  View coverage report           (waza coverage)\n  8  Open results dashboard         (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\nAsk: **\"Enter a number (or the name of a skill to evaluate it end-to-end):\"**\n\n---\n\n## Step 2 — Execute the chosen action\n\n### Quick Reference: Step 2 Decision Tree\n\n| Option | Task                | Key Input                 | Output                                    |\n| ------ | ------------------- | ------------------------- | ----------------------------------------- |\n| **1**  | Install Waza        | Confirm                   | Verify with `waza --version`              |\n| **2**  | Scaffold eval suite | Select skill              | Creates `evals/\u003cskill\u003e/eval.yaml` + tasks |\n| **3**  | AI-generate eval    | Select skill + mode       | Preview or apply generated tasks          |\n| **4**  | Run evaluations     | Select eval(s) + executor | Exit code: 0=pass, 1=fail, 2=config error |\n| **5**  | Check readiness     | Select skill              | Compliance score + detailed report        |\n| **6a** | Improve frontmatter | Select skill + target     | Interactive or one-pass report            |\n| **6b** | Score quality       | Select skill + model      | 5-dimension quality breakdown             |\n| **7**  | Coverage report     | Select format             | Grid showing eval coverage by skill       |\n| **8**  | View dashboard      | Provide port/directory    | Browser-based results viewer              |\n| **9**  | CI/CD setup         | Select skills             | GitHub Actions workflow file              |\n\n---\n\n### Option 1 — Install / verify Waza\n\n**Action**: Show and confirm install command.\n\n```bash\ncurl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n```\n\n**After confirmation**, verify the install:\n\n```bash\nwaza --version\n```\n\n**If it fails**, suggest the source-build alternative (requires Go 1.26+):\n\n```bash\ngit clone https://github.com/microsoft/waza.git\ncd waza \u0026\u0026 git lfs install \u0026\u0026 git lfs pull\ngo build -o waza ./cmd/waza \u0026\u0026 sudo mv waza /usr/local/bin/\n```\n\nMark Waza as installed and return to the main menu.\n\n---\n\n### Option 2 — Scaffold an eval suite (waza new eval)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                        |\n| ---- | ------------------------------- | ----------------------------------------------------------------------------- |\n| 1    | List unevaluated skills         | Display numbered list                                                         |\n| 2    | \"Which skill? (number or path)\" | Get user input                                                                |\n| 3    | Show command                    | `waza new eval \u003cskill-path\u003e`                                                  |\n| 4    | Explain outputs                 | `eval.yaml`, `tasks/positive-trigger-1.yaml`, `tasks/negative-trigger-1.yaml` |\n| 5    | Confirm                         | \"Run this command? (yes/no)\"                                                  |\n| 6    | Execute \u0026 show output           | Run command and display results                                               |\n| 7    | Offer next steps                | Edit manually / AI-suggest / Run now                                          |\n\n---\n\n### Option 3 — AI-suggested eval suite (waza suggest)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                            |\n| ---- | --------------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills without full coverage | Display numbered list                                             |\n| 2    | \"Which skill to target?\"          | Get user input                                                    |\n| 3    | \"Preview only or write files?\"    | Choose `--dry-run` (safe) or `--apply`                            |\n| 4    | \"Model override? (optional)\"      | Optional: specify model ID                                        |\n| 5    | Show command                      | `waza suggest \u003cskill-path\u003e [--dry-run \\| --apply] [--model \u003cid\u003e]` |\n| 6    | Execute \u0026 display output          | Run and show suggested YAML                                       |\n| 7    | If `--dry-run`: confirm apply     | \"Apply these files? (yes/no)\" → re-run with `--apply`             |\n\n---\n\n### Option 4 — Run evaluations (waza run)\n\n**Workflow:**\n\n| Step | Prompt               | Action                                                                                                           |\n| ---- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |\n| 1    | List available evals | Display numbered list with skill names                                                                           |\n| 2    | \"Which eval to run?\" | Number, or 'all' to auto-discover                                                                                |\n| 3    | \"Executor type?\"     | `mock` (fast, no API key) or `copilot-sdk` (requires GITHUB_TOKEN)                                               |\n| 4    | \"Verbose output?\"    | -v flag for detailed logs                                                                                        |\n| 5    | \"Save results?\"      | -o results.json to persist output                                                                                |\n| 6    | \"Run in parallel?\"   | --parallel flag for concurrent execution                                                                         |\n| 7    | Show final command   | Single: `waza run \u003ceval.yaml\u003e [-v] [-o results.json]` / All: `waza run --discover evals/ [-v] [-o results.json]` |\n| 8    | Execute              | Run command and display results                                                                                  |\n| 9    | Interpret exit code  | 0=✅ passed, 1=❌ failed, 2=⚠️ config error                                                                      |\n| 10   | Offer next steps     | Compare results / Open dashboard / Fix failing tasks                                                             |\n\n---\n\n### Option 5 — Check skill readiness (waza check)\n\n**Workflow:**\n\n| Step | Prompt                              | Action                                                              |\n| ---- | ----------------------------------- | ------------------------------------------------------------------- |\n| 1    | List all skills (flag known issues) | Display numbered list                                               |\n| 2    | \"Which skill to check?\"             | Number, or 'all'                                                    |\n| 3    | Show command                        | `waza check \u003cskill-path\u003e`                                           |\n| 4    | Execute                             | Run and display readiness report                                    |\n| 5    | Explain report sections             | Compliance / Token Budget / Eval Suite / Spec Compliance / Advisory |\n| 6    | Remediation                         | For each failure, explain what it means and suggest fix             |\n| 7    | Offer improvement                   | \"Would you like to improve this skill? (yes/no)\" → go to Option 6   |\n\n**Report sections explained:**\n\n- **Compliance Score** — Frontmatter adherence (Low / Medium / Medium-High / High)\n- **Token Budget** — Whether `SKILL.md` is within limits\n- **Evaluation Suite** — Whether `eval.yaml` exists\n- **Spec Compliance** — agentskills.io spec checks\n- **Advisory Checks** — Quality and maintainability heuristics\n\n---\n\n### Option 6a — Improve skill quality: Frontmatter (waza dev)\n\n**Workflow:**\n\n| Step | Prompt                          | Action                                                                                                                 |\n| ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |\n| 1    | List skills to improve          | Display numbered list                                                                                                  |\n| 2    | \"Which skill?\"                  | Get user input                                                                                                         |\n| 3    | \"Improvement mode?\"             | Interactive (iterative) or Copilot report (single-pass)                                                                |\n| 4    | If interactive: \"Target level?\" | low / medium / medium-high / high (default: medium-high)                                                               |\n| 5    | Show command                    | Interactive: `waza dev \u003cskill-path\u003e [--target medium-high]` / Report: `waza dev \u003cskill-path\u003e --copilot [--model \u003cid\u003e]` |\n| 6    | Execute                         | Run and display improvements                                                                                           |\n| 7    | Follow-up                       | Suggest running `waza check` again                                                                                     |\n\n---\n\n### Option 6b — Improve skill quality: LLM judge (waza quality)\n\n**Workflow:**\n\n| Step | Prompt                    | Action                                                            |\n| ---- | ------------------------- | ----------------------------------------------------------------- |\n| 1    | List skills to evaluate   | Display numbered list                                             |\n| 2    | \"Which skill?\"            | Get user input                                                    |\n| 3    | \"Judge model? (optional)\" | Optional: specify model ID                                        |\n| 4    | \"Output format?\"          | table (default), json                                             |\n| 5    | Show command              | `waza quality \u003cskill-path\u003e [--model \u003cid\u003e] [--format table\\|json]` |\n| 6    | Execute                   | Run and display five quality dimensions                           |\n| 7    | Explain scoring           | Each dimension: score 1–5, explanation, and suggested fix         |\n\n**Five quality dimensions:**\n\n- **Clarity** — Is the skill description clear and unambiguous?\n- **Completeness** — Does it cover all relevant scenarios?\n- **Trigger Precision** — Will the agent invoke it at the right times?\n- **Scope Coverage** — Is the workflow fully described?\n- **Anti-patterns** — Any patterns that hurt effectiveness?\n\n---\n\n### Option 7 — Coverage report (waza coverage)\n\n**Workflow:**\n\n| Step | Prompt                  | Action                                               |\n| ---- | ----------------------- | ---------------------------------------------------- |\n| 1    | \"Output format?\"        | text (default), markdown, or json                    |\n| 2    | Show command            | `waza coverage [--format markdown]`                  |\n| 3    | Execute                 | Run and display grid                                 |\n| 4    | Explain coverage levels | Full / Partial / None                                |\n| 5    | Recommend actions       | For uncovered skills, offer to scaffold (→ Option 2) |\n\n**Coverage levels:**\n\n- **Full** — Has tasks + 2+ grader types\n- **Partial** — Has eval.yaml but missing tasks or grader variety\n- **None** — No eval suite at all\n\n---\n\n### Option 8 — Results dashboard (waza serve)\n\n**Workflow:**\n\n| Step | Prompt                            | Action                                                           |\n| ---- | --------------------------------- | ---------------------------------------------------------------- |\n| 1    | \"Results directory? (default: .)\" | Get path or accept default                                       |\n| 2    | \"Port? (default: 3000)\"           | Get port or accept default                                       |\n| 3    | Show command                      | `waza serve [--port 3000] [--results-dir ./results]`             |\n| 4    | Execute                           | Run server and open browser                                      |\n| 5    | Explain dashboard                 | Task pass/fail / Scores / Model comparisons / Aggregated metrics |\n| 6    | Cleanup reminder                  | \"Stop the server with Ctrl+C when done.\"                         |\n\n---\n\n### Option 9 — CI/CD integration\n\n**Workflow:**\n\n| Step | Prompt                        | Action                                                          |\n| ---- | ----------------------------- | --------------------------------------------------------------- |\n| 1    | \"Which skill(s) to include?\"  | List and select skills                                          |\n| 2    | Generate scaffold             | Create `.github/workflows/eval.yml`                             |\n| 3    | Explain exit codes            | 0=pass, 1=fail, 2=config error                                  |\n| 4    | Optional: token budget gating | Add `waza tokens compare main --skills --threshold 10 --strict` |\n| 5    | Confirm                       | \"Write workflow file? (yes/no)\"                                 |\n| 6    | Finalize                      | Write file and show path                                        |\n\n**Generated workflow scaffold:**\n\n```yaml\nname: Skill Evaluation\non:\n  pull_request:\n    paths:\n      - \"skills/**\"\n      - \"evals/**\"\n\njobs:\n  evaluate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Install Waza\n        run: curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash\n      - name: Run evaluations\n        run: waza run --discover evals/ -v -o results.json\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n      - name: Upload results\n        uses: actions/upload-artifact@v4\n        with:\n          name: eval-results\n          path: results.json\n```\n\n---\n\n## Step 3 — After each action\n\nAfter every action completes:\n\n1. Show a brief **summary** of what was done and whether it succeeded.\n2. Update the user's awareness of overall eval coverage (X of Y skills covered).\n3. Ask: **\"What would you like to do next?\"** and re-present the menu.\n\nPersist a lightweight session state so the wizard remembers:\n\n- Which skills have been checked this session\n- Whether Waza is confirmed installed\n- Results file paths generated this session\n\n---\n\n## Reference: Waza Command Cheatsheet\n\n| Goal                        | Command                                                                                   |\n| --------------------------- | ----------------------------------------------------------------------------------------- |\n| Install                     | `curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh \\| bash`     |\n| Scaffold eval from SKILL.md | `waza new eval \u003cskill-path\u003e`                                                              |\n| AI-generate eval            | `waza suggest \u003cskill-path\u003e --apply`                                                       |\n| Run single eval             | `waza run evals/\u003cskill\u003e/eval.yaml -v`                                                     |\n| Run all evals               | `waza run --discover evals/ -v`                                                           |\n| Check readiness             | `waza check \u003cskill-path\u003e`                                                                 |\n| Improve frontmatter         | `waza dev \u003cskill-path\u003e`                                                                   |\n| LLM quality score           | `waza quality \u003cskill-path\u003e`                                                               |\n| Coverage grid               | `waza coverage --format markdown`                                                         |\n| Token count                 | `waza tokens count skills/`                                                               |\n| Token budget CI             | `waza tokens compare main --skills --threshold 10`                                        |\n| Results dashboard           | `waza serve --results-dir ./results`                                                      |\n| Compare runs                | `waza compare results-a.json results-b.json`                                              |\n| Save results                | `waza run eval.yaml -o results.json`                                                      |\n| Grade previous run          | `waza run eval.yaml --output results.json \u0026\u0026 waza grade eval.yaml --results results.json` |\n| List models                 | `waza models`                                                                             |\n| Clear cache                 | `waza cache clear`                                                                        |\n",
+              "type": "skill.invoked"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "content": "Let me gather workspace context first - check for waza, SKILL.md files, and existing eval.yaml files.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "which waza 2\u003e/dev/null \u0026\u0026 waza --version || echo \"NOT_INSTALLED\"",
+                "description": "Check if waza is installed"
+              },
+              "tool_call_id": "toolu_vrtx_01Qij5ZRtsLbVNwFEqrw4mAc",
+              "tool_name": "bash"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "pattern": "**/SKILL.md"
+              },
+              "tool_call_id": "toolu_vrtx_012pyjghCz5EyV8QqMv74nve",
+              "tool_name": "glob"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "pattern": "**/eval.yaml"
+              },
+              "tool_call_id": "toolu_vrtx_01VjPzThHFDZaexzDPcGsHtz",
+              "tool_name": "glob"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01VjPzThHFDZaexzDPcGsHtz",
+              "tool_result": {
+                "content": "No files matched the pattern.",
+                "detailedContent": "No files matched the pattern."
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_012pyjghCz5EyV8QqMv74nve",
+              "tool_result": {
+                "content": "No files matched the pattern.",
+                "detailedContent": "No files matched the pattern."
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01Qij5ZRtsLbVNwFEqrw4mAc",
+              "tool_result": {
+                "content": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "/usr/local/bin/waza\nwaza version 0.31.0\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "find /home/node/.claude/skills -name \"SKILL.md\" 2\u003e/dev/null; find /home/node/.copilot -name \"SKILL.md\" 2\u003e/dev/null; find / -maxdepth 6 -name \"SKILL.md\" 2\u003e/dev/null | head -30",
+                "description": "Search broader paths for SKILL.md files"
+              },
+              "tool_call_id": "toolu_vrtx_01Dkm4ddxRtzpu3fWZK4T9ni",
+              "tool_name": "bash"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_partial_result",
+              "tool_call_id": "toolu_vrtx_01Dkm4ddxRtzpu3fWZK4T9ni"
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01Dkm4ddxRtzpu3fWZK4T9ni",
+              "tool_result": {
+                "content": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-lucas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-graphify-setup/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/docs-sync/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-impl-strategy/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-lessons-learned/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-thomas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard-eval/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-strategy-debate/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-daedalus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-sherlock/SKILL.md\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md\n/home/node/.claude/skills/graphify/SKILL.md\n/home/node/.claude/skills/sdlc-council-lucas/SKILL.md\n/home/node/.claude/skills/sdlc-thomas/SKILL.md\n/home/node/.claude/skills/sdlc-devcontainer-setup/SKILL.md\n/home/node/.claude/skills/sdlc-graphify-setup/SKILL.md\n/home/node/.claude/skills/sdlc-lessons-learned/SKILL.md\n/home/node/.claude/skills/docs-sync/SKILL.md\n/home/node/.claude/skills/sdlc-council-daedalus/SKILL.md\n/home/node/.claude/skills/sdlc-council-sherlock/SKILL.md\n/home/node/.claude/skills/sdlc-council/SKILL.md\n/home/node/.claude/skills/sdlc-wizard/SKILL.md\n/home/node/.claude/skills/sdlc-impl-strategy/SKILL.md\n/home/node/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/home/node/.claude/skills/sdlc-strategy-debate/SKILL.md\n/home/node/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-lucas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/jira-fetch/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-graphify-setup/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/docs-sync/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-impl-strategy/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-lessons-learned/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-thomas/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-wizard-eval/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-strategy-debate/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-daedalus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-hephaestus/SKILL.md\n/workspaces/agentic-sdlc-wizard/.claude/skills/sdlc-council-sherlock/SKILL.md\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "",
+              "type": "assistant.message"
+            },
+            {
+              "type": "tool.execution_start",
+              "arguments": {
+                "command": "find /workspaces/agentic-sdlc-wizard -name \"eval.yaml\" 2\u003e/dev/null | head -20; find /home/node/.claude/skills -name \"eval.yaml\" 2\u003e/dev/null | head -20",
+                "description": "Check for existing eval.yaml files"
+              },
+              "tool_call_id": "toolu_vrtx_01UzxJrXgR55d3d849x5okBd",
+              "tool_name": "bash"
+            },
+            {
+              "type": "permission.requested"
+            },
+            {
+              "type": "permission.completed",
+              "tool_result": {
+                "kind": "approved"
+              }
+            },
+            {
+              "type": "tool.execution_complete",
+              "success": true,
+              "tool_call_id": "toolu_vrtx_01UzxJrXgR55d3d849x5okBd",
+              "tool_result": {
+                "content": "/workspaces/agentic-sdlc-wizard/evals/sdlc-council/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-lucas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/jira-fetch/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-graphify-setup/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/docs-sync/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-impl-strategy/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-lessons-learned/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-thomas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard-eval/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-strategy-debate/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-daedalus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-hephaestus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-sherlock/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-devcontainer-setup/eval.yaml\n\u003cexited with exit code 0\u003e",
+                "detailedContent": "/workspaces/agentic-sdlc-wizard/evals/sdlc-council/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-lucas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/jira-fetch/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-graphify-setup/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/docs-sync/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-impl-strategy/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-lessons-learned/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-thomas/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-wizard-eval/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-strategy-debate/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-daedalus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-hephaestus/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-council-sherlock/eval.yaml\n/workspaces/agentic-sdlc-wizard/evals/sdlc-devcontainer-setup/eval.yaml\n\u003cexited with exit code 0\u003e"
+              }
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "assistant.turn_start"
+            },
+            {
+              "type": "session.usage_info"
+            },
+            {
+              "type": "assistant.usage"
+            },
+            {
+              "content": "Here's your workspace snapshot:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound 15 skill(s)  |  15 already have evals  |  Waza: ✅ installed (v0.31.0)\n═══════════════════════════════════════════\n\nSkills (all in /workspaces/agentic-sdlc-wizard/.claude/skills/):\n  ✅ docs-sync               — eval exists\n  ✅ jira-fetch              — eval exists\n  ✅ sdlc-council            — eval exists\n  ✅ sdlc-council-daedalus   — eval exists\n  ✅ sdlc-council-hephaestus — eval exists\n  ✅ sdlc-council-lucas      — eval exists\n  ✅ sdlc-council-sherlock   — eval exists\n  ✅ sdlc-devcontainer-setup — eval exists\n  ✅ sdlc-graphify-setup     — eval exists\n  ✅ sdlc-impl-strategy      — eval exists\n  ✅ sdlc-lessons-learned    — eval exists\n  ✅ sdlc-strategy-debate    — eval exists\n  ✅ sdlc-thomas             — eval exists\n  ✅ sdlc-wizard             — eval exists\n  ✅ sdlc-wizard-eval        — eval exists\n\nAll 15 skills already have eval suites! 🎉\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill     (waza new eval)\n  3  Suggest an eval suite with AI          (waza suggest)\n  4  Run evaluations                        (waza run)\n  5  Check skill readiness                  (waza check)\n  6  Improve skill quality                  (waza dev / waza quality)\n  7  View coverage report                   (waza coverage)\n  8  Open results dashboard                 (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\n**Enter a number (or the name of a skill to evaluate it end-to-end):**",
+              "type": "assistant.message"
+            },
+            {
+              "content": "Now I have a clear picture:\n\n**Workspace**: `/workspaces/agentic-sdlc-wizard`\n- **15 SKILL.md files** found in `/workspaces/agentic-sdlc-wizard/.claude/skills/`\n- **15 eval.yaml files** already exist in `/workspaces/agentic-sdlc-wizard/evals/`\n\nSkills found:\n1. sdlc-council\n2. sdlc-council-lucas\n3. sdlc-wizard\n4. jira-fetch\n5. sdlc-graphify-setup\n\n\n6. docs-sync\n7. sdlc-impl-strategy\n8. sdlc-lessons-learned\n9. sdlc-thomas\n10. sdlc-wizard-eval\n11. sdlc-strategy-debate\n12. sdlc-council-daedalus\n13. sdlc-council-hephaestus\n14. sdlc-council-sherlock\n15. sdlc-devcontainer-setup\n\nI'm checking which eval.yaml files exist for these skills and it looks like the first three have been confirmed, with the list continuing through the rest.\n\nAll 15 skills appear to have eval.yaml files already, so coverage is complete. Though I'm wondering if there's a skill like sdlc-council-critic that might be in the available skills but not yet accounted for.",
+              "type": "assistant.reasoning"
+            },
+            {
+              "type": "assistant.turn_end"
+            },
+            {
+              "type": "session.idle"
+            }
+          ],
+          "final_output": "Here's your workspace snapshot:\n\n```\n🧙 SDLC Eval Wizard\n═══════════════════════════════════════════\nFound 15 skill(s)  |  15 already have evals  |  Waza: ✅ installed (v0.31.0)\n═══════════════════════════════════════════\n\nSkills (all in /workspaces/agentic-sdlc-wizard/.claude/skills/):\n  ✅ docs-sync               — eval exists\n  ✅ jira-fetch              — eval exists\n  ✅ sdlc-council            — eval exists\n  ✅ sdlc-council-daedalus   — eval exists\n  ✅ sdlc-council-hephaestus — eval exists\n  ✅ sdlc-council-lucas      — eval exists\n  ✅ sdlc-council-sherlock   — eval exists\n  ✅ sdlc-devcontainer-setup — eval exists\n  ✅ sdlc-graphify-setup     — eval exists\n  ✅ sdlc-impl-strategy      — eval exists\n  ✅ sdlc-lessons-learned    — eval exists\n  ✅ sdlc-strategy-debate    — eval exists\n  ✅ sdlc-thomas             — eval exists\n  ✅ sdlc-wizard             — eval exists\n  ✅ sdlc-wizard-eval        — eval exists\n\nAll 15 skills already have eval suites! 🎉\n\nWhat would you like to do?\n\n  1  Install / verify Waza\n  2  Scaffold an eval suite for a skill     (waza new eval)\n  3  Suggest an eval suite with AI          (waza suggest)\n  4  Run evaluations                        (waza run)\n  5  Check skill readiness                  (waza check)\n  6  Improve skill quality                  (waza dev / waza quality)\n  7  View coverage report                   (waza coverage)\n  8  Open results dashboard                 (waza serve)\n  9  Set up CI/CD integration\n  0  Exit\n```\n\n**Enter a number (or the name of a skill to evaluate it end-to-end):**",
+          "skill_invocations": [
+            {
+              "name": "sdlc-wizard-eval",
+              "path": "/home/node/.claude/skills/sdlc-wizard-eval/SKILL.md"
+            }
+          ],
+          "workspace_dir": "/tmp/waza-1465427666"
+        }
+      ],
+      "stats": {
+        "pass_rate": 0,
+        "flakiness_percent": 0,
+        "passed_runs": 0,
+        "failed_runs": 1,
+        "error_runs": 0,
+        "total_runs": 1,
+        "avg_score": 0.125,
+        "avg_weighted_score": 0.125,
+        "min_score": 0.125,
+        "max_score": 0.125,
+        "std_dev_score": 0,
+        "score_variance": 0,
+        "ci95_lo": 0,
+        "ci95_hi": 0,
+        "flaky": false,
+        "avg_duration_ms": 34167
+      }
+    }
+  ]
+}

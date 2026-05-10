@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - path: ../.env
+        required: false
     volumes:
       - ..:/workspaces/agentic-sdlc-wizard:cached
     command: sleep infinity
