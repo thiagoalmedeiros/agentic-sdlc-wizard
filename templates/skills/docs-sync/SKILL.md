@@ -1,12 +1,12 @@
 ---
 name: docs-sync
-description: "Keep project documentation aligned with code changes. Use when: syncing docs after code changes, updating AGENTS.md, updating ARCHITECTURE.md, updating README.md, updating copilot-instructions.md, updating CLAUDE.md, detecting doc drift, running pre-merge documentation check, ensuring docs are current with main branch."
+description: "Keep project documentation aligned with code changes. Use when: syncing docs after code changes, updating AGENTS.md, updating ARCHITECTURE.md, updating README.md, updating CLAUDE.md, detecting doc drift, running pre-merge documentation check, ensuring docs are current with main branch."
 argument-hint: "optional base branch (defaults to origin/main)"
 ---
 
 # Documentation Sync
 
-Keep `AGENTS.md`, `ARCHITECTURE.md`, `README.md`, `CLAUDE.md`, and `.github/copilot-instructions.md` aligned with actual code changes in the branch.
+Keep `AGENTS.md`, `ARCHITECTURE.md`, `README.md`, and `CLAUDE.md` aligned with actual code changes in the branch.
 
 ## When to Use
 
@@ -16,13 +16,12 @@ Keep `AGENTS.md`, `ARCHITECTURE.md`, `README.md`, `CLAUDE.md`, and `.github/copi
 
 ## Target Files
 
-| File                              | Governs                                     | Key Sections to Watch                                                                  |
-| --------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `AGENTS.md`                       | AI agent workflows, key commands            | Key Workflows, Database Operations, Edit Configuration                                 |
-| `ARCHITECTURE.md`                 | System design, components, directory tree   | System Components, Directory Structure, Configuration, Tests, Data Flow                |
-| `README.md`                       | Setup guide, prerequisites, quick start     | Prerequisites, Environment Configuration, Documentation links                          |
-| `CLAUDE.md`                       | Claude/agent session rules, essential rules | Essential Rules, Quick Reference                                                       |
-| `.github/copilot-instructions.md` | Copilot context, navigation, file index     | Project Overview, Documentation Structure, Quick Navigation, Where to Find Information |
+| File              | Governs                                            | Key Sections to Watch                                                   |
+| ----------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
+| `AGENTS.md`       | AI agent workflows, key commands                   | Key Workflows, Database Operations, Edit Configuration                  |
+| `ARCHITECTURE.md` | System design, components, directory tree          | System Components, Directory Structure, Configuration, Tests, Data Flow |
+| `README.md`       | Setup guide, prerequisites, quick start            | Prerequisites, Environment Configuration, Documentation links           |
+| `CLAUDE.md`       | Thin redirect — points the agent to read AGENTS.md | Single pointer line to AGENTS.md                                        |
 
 ## Procedure
 
@@ -41,21 +40,21 @@ Capture the full list of added (`A`), modified (`M`), deleted (`D`), and renamed
 
 Scan the diff output and determine which documentation files are potentially affected. Use these heuristics:
 
-- **Structural changes** (new/removed/renamed directories, apps, libs, services) → `ARCHITECTURE.md` (Components, Directory Structure), `README.md`, `copilot-instructions.md`
+- **Structural changes** (new/removed/renamed directories, apps, libs, services) → `ARCHITECTURE.md` (Components, Directory Structure), `README.md`
 - **Build/task changes** (task definitions, build scripts, orchestration) → `AGENTS.md` (Workflows), `ARCHITECTURE.md` (Orchestration)
 - **Configuration changes** (env vars, settings templates, port numbers) → `ARCHITECTURE.md` (Configuration), `README.md` (Setup)
 - **Infrastructure changes** (Docker files, compose files, CI pipelines, deployment manifests) → `ARCHITECTURE.md` (Infrastructure, Ports, Directory Structure)
 - **Dependency changes** (package manifests, requirements files) → `ARCHITECTURE.md` (Components), `README.md` (Prerequisites)
-- **Agent/skill/instruction changes** (new or modified customization files in `.claude/` or `.github/instructions/`) → `copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md`
+- **Agent/skill/instruction changes** (new or modified customization files in `.claude/` or `.github/instructions/`) → `AGENTS.md`, `CLAUDE.md`
 - **Renamed or moved files** that are referenced in any doc → All four files
 - **Database or migration changes** → `AGENTS.md` (Database Operations)
 - **Other file changes** (not matching above heuristics) → Log and continue; do not force documentation updates for unrelated code changes. Notify the user if significant non-doc files changed but no documentation updates are warranted.
 
-If no changes match any heuristic, report "Docs are up to date" and stop.
+If no changes match any heuristic, report "Docs are up to date" and **stop immediately**. Do not proceed to Step 4 (Detect drift), Step 5 (Present plan), Step 6 (Apply changes), or Step 7 (Verify). The process terminates with this status report to the user.
 
 ### Step 3 — Read current docs and changed files
 
-Read each of the five target documentation files **in full**. Then read the content of every changed file that matched a pattern in Step 2. This is required to understand what the docs currently say and what the code now does.
+Read each of the four target documentation files **in full**. Then read the content of every changed file that matched a pattern in Step 2. This is required to understand what the docs currently say and what the code now does.
 
 ### Step 4 — Detect drift
 
@@ -102,7 +101,7 @@ After edits, re-read each modified file and confirm:
 - No references to deleted files or tasks.
 - Directory trees match actual `ls` output for the depicted paths.
 - Tables are syntactically valid markdown.
-- **Cross-references between the five docs are consistent**: every link from one target file to another resolves to a heading or file that actually exists (e.g., README.md links to `ARCHITECTURE.md` sections, `copilot-instructions.md` links to `AGENTS.md`, `CLAUDE.md` links to `AGENTS.md`/`ARCHITECTURE.md`, etc.). Flag any broken or orphaned cross-links.
+- **Cross-references between the four docs are consistent**: every link from one target file to another resolves to a heading or file that actually exists (e.g., README.md links to `ARCHITECTURE.md` sections, `CLAUDE.md` links to `AGENTS.md`/`ARCHITECTURE.md`, etc.). Flag any broken or orphaned cross-links.
 
 Report the verification result to the user.
 
