@@ -8,6 +8,7 @@ const {
   writeConfig,
   getSkillsDir,
   getInstructionsDir,
+  getRulesDir,
   resolvePaths,
 } = require("../config");
 
@@ -107,6 +108,32 @@ function installInstructions(cwd, scope) {
 
   for (const file of files) {
     copyFileSync(path.join(instructionsDir, file), targetDir, file);
+  }
+
+  return files;
+}
+
+/**
+ * Install Claude Code rule files into `<scope>/.claude/rules/`.
+ *
+ * Rules files provide standing directives to the AI agent — for example,
+ * automatically logging user corrections via `skill:sdlc-lessons-learned`.
+ */
+function installRules(cwd, scope) {
+  scope = scope || "project";
+  const paths = resolvePaths(cwd, scope);
+  const rulesDir = getRulesDir();
+  const targetDir = path.join(paths.claudeBase, "rules");
+
+  if (!fs.existsSync(rulesDir)) return [];
+
+  const files = fs
+    .readdirSync(rulesDir, { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.endsWith(".md"))
+    .map((e) => e.name);
+
+  for (const file of files) {
+    copyFileSync(path.join(rulesDir, file), targetDir, file);
   }
 
   return files;
@@ -411,6 +438,8 @@ async function installCommand(cwd, scope) {
   writeConfig(cwd, config);
 
   const skills = installSkills(cwd, scope);
+  installInstructions(cwd, scope);
+  installRules(cwd, scope);
   const envInstalled = installEnvSample(cwd, scope);
 
   console.log(`\nSDLC Wizard v${VERSION} installed successfully (${scopeLabel(scope)}).`);
@@ -479,6 +508,7 @@ async function installSkillsCommand(cwd, scope) {
   writeConfig(cwd, config);
 
   const installed = installSkills(cwd, scope, selected);
+  installRules(cwd, scope);
 
   if (selected.includes("jira-fetch")) {
     installEnvSample(cwd, scope);
@@ -504,6 +534,7 @@ module.exports = {
   installCommand,
   installSkills,
   installInstructions,
+  installRules,
   installEnvSample,
   installSkillsCommand,
   promptScope,

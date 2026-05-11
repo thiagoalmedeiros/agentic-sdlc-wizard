@@ -34,6 +34,10 @@ function getInstructionsDir() {
   return path.join(TEMPLATES_DIR, "instructions");
 }
 
+function getRulesDir() {
+  return path.join(TEMPLATES_DIR, "rules");
+}
+
 function getGitignorePath(cwd) {
   return path.join(cwd, ".gitignore");
 }
@@ -87,6 +91,7 @@ module.exports = {
   writeConfig,
   getSkillsDir,
   getInstructionsDir,
+  getRulesDir,
   getGitignorePath,
   updateGitignore,
   resolvePaths,

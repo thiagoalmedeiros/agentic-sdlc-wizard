@@ -1,7 +1,7 @@
 ---
 name: sdlc-impl-strategy
-description: 'Create structured implementation plans with a fixed three-section output: What We Are Doing, How We Are Doing It / What Is Out of Scope, and Tracking List. USE FOR: planning refactors, migrations, feature delivery, technical execution plans, and persistent plan documents that will guide a later implementation phase. DO NOT USE FOR: direct execution, ad-hoc code explanations, one-off tiny edits that do not need planning, or broad product brainstorming without a concrete implementation target.'
-argument-hint: 'Feature, route, or task to analyze and turn into an implementation plan'
+description: "Create structured implementation plans with a fixed three-section output: What We Are Doing, How We Are Doing It / What Is Out of Scope, and Tracking List. USE FOR: planning refactors, migrations, feature delivery, technical execution plans, and persistent plan documents that will guide a later implementation phase. DO NOT USE FOR: direct execution, ad-hoc code explanations, one-off tiny edits that do not need planning, or broad product brainstorming without a concrete implementation target."
+argument-hint: "Feature, route, or task to analyze and turn into an implementation plan"
 ---
 
 # Implementation Plan
@@ -29,18 +29,18 @@ Gather the minimum context required to produce a defensible plan:
 2. Inspect the current implementation and identify the affected files, components, modules, or flows.
 3. Identify dependencies, shared infrastructure, and risks that may force work out of scope.
 4. Search the codebase to identify the relevant validation path: inspect files such as `Taskfile.yml`, `package.json`, `README.md`, CI configs, and existing docs to determine which build, test, runtime, and manual verification commands are actually used by the project. Then ask the user (one message, two questions):
-   - *"What command(s) should run after each batch to verify it?"*
-   - *"What command(s) should run globally after all batches complete?"*
-   If the user says "auto-detect" or equivalent, use the discovered commands. Record the answers (or discovered commands) in `## Execution Config` in the plan — they become the per-batch and global verify commands embedded in every batch's `**Verify:**` line.
+   - _"What command(s) should run after each batch to verify it?"_
+   - _"What command(s) should run globally after all batches complete?"_
+     If the user says "auto-detect" or equivalent, use the discovered commands. Record the answers (or discovered commands) in `## Execution Config` in the plan — they become the per-batch and global verify commands embedded in every batch's `**Verify:**` line.
 5. **Check for `skill:sdlc-thomas`.** Ask the user:
-   *"`skill:sdlc-thomas` is available — do you want it spawned as a subagent to witness every batch's Verify step before the batch is marked ✅?"*
+   _"`skill:sdlc-thomas` is available — do you want it spawned as a subagent to witness every batch's Verify step before the batch is marked ✅?"_
    Record the answer as `thomas: enabled` or `thomas: disabled` in `## Execution Config`. If Thomas is disabled, omit the `Thomas` row and `**Thomas Gate:**` lines from all batches.
 6. **Capture the Definition of Done (DoD).** Follow this order:
-   1. Ask the user: *"Do you have a Definition of Done skill (e.g., `skill:definition-of-done`) you'd like to use as the verification gate for every batch? If so, name it."*
+   1. Ask the user: _"Do you have a Definition of Done skill (e.g., `skill:definition-of-done`) you'd like to use as the verification gate for every batch? If so, name it."_
    2. If the user names a skill, record it as `skill:<skill-name>` in `plan.md` under `## Definition of Done` and instruct every batch's `**DoD Gate:**` to invoke that skill.
    3. If the user declines but supplies a validation script, acceptance criteria, or explicit DoD criteria inline, record it verbatim under `## Definition of Done`.
    4. If neither a skill nor inline DoD is provided, omit the `## Definition of Done` section and the `DoD Gate` lines from all batches.
-   This DoD — however sourced — is attached to every batch as a mandatory gate and cannot be removed or deferred to a later batch.
+      This DoD — however sourced — is attached to every batch as a mandatory gate and cannot be removed or deferred to a later batch.
 7. Group the work into batches of at most 4 items.
 
 ### Phase 2 - Design The Plan
@@ -100,9 +100,12 @@ section below for `plan.md`.
 ### Phase 4 - Handoff
 
 **Before handing off, verify both files exist in the plan folder:**
+
 - `plan.md` — written by this skill
 - `lessons.md` — initialized by `skill:sdlc-lessons-learned` (invoked in
   Phase 3, step 2)
+
+**HARD CHECK — do not skip:** Re-read Section 1 of `plan.md` and confirm it contains the standing **Continuous lessons capture** item. The item must be a numbered entry in the list with the exact text: `Lessons are automatically logged to \`lessons.md\` after every user correction and every agent mistake discovered during execution — without being asked.` If it is absent, add it before proceeding.
 
 If `lessons.md` is missing, invoke `skill:sdlc-lessons-learned` in
 `init <topic>` mode now — do not skip it.
@@ -189,11 +192,11 @@ Use this table shape (without DoD):
 ```markdown
 ### Batch N - <description>
 
-| #      | Item              | File/Area                 | Status |
-| ------ | ----------------- | ------------------------- | ------ |
-| 1      | `Work item`       | `src/app/path/or/feature` | ⬜     |
-| 2      | `Work item`       | `src/app/path/or/feature` | ⬜     |
-| Thomas | Verify this batch | `skill:sdlc-thomas` (if available) | ⛾  |
+| #      | Item              | File/Area                          | Status |
+| ------ | ----------------- | ---------------------------------- | ------ |
+| 1      | `Work item`       | `src/app/path/or/feature`          | ⬜     |
+| 2      | `Work item`       | `src/app/path/or/feature`          | ⬜     |
+| Thomas | Verify this batch | `skill:sdlc-thomas` (if available) | ⛾      |
 
 **Verify:** `<command>` -> `<command>` -> check <routes/tests/scenarios>
 **Thomas Gate (if available):** After the `Verify` command passes, dispatch `skill:sdlc-thomas` as a subagent to execute every check in this batch's `Verify` line itself and confirm witnessed passing output. Thomas will also verify that all tracking-list rows for this batch are marked ✅ in `plan.md`. Mark the Thomas row ✅ only after Thomas issues an **APPROVED** verdict. If Thomas returns **NOT APPROVED**, the batch is not complete.
@@ -204,12 +207,12 @@ Use this table shape **when a DoD was provided**:
 ```markdown
 ### Batch N - <description>
 
-| #      | Item              | File/Area                    | Status |
-| ------ | ----------------- | ---------------------------- | ------ |
-| 1      | `Work item`       | `src/app/path/or/feature`    | ⬜     |
-| 2      | `Work item`       | `src/app/path/or/feature`    | ⬜     |
-| DoD    | Validate batch    | DoD / validation script      | ⬜     |
-| Thomas | Verify this batch | `skill:sdlc-thomas` (if available) | ⛾     |
+| #      | Item              | File/Area                          | Status |
+| ------ | ----------------- | ---------------------------------- | ------ |
+| 1      | `Work item`       | `src/app/path/or/feature`          | ⬜     |
+| 2      | `Work item`       | `src/app/path/or/feature`          | ⬜     |
+| DoD    | Validate batch    | DoD / validation script            | ⬜     |
+| Thomas | Verify this batch | `skill:sdlc-thomas` (if available) | ⛾      |
 
 **Verify:** `<command>` -> `<command>` -> check <routes/tests/scenarios>
 **DoD Gate:** Invoke `skill:<dod-skill-name>` (or run the inline DoD criteria) against this batch's output using a validation subagent. This step is **mandatory and cannot be skipped**. Mark the DoD row ✅ only after the subagent confirms all criteria pass. If any criterion fails, fix the failure, log the correction in `lessons.md`, and re-run the gate before proceeding to the next batch.
@@ -247,8 +250,8 @@ Rules for this skill:
   the per-plan file owned by `skill:sdlc-lessons-learned` does **not**
   replace it. This one is scoped to the plan's execution; the team-level
   one persists across plans.
-- **User corrections are logged automatically.** Any time the user corrects the agent's approach, output, or reasoning during a session, the executor must immediately invoke `skill:sdlc-lessons-learned` in `append` mode — without being asked. The entry must describe what was wrong and what the correct approach is.
-- **Agent mistakes are logged automatically.** Any time the agent detects it has made an error (wrong file, wrong logic, wrong assumption), it must fix the error first, then immediately invoke `skill:sdlc-lessons-learned` in `append` mode to record what went wrong and how it was corrected. This is not optional and must not be deferred to the end of the session.
+- **User corrections are logged automatically.** Any time the user corrects the agent's approach, output, or reasoning during a session, the executor must immediately — without being asked — capture the lesson: invoke `skill:sdlc-lessons-learned` in `append` mode if the skill is available; otherwise write the entry directly to `lessons.md`. The entry must describe what was wrong and what the correct approach is. Capturing the lesson is mandatory regardless of whether the skill is available.
+- **Agent mistakes are logged automatically.** Any time the agent detects it has made an error (wrong file, wrong logic, wrong assumption), it must fix the error first, then immediately capture the lesson: invoke `skill:sdlc-lessons-learned` in `append` mode if the skill is available; otherwise write the entry directly to `lessons.md`. This is not optional and must not be deferred to the end of the session.
 
 ---
 
@@ -268,9 +271,10 @@ Follow this flow every time the skill is used:
 
 Throughout every execution session that uses this plan:
 
-- **After every user correction:** invoke `skill:sdlc-lessons-learned` in `append` mode immediately. Do not batch corrections to the end of the session.
-- **After every agent mistake caught and corrected:** fix the error first, then invoke `skill:sdlc-lessons-learned` in `append` mode immediately. Do not skip this step.
+- **After every user correction:** if `skill:sdlc-lessons-learned` is available, invoke it in `append` mode immediately. If the skill is not available, write the lesson entry directly to `lessons.md`. Do not batch corrections to the end of the session. Capturing the lesson is mandatory in either case.
+- **After every agent mistake caught and corrected:** fix the error first, then capture the lesson — invoke `skill:sdlc-lessons-learned` in `append` mode if available, or write directly to `lessons.md` if not. Do not skip this step.
 - **After every batch with a DoD Gate:** spawn a validation subagent to run all DoD criteria before advancing. The DoD row in the batch table must be ✅ before the next batch starts.
+- **After every status update to `plan.md`:** immediately re-read the modified section of `plan.md` and confirm the ✅ symbols are present in the file. Do not declare a batch complete until the updated statuses are confirmed in the file. If the write did not land, apply the edit again and re-read before proceeding.
 - **After every batch (if Thomas is enabled):** invoke `skill:sdlc-thomas` as a subagent after the `Verify` step (and after the DoD Gate, if present). Thomas executes every check itself, then verifies that all tracking-list rows for the batch are ✅ in `plan.md`. The Thomas row must be ✅ before the next batch starts.
 - **Final batch — full plan review (if Thomas is enabled):** the last batch in every plan must include a Thomas Gate that covers the entire plan, not just the final batch. Thomas re-runs the full validation suite, reviews every section of `plan.md` to confirm all rows are ✅, and issues a final **APPROVED** or **NOT APPROVED** verdict for the plan as a whole. This is Thomas's end-to-end sign-off. The plan is not complete until this verdict is **APPROVED**.
 

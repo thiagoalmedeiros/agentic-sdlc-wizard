@@ -13,6 +13,7 @@ const {
   installCommand,
   installSkills,
   installInstructions,
+  installRules,
 } = require("../src/commands/install");
 
 let testDir;
@@ -76,8 +77,12 @@ describe("installCommand", () => {
       "sdlc-impl-strategy",
       "sdlc-lessons-learned",
       "sdlc-council-daedalus",
-      "sdlc-council-lucas",
+      "sdlc-council-critic",
       "sdlc-council",
+      "docs-sync",
+      "jira-fetch",
+      "sdlc-thomas",
+      "sdlc-wizard-eval",
     ].sort();
 
     expect(actual).toEqual(expected);
@@ -278,13 +283,13 @@ describe("repository contract", () => {
     );
   });
 
-  test("templates has only skills and instructions directories", () => {
+  test("templates has only skills, instructions, and rules directories", () => {
     const entries = fs
       .readdirSync(path.join(repoRoot, "templates"), { withFileTypes: true })
       .filter((e) => e.isDirectory())
       .map((e) => e.name)
       .sort();
-    expect(entries).toEqual(["instructions", "skills"]);
+    expect(entries).toEqual(["instructions", "rules", "skills"]);
   });
 
   test("no agent definition files exist anywhere under templates/", () => {
@@ -373,6 +378,62 @@ describe("repository contract", () => {
     );
     expect(src).not.toMatch(/fantastic4/i);
   });
+
+// ---------------------------------------------------------------------------
+// installRules
+// ---------------------------------------------------------------------------
+
+describe("installRules", () => {
+  test("copies rule files to .claude/rules/ (project scope)", () => {
+    const files = installRules(testDir);
+    expect(files).toContain("auto-lessons-log.md");
+
+    for (const file of files) {
+      expect(
+        fs.existsSync(path.join(testDir, ".claude", "rules", file))
+      ).toBe(true);
+    }
+  });
+
+  test("installs to the global .claude path when scope is global", () => {
+    const globalRules = path.join(os.homedir(), ".claude", "rules");
+    const hadGlobal = fs.existsSync(globalRules);
+
+    try {
+      const files = installRules(testDir, "global");
+      expect(files).toContain("auto-lessons-log.md");
+
+      for (const file of files) {
+        expect(fs.existsSync(path.join(globalRules, file))).toBe(true);
+      }
+    } finally {
+      if (!hadGlobal && fs.existsSync(globalRules)) {
+        fs.rmSync(globalRules, { recursive: true, force: true });
+      }
+    }
+  });
+
+  test("auto-lessons-log.md contains required rule directives", () => {
+    installRules(testDir);
+    const content = fs.readFileSync(
+      path.join(testDir, ".claude", "rules", "auto-lessons-log.md"),
+      "utf-8"
+    );
+    expect(content).toMatch(/skill:sdlc-lessons-learned/);
+    expect(content).toMatch(/append/);
+    expect(content).toMatch(/sessions/);
+  });
+});
+
+describe("installCommand with rules", () => {
+  test("installCommand installs rules file to .claude/rules/", async () => {
+    await installCommand(testDir);
+
+    const rules = path.join(testDir, ".claude", "rules", "auto-lessons-log.md");
+    expect(fs.existsSync(rules)).toBe(true);
+    expect(fs.readFileSync(rules, "utf-8").length).toBeGreaterThan(0);
+  });
+});
 
   test("wizard skill documents dispatch for both Claude Code and Copilot", () => {
     const wizard = fs.readFileSync(
