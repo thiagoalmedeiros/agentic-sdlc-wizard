@@ -38,19 +38,29 @@ Capture the full list of added (`A`), modified (`M`), deleted (`D`), and renamed
 
 ### Step 2 — Classify changes
 
-Scan the diff output and determine which documentation files are potentially affected. Use these heuristics:
+Scan the diff output and determine which documentation files are potentially affected. Apply the heuristics below, grouped by concern:
+
+**Code and infrastructure changes:**
 
 - **Structural changes** (new/removed/renamed directories, apps, libs, services) → `ARCHITECTURE.md` (Components, Directory Structure), `README.md`
 - **Build/task changes** (task definitions, build scripts, orchestration) → `AGENTS.md` (Workflows), `ARCHITECTURE.md` (Orchestration)
 - **Configuration changes** (env vars, settings templates, port numbers) → `ARCHITECTURE.md` (Configuration), `README.md` (Setup)
 - **Infrastructure changes** (Docker files, compose files, CI pipelines, deployment manifests) → `ARCHITECTURE.md` (Infrastructure, Ports, Directory Structure)
 - **Dependency changes** (package manifests, requirements files) → `ARCHITECTURE.md` (Components), `README.md` (Prerequisites)
+
+**Agent customization changes:**
+
 - **Agent/skill/instruction changes** (new or modified customization files in `.claude/` or `.github/instructions/`) → `AGENTS.md`, `CLAUDE.md`
+
+**Cross-cutting changes:**
+
 - **Renamed or moved files** that are referenced in any doc → All four files
-- **Database or migration changes** → `AGENTS.md` (Database Operations)
+
+**Fallthrough:**
+
 - **Other file changes** (not matching above heuristics) → Log and continue; do not force documentation updates for unrelated code changes. Notify the user if significant non-doc files changed but no documentation updates are warranted.
 
-If no changes match any heuristic, report "Docs are up to date" and **stop immediately**. Do not proceed to Step 4 (Detect drift), Step 5 (Present plan), Step 6 (Apply changes), or Step 7 (Verify). The process terminates with this status report to the user.
+If no changes match any heuristic, report "Docs are up to date" and **stop immediately**. Do not proceed to Step 4 (Detect drift), Step 5 (Present plan), Step 6 (Apply changes), or Step 7 (Verify). The process terminates with this single status message to the user. **Do not produce a Sync Summary or Update Plan** — those outputs are only required when changes are applied.
 
 ### Step 3 — Read current docs and changed files
 
