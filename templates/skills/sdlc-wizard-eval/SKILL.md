@@ -36,8 +36,7 @@ Before presenting the menu, silently gather workspace context:
 
 Use this context to pre-fill answers and highlight recommended actions.
 
-If an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), skip the main
-menu and jump directly to **Step 2** for that skill.
+If an argument was passed (e.g. `/sdlc-wizard-eval docs-sync`), perform Step 0 silently, then skip the main menu and jump directly to **Step 2** for that skill.
 
 ---
 
@@ -71,20 +70,17 @@ Ask: **"Enter a number (or the name of a skill to evaluate it end-to-end):"**
 
 ## Step 2 — Execute the chosen action
 
-### Quick Reference: Step 2 Decision Tree
+Handle each option independently. For each option, collect required input, show the exact command, confirm with the user, run it, and report the outcome before returning to the menu.
 
-| Option | Task                | Key Input                 | Output                                    |
-| ------ | ------------------- | ------------------------- | ----------------------------------------- |
-| **1**  | Install Waza        | Confirm                   | Verify with `waza --version`              |
-| **2**  | Scaffold eval suite | Select skill              | Creates `evals/<skill>/eval.yaml` + tasks |
-| **3**  | AI-generate eval    | Select skill + mode       | Preview or apply generated tasks          |
-| **4**  | Run evaluations     | Select eval(s) + executor | Exit code: 0=pass, 1=fail, 2=config error |
-| **5**  | Check readiness     | Select skill              | Compliance score + detailed report        |
-| **6a** | Improve frontmatter | Select skill + target     | Interactive or one-pass report            |
-| **6b** | Score quality       | Select skill + model      | 5-dimension quality breakdown             |
-| **7**  | Coverage report     | Select format             | Grid showing eval coverage by skill       |
-| **8**  | View dashboard      | Provide port/directory    | Browser-based results viewer              |
-| **9**  | CI/CD setup         | Select skills             | GitHub Actions workflow file              |
+**Setup:** Option 1 installs or verifies Waza.
+
+**Authoring:** Options 2 and 3 scaffold or AI-generate eval suites for a selected skill.
+
+**Running and checking:** Options 4, 5, 6a, and 6b run evaluations, check readiness, and score quality.
+
+**Reporting:** Options 7 and 8 display coverage and dashboard views.
+
+**Integration:** Option 9 generates a CI/CD workflow.
 
 ---
 
