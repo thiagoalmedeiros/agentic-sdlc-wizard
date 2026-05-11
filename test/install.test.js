@@ -110,17 +110,12 @@ describe("installCommand", () => {
     expect(content).toContain("Orchestrator");
   });
 
-  test("installs global coding instructions to .claude/instructions/", async () => {
+  test("does NOT install .claude/instructions/ directory", async () => {
     await installCommand(testDir);
 
-    const instr = path.join(
-      testDir,
-      ".claude",
-      "instructions",
-      "global-coding.instructions.md"
-    );
-    expect(fs.existsSync(instr)).toBe(true);
-    expect(fs.readFileSync(instr, "utf-8").length).toBeGreaterThan(0);
+    expect(
+      fs.existsSync(path.join(testDir, ".claude", "instructions"))
+    ).toBe(false);
   });
 
   test("does NOT create any .claude/agents directory", async () => {

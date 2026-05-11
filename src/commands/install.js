@@ -438,7 +438,6 @@ async function installCommand(cwd, scope) {
   writeConfig(cwd, config);
 
   const skills = installSkills(cwd, scope);
-  installInstructions(cwd, scope);
   installRules(cwd, scope);
   const envInstalled = installEnvSample(cwd, scope);
 

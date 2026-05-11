@@ -7,11 +7,13 @@ applyTo: "**"
 
 ## Rule: Always log user corrections automatically
 
-Whenever the user corrects your approach, output, reasoning, or any assumption you made, you **must** immediately invoke `skill:sdlc-lessons-learned` in `append` mode **without being asked**. Do not wait until the end of the session. Do not batch multiple corrections.
+Whenever the user corrects your approach, output, reasoning, or any assumption you made, follow these steps in order:
 
-- Target file: `sessions/<YYYY-MM-DD>.md` inside the nearest `plans/` directory, or `sessions/<YYYY-MM-DD>.md` in the workspace root if no `plans/` directory exists.
-- The entry must describe: what the user corrected, what was wrong, and the rule to prevent recurrence.
-- This is mandatory and cannot be skipped or deferred.
+1. **Detect:** Identify that a user correction has occurred.
+2. **Determine path:** Use `sessions/<YYYY-MM-DD>.md` inside the nearest `plans/` directory, or `sessions/<YYYY-MM-DD>.md` in the workspace root if no `plans/` directory exists.
+3. **Log entry:** Immediately invoke `skill:sdlc-lessons-learned` in `append` mode with an entry describing what the user corrected, what was wrong, and the rule to prevent recurrence.
+
+Do not wait until the end of the session. Do not batch multiple corrections. This is mandatory and cannot be skipped or deferred.
 
 ## Rule: Always log agent-detected mistakes automatically
 
@@ -30,7 +32,7 @@ Log corrections to:
 sessions/YYYY-MM-DD.md
 ```
 
-where `sessions/` is a sibling of the active `lessons.md` file, or a top-level `sessions/` folder if no `lessons.md` is in scope. Create the `sessions/` directory if it does not exist.
+where `sessions/` is the first directory found as a sibling of the active `lessons.md` file, or a top-level `sessions/` folder if no `lessons.md` is in scope. Create the `sessions/` directory if it does not exist. If the `sessions/` directory cannot be created due to a file system error, log an error message to the output pane and notify the user.
 
 ## What to record
 
