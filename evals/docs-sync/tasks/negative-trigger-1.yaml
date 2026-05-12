@@ -1,13 +1,26 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: docs-sync-negative-google-docs
+name: Adversarial negative — Google Docs to Dropbox
+description: >
+  Adversarial negative. Syncing Google Docs to Dropbox is unrelated to code
+  documentation and must NOT trigger docs-sync.
 tags:
-- negative-trigger
+  - negative-trigger
+  - adversarial
 inputs:
-  prompt: Tell me a short joke about coffee.
+  prompt: "Sync my Google Docs to Dropbox."
 expected:
   should_trigger: false
-  behavior:
-    forbidden_tools:
-    - create_file
-    - replace_string_in_file
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-git-diff
+    type: text
+    config:
+      not_contains:
+        - git diff
+        - origin/main
+        - AGENTS.md
+        - ARCHITECTURE.md

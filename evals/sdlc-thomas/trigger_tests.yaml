@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-thomas
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-thomas to validate that the payment module is working before we merge."
+    confidence: high
+  - prompt: "Run Thomas to personally verify every check passes on the login feature."
+    confidence: high
+  - prompt: "I need sdlc-thomas to sign off on the release — run all verifications first-hand."
+    confidence: high
+  - prompt: "Thomas should witness the passing test output before we mark this feature done."
+    confidence: medium
+  - prompt: "Validate this PR using the Thomas skill — no assumptions, run the checks."
+    confidence: medium
+  - prompt: "Use the validation skill to pressure-test the claim that our migration is complete."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "Who was Thomas Aquinas and what did he write about?"
+    confidence: high
+  - prompt: "Tell me about Thomas Edison's most important inventions."
+    confidence: high
+  - prompt: "The code looks fine, no need to verify anything."
+    confidence: high
+  - prompt: "Use skill:sdlc-council-sherlock to find the bug in this test."
+    confidence: medium
+  - prompt: "Run skill:sdlc-council-critic to challenge this claim."
+    confidence: medium
+  - prompt: "Use skill:sdlc-impl-strategy to plan the next feature."
+    confidence: medium

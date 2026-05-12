@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/task.schema.json
+name: auto-generated-test
+inputs:
+  prompt: Read README.md and append a single blank line to it.
+id: auto-generated-test
+graders:
+  - name: tools-check
+    type: tool_constraint
+    config:
+      expect_tools:
+        - tool: view
+          path_pattern: /tmp/waza-1651746390/README\.md
+        - tool: glob
+          path_pattern: /tmp/waza-1651746390
+        - tool: glob
+          path_pattern: /tmp/waza-1651746390
+  - name: check-response
+    type: text
+    config:
+      contains_cs:
+        - Reading README.md to confirm its contents before appending a single blank line to the end (keeps file integrity and avoids accidental truncation). Running a read of the file now. I'll then append the blank line in a follow-up step.Searching the workspace for any README files to locate the correct path before editing.Couldn't find README.md in the repository root or subdirectories. Would you like to create a new README.md (blank file with a single trailing newline) or provide the correct path to the existing file?

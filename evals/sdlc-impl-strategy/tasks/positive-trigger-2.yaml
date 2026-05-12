@@ -1,14 +1,44 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: impl-strategy-plan-rate-limiter
+name: Plan rate limiter middleware
+description: >
+  Trigger sdlc-impl-strategy to plan a rate limiter feature. Checks action
+  sequence: skill invocation leads to file creation.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-b
+  - file-producer
 inputs:
-  prompt: migrations
+  prompt: >
+    Use skill:sdlc-impl-strategy to plan adding rate limiting middleware to the
+    Express app in this project. Plan folder: plans/rate-limiter. Auto-detect
+    validation commands and skip interactive questions.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - manage_todo_list
-    - vscode_askQuestions
-    - create_file
+graders:
+  - name: plan-file-exists
+    type: file
+    config:
+      must_exist:
+        - plans/rate-limiter/plan.md
+        - plans/rate-limiter/lessons.md
+      content_patterns:
+        - path: plans/rate-limiter/plan.md
+          must_match:
+            - "(?m)^### Section 1 - What We Are Doing"
+            - "(?m)^### Section 3 - Tracking List"
+            - "(?m)\\*\\*Verify:\\*\\*"
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-impl-strategy
+        - type: file_created
+          path_pattern: "plans/rate-limiter/plan\.md"
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

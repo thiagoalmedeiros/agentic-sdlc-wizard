@@ -1,0 +1,13 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Trigger sdlc-council-critic to pressure-test a decision.
+tags:
+  - positive-trigger
+inputs:
+  prompt: I need sdlc-council-critic to challenge our assumption that TypeScript is the right language for this new CLI project.
+expected:
+  should_trigger: true
+  behavior:
+    forbidden_tools:
+      - create
+      - bash

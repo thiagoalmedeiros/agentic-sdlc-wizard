@@ -1,0 +1,31 @@
+id: daedalus-holdout-negative-mythology
+name: Hold-out adversarial negative — Daedalus mythology
+description: >
+  Hold-out negative. A question about the mythological Daedalus must NOT
+  trigger sdlc-council-daedalus.
+tags:
+  - negative-trigger
+  - holdout
+  - adversarial
+inputs:
+  prompt: "Explain the myth of Daedalus and why he created the labyrinth."
+expected:
+  should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-plan-file
+    type: file
+    config:
+      must_not_exist:
+        - plans/labyrinth/plan.md
+  - name: no-sdlc-language
+    type: text
+    config:
+      not_contains:
+        - section 1
+        - implementation plan
+        - batches

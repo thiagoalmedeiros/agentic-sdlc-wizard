@@ -1,12 +1,38 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: graphify-setup-configure-index
+name: Configure knowledge graph for repo navigation
+description: >
+  Trigger sdlc-graphify-setup via a natural-language prompt about knowledge
+  graph navigation. Verifies skill is invoked and bash is called.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-d
+  - graphify
 inputs:
-  prompt: I need assistance with sdlc graphify setup-related work
+  prompt: >
+    Configure the knowledge graph so the AI agent can navigate this repo.
+    Use skill:sdlc-graphify-setup and index all files under src/.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-graphify-setup
+      mode: any_order
+      allow_extra: true
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-graphify-setup
+        - type: tool_called
+          tool: bash
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

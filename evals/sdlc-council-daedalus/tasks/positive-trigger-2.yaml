@@ -1,13 +1,45 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: daedalus-decompose-notification-service
+name: Decompose notification service
+description: >
+  Trigger sdlc-council-daedalus to break down a notification service into
+  dependency-ordered batches. Checks action sequence: codebase exploration
+  precedes plan file creation.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-b
+  - architecture
 inputs:
-  prompt: I need assistance with sdlc council daedalus-related work
+  prompt: >
+    Use skill:sdlc-council-daedalus to produce an architecture specification
+    and actionable implementation plan for a notification service in this
+    project. Plan folder: plans/notification-service. Include file paths and
+    dependency-ordered batches.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - read_file
-    - semantic_search
+graders:
+  - name: plan-file-exists
+    type: file
+    config:
+      must_exist:
+        - plans/notification-service/plan.md
+        - plans/notification-service/lessons.md
+      content_patterns:
+        - path: plans/notification-service/plan.md
+          must_match:
+            - "(?m)^### Section 3 - Tracking List"
+            - "(?m)\\|\\s+#\\s+\\|\\s+Item"
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-council-daedalus
+        - type: file_created
+          path_pattern: "plans/notification-service/plan\.md"
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

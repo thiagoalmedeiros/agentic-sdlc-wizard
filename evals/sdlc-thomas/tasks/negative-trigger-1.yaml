@@ -1,12 +1,30 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: thomas-negative-aquinas
+name: Adversarial negative — Thomas Aquinas
+description: >
+  Adversarial negative. A question about Thomas Aquinas must NOT trigger
+  sdlc-thomas.
 tags:
-- negative-trigger
+  - negative-trigger
+  - adversarial
 inputs:
-  prompt: Tell me a short joke about coffee.
+  prompt: "Who was Thomas Aquinas and what were his main philosophical contributions?"
 expected:
   should_trigger: false
-  behavior:
-    forbidden_tools:
-    - run_in_terminal
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-validation-run
+    type: behavior
+    config:
+      forbidden_tools:
+        - bash
+  - name: no-validation-language
+    type: text
+    config:
+      not_contains:
+        - test result
+        - validate
+        - production-ready

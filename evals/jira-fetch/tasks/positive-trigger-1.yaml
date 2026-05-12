@@ -1,12 +1,33 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: jira-fetch-ticket-url
+name: Fetch Jira ticket by URL
+description: >
+  Trigger jira-fetch with a full Jira URL. Verifies the skill is invoked and
+  uses bash to call the Jira REST API.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-e
+  - api-fetch
 inputs:
-  prompt: Use jira-fetch to help me complete this task
+  prompt: >
+    Use skill:jira-fetch to fetch the Jira ticket at
+    https://myteam.atlassian.net/browse/PROJ-42 and save the details.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - jira-fetch
+      mode: any_order
+      allow_extra: false
+  - name: uses-api
+    type: behavior
+    config:
+      required_tools:
+        - bash
+  - name: mentions-key
+    type: text
+    config:
+      contains:
+        - PROJ-42

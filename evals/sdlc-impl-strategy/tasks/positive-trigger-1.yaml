@@ -1,14 +1,47 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: impl-strategy-plan-health-endpoint
+name: Plan /health endpoint
+description: >
+  Trigger sdlc-impl-strategy to create a structured plan for adding a /health
+  endpoint. Verifies plan.md + lessons.md are produced with correct structure.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-b
+  - file-producer
 inputs:
-  prompt: planning refactors
+  prompt: >
+    Use skill:sdlc-impl-strategy to create an implementation plan for adding a
+    /health endpoint to this Node.js project. The plan folder should be named
+    plans/health-endpoint. Skip interactive questions and auto-detect the
+    validation commands.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - manage_todo_list
-    - vscode_askQuestions
-    - create_file
+graders:
+  - name: plan-file-exists
+    type: file
+    config:
+      must_exist:
+        - plans/health-endpoint/plan.md
+        - plans/health-endpoint/lessons.md
+      content_patterns:
+        - path: plans/health-endpoint/plan.md
+          must_match:
+            - "(?m)^### Section 1 - What We Are Doing"
+            - "(?m)^### Section 2 - How We Are Doing It"
+            - "(?m)^### Section 3 - Tracking List"
+            - "lessons\.md"
+  - name: skill-chain
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-impl-strategy
+        - sdlc-lessons-learned
+      mode: in_order
+      allow_extra: true
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40
+      forbidden_tools:
+        - bash

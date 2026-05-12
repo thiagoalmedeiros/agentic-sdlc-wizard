@@ -1,13 +1,40 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: council-orchestrate-api-gateway
+name: Orchestrate API gateway planning
+description: >
+  Trigger sdlc-council to coordinate a pre-implementation debate and planning
+  for an API gateway. Checks the council invokes sdlc-strategy-debate.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-a
+  - orchestrator
 inputs:
-  prompt: managing batches
+  prompt: >
+    Use skill:sdlc-council to run the full planning workflow for adding an
+    API gateway to this project. Topic: api-gateway. Run the debate first,
+    then produce the plan. Stop before implementing.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - manage_todo_list
-    - read_file
+graders:
+  - name: skill-chain
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-council
+        - sdlc-strategy-debate
+      mode: in_order
+      allow_extra: true
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-council
+        - type: file_created
+          path_pattern: "plans/api-gateway/"
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 300000
+      max_duration_ms: 600000
+      max_tool_calls: 80

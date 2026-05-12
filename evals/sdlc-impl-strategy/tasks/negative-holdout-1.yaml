@@ -1,0 +1,31 @@
+id: impl-strategy-holdout-negative-military
+name: Hold-out adversarial negative — military strategy
+description: >
+  Hold-out negative. A question about military strategy must NOT trigger
+  sdlc-impl-strategy.
+tags:
+  - negative-trigger
+  - holdout
+  - adversarial
+inputs:
+  prompt: "What were Napoleon's key military strategies that led to his early victories?"
+expected:
+  should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-plan-file
+    type: file
+    config:
+      must_not_exist:
+        - plans/napoleon/plan.md
+  - name: no-sdlc-language
+    type: text
+    config:
+      not_contains:
+        - section 1
+        - tracking list
+        - implementation steps

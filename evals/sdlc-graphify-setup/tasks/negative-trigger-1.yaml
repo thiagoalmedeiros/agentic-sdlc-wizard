@@ -1,9 +1,25 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: graphify-negative-matplotlib
+name: Adversarial negative — bar graph in matplotlib
+description: >
+  Adversarial negative. A question about plotting bar graphs in matplotlib
+  must NOT trigger sdlc-graphify-setup.
 tags:
   - negative-trigger
+  - adversarial
 inputs:
-  prompt: "Tell me a short joke about coffee."
+  prompt: "How do I plot a bar graph in matplotlib?"
 expected:
   should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-graphify-language
+    type: text
+    config:
+      not_contains:
+        - graphify
+        - knowledge graph
+        - index

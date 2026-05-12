@@ -1,13 +1,13 @@
-name: sdlc-council-lucas-eval
-description: Auto-generated eval for sdlc-council-lucas.
-skill: sdlc-council-lucas
+name: sdlc-council-critic-eval
+description: Eval suite for sdlc-council-critic — contrarian reviewer and blind-spot detector.
+skill: sdlc-council-critic
 version: "1.0"
 config:
   trials_per_task: 1
   timeout_seconds: 300
   parallel: false
   executor: copilot-sdk
-  model: gpt-4o-mini
+  model: gpt-5-mini
 metrics:
   - name: task_completion
     weight: 0.7
@@ -21,6 +21,8 @@ graders:
   - type: behavior
     name: token-budget
     config:
-      max_tokens: 2000000
+      max_tokens: 60000
+      max_duration_ms: 180000
+      max_tool_calls: 15
 tasks:
   - "tasks/*.yaml"

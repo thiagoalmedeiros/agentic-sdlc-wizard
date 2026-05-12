@@ -1,12 +1,30 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: council-negative-dnd-campaign
+name: Adversarial negative — D&D mage council
+description: >
+  Adversarial negative. A request about a D&D council of mages must NOT
+  trigger sdlc-council. Verifies the skill declines fantasy world-building queries.
 tags:
-- negative-trigger
+  - negative-trigger
+  - adversarial
 inputs:
-  prompt: direct code execution without planning
+  prompt: "Tell me how a council of mages would design dragons in a D&D campaign."
 expected:
   should_trigger: false
-  behavior:
-    forbidden_tools:
-    - create_file
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-plan-file
+    type: file
+    config:
+      must_not_exist:
+        - plans/dragons/plan.md
+  - name: no-sdlc-language
+    type: text
+    config:
+      not_contains:
+        - tracking list
+        - implementation plan
+        - section 1

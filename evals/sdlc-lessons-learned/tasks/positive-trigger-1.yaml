@@ -1,12 +1,43 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: lessons-learned-append-entry
+name: Append a lessons entry
+description: >
+  Trigger sdlc-lessons-learned to append a lesson entry. Verifies that the
+  file has a correctly formatted entry with all four required fields.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-e
+  - log-file
 inputs:
-  prompt: initializing
+  prompt: >
+    Use skill:sdlc-lessons-learned to append a lesson to plans/test-project/lessons.md.
+    The lesson: we forgot to validate the JWT expiry before calling downstream APIs,
+    causing intermittent 401 errors in production. Short title: JWT expiry not validated.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - create_file
+graders:
+  - name: lessons-file-entry
+    type: file
+    config:
+      must_exist:
+        - plans/test-project/lessons.md
+      content_patterns:
+        - path: plans/test-project/lessons.md
+          must_match:
+            - "(?m)^### \\[\\d{4}-\\d{2}-\\d{2}\\] —"
+            - "(?m)^\\*\\*Context:\\*\\*"
+            - "(?m)^\\*\\*Mistake:\\*\\*"
+            - "(?m)^\\*\\*Rule:\\*\\*"
+            - "(?m)^\\*\\*Applies to:\\*\\*"
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-lessons-learned
+      mode: any_order
+      allow_extra: false
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 60000
+      max_duration_ms: 180000
+      max_tool_calls: 15

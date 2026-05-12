@@ -1,12 +1,34 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: graphify-setup-install
+name: Install and configure graphify for codebase navigation
+description: >
+  Trigger sdlc-graphify-setup to install graphify and index this codebase.
+  Verifies that bash is invoked for installation.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-d
+  - graphify
 inputs:
-  prompt: Use sdlc-graphify-setup to help me complete this task
+  prompt: >
+    Use skill:sdlc-graphify-setup to install and configure graphify so the
+    AI agent can navigate this codebase via a knowledge graph.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-graphify-setup
+      mode: any_order
+      allow_extra: true
+  - name: runs-install
+    type: behavior
+    config:
+      required_tools:
+        - bash
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

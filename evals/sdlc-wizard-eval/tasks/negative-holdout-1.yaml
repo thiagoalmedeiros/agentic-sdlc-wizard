@@ -1,0 +1,31 @@
+id: wizard-eval-holdout-negative-school-evaluation
+name: Hold-out adversarial negative — school evaluation rubric
+description: >
+  Hold-out negative. A request about school evaluation rubrics must NOT trigger
+  sdlc-wizard-eval.
+tags:
+  - negative-trigger
+  - holdout
+  - adversarial
+inputs:
+  prompt: "Create a rubric for evaluating student essays in a high school English class."
+expected:
+  should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-waza-run
+    type: behavior
+    config:
+      forbidden_tools:
+        - bash
+  - name: no-eval-language
+    type: text
+    config:
+      not_contains:
+        - waza
+        - eval.yaml
+        - SKILL.md

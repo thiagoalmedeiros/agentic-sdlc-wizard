@@ -1,12 +1,33 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: wizard-eval-run-skill-eval
+name: Evaluate sdlc-impl-strategy skill with Waza
+description: >
+  Trigger sdlc-wizard-eval to run the waza eval for sdlc-impl-strategy.
+  Checks that waza is invoked via bash and that eval output is reviewed.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-a
+  - waza-eval
 inputs:
-  prompt: evaluating existing SKILL.md files with Waza
+  prompt: >
+    Use skill:sdlc-wizard-eval to run the Waza eval for the sdlc-impl-strategy
+    skill in this project. Show me the results.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-wizard-eval
+      mode: any_order
+      allow_extra: true
+  - name: waza-run
+    type: behavior
+    config:
+      required_tools:
+        - bash
+  - name: mentions-waza
+    type: text
+    config:
+      contains:
+        - waza

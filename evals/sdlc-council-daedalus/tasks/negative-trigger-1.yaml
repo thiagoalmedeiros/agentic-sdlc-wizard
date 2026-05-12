@@ -1,9 +1,31 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: daedalus-negative-greek-myth
+name: Adversarial negative — Greek myth of Daedalus
+description: >
+  Adversarial negative. A request about the Greek myth must NOT trigger
+  sdlc-council-daedalus. Verifies the skill correctly declines mythology queries.
 tags:
   - negative-trigger
+  - adversarial
 inputs:
-  prompt: "Tell me a short joke about coffee."
+  prompt: "Summarize the Greek myth of Daedalus and Icarus."
 expected:
   should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-plan-file
+    type: file
+    config:
+      must_not_exist:
+        - plans/daedalus/plan.md
+  - name: no-sdlc-language
+    type: text
+    config:
+      not_contains:
+        - tracking list
+        - implementation plan
+        - section 1
+        - section 2

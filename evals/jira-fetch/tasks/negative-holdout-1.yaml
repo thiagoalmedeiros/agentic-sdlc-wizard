@@ -1,0 +1,31 @@
+id: jira-holdout-negative-workout-tracking
+name: Hold-out adversarial negative — workout tracking app
+description: >
+  Hold-out negative. A request to build a workout tracking app must NOT trigger
+  jira-fetch.
+tags:
+  - negative-trigger
+  - holdout
+  - adversarial
+inputs:
+  prompt: "Build me a workout tracking app that logs reps and sets."
+expected:
+  should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-api-call
+    type: behavior
+    config:
+      forbidden_tools:
+        - bash
+  - name: no-jira-language
+    type: text
+    config:
+      not_contains:
+        - Jira
+        - PROJ-
+        - ticket

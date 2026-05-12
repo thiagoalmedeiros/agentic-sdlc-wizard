@@ -1,12 +1,44 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: thomas-validate-install-command
+name: Validate install command works correctly
+description: >
+  Trigger sdlc-thomas to validate that the install command works.
+  Verifies thomas actually runs checks instead of assuming.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-c
+  - validation
 inputs:
-  prompt: Use sdlc-thomas to help me complete this task
+  prompt: >
+    Use skill:sdlc-thomas to validate that the install command in this project
+    works correctly. Run the tests, execute the command, and report exactly
+    what you observed. Do not assume anything passes without running it.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-thomas
+      mode: any_order
+      allow_extra: true
+  - name: runs-checks
+    type: behavior
+    config:
+      required_tools:
+        - bash
+  - name: observed-output
+    type: text
+    config:
+      contains_any:
+        - observed
+        - passed
+        - failed
+        - verified
+        - output
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 60000
+      max_duration_ms: 180000
+      max_tool_calls: 15

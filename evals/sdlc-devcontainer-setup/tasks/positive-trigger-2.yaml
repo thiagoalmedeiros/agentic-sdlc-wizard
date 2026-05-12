@@ -1,13 +1,41 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: devcontainer-setup-with-postgres
+name: Set up devcontainer with PostgreSQL service
+description: >
+  Trigger sdlc-devcontainer-setup to create devcontainer files with a PostgreSQL
+  service. Verifies docker-compose.yml has services section.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-d
+  - devcontainer
 inputs:
-  prompt: I need assistance with sdlc devcontainer setup-related work
+  prompt: >
+    Use skill:sdlc-devcontainer-setup to set up a .devcontainer for this
+    Node.js project that includes a PostgreSQL service. Create all three
+    devcontainer files.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - create_file
-    - run_in_terminal
+graders:
+  - name: compose-has-services
+    type: file
+    config:
+      must_exist:
+        - .devcontainer/docker-compose.yml
+      content_patterns:
+        - path: .devcontainer/docker-compose.yml
+          must_match:
+            - "(?m)^services:"
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-devcontainer-setup
+        - type: file_created
+          path_pattern: ".devcontainer/devcontainer\.json"
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

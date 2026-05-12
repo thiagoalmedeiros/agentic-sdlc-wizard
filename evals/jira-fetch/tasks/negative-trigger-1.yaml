@@ -1,12 +1,30 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: jira-fetch-negative-etymology
+name: Adversarial negative — etymology of jira
+description: >
+  Adversarial negative. A question about the etymology of the word 'jira'
+  must NOT trigger jira-fetch. No API calls should be made.
 tags:
-- negative-trigger
+  - negative-trigger
+  - adversarial
 inputs:
-  prompt: Tell me a short joke about coffee.
+  prompt: "What's the etymology of the word 'jira'?"
 expected:
   should_trigger: false
-  behavior:
-    forbidden_tools:
-    - run_in_terminal
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-api-call
+    type: behavior
+    config:
+      forbidden_tools:
+        - bash
+  - name: no-jira-api
+    type: text
+    config:
+      not_contains:
+        - atlassian.net
+        - rest/api
+        - JIRA_API_TOKEN

@@ -1,13 +1,45 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: daedalus-decompose-oauth-login
+name: Decompose OAuth2 login feature
+description: >
+  Trigger sdlc-council-daedalus to decompose an OAuth2 login feature into an
+  actionable plan. Verifies that plan.md + lessons.md are created with correct
+  structure, and that sdlc-impl-strategy is invoked.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-b
+  - architecture
 inputs:
-  prompt: Use sdlc-council-daedalus to help me complete this task
+  prompt: >
+    Use skill:sdlc-council-daedalus to decompose the feature of adding OAuth2
+    login to this Node.js project. The plan folder should be named
+    plans/oauth-login. Produce a plan with specific file paths and function
+    signatures. Skip interactive questions.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - read_file
-    - semantic_search
+graders:
+  - name: plan-file-exists
+    type: file
+    config:
+      must_exist:
+        - plans/oauth-login/plan.md
+        - plans/oauth-login/lessons.md
+      content_patterns:
+        - path: plans/oauth-login/plan.md
+          must_match:
+            - "(?m)^### Section 1 - What We Are Doing"
+            - "(?m)^### Section 2 - How We Are Doing It"
+            - "(?m)^### Section 3 - Tracking List"
+  - name: skill-chain
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-council-daedalus
+        - sdlc-impl-strategy
+      mode: in_order
+      allow_extra: true
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

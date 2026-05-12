@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-strategy-debate
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-strategy-debate to debate the pros and cons of migrating to microservices."
+    confidence: high
+  - prompt: "Run a strategy debate on whether to use TypeScript or Go for the new service."
+    confidence: high
+  - prompt: "Pre-implementation debate: should we use GraphQL or REST for the new API?"
+    confidence: high
+  - prompt: "Dispatch Daedalus, Hephaestus, and Critic to debate the database choice before we plan."
+    confidence: medium
+  - prompt: "Multi-agent debate on whether to adopt Kubernetes now or wait."
+    confidence: medium
+  - prompt: "Before we plan this refactor, run the strategy debate skill to stress-test the approach."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "Help me prepare for a high-school debate team on AI ethics."
+    confidence: high
+  - prompt: "What are the rules for competitive parliamentary debate?"
+    confidence: high
+  - prompt: "Debate this with me: is pineapple a valid pizza topping?"
+    confidence: high
+  - prompt: "Use skill:sdlc-council to run the full workflow for this feature."
+    confidence: medium
+  - prompt: "Run skill:sdlc-impl-strategy to create the implementation plan."
+    confidence: medium
+  - prompt: "Use skill:sdlc-council-critic to review this decision."
+    confidence: medium

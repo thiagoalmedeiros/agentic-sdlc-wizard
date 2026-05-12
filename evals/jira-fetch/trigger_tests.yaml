@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: jira-fetch
+
+should_trigger_prompts:
+  - prompt: "Use skill:jira-fetch to get the details of https://mycompany.atlassian.net/browse/PROJ-123."
+    confidence: high
+  - prompt: "Fetch the Jira ticket PROJ-456 and save the description and comments to a markdown file."
+    confidence: high
+  - prompt: "I need the full details of MYTEAM-789 — use jira-fetch to pull it down."
+    confidence: high
+  - prompt: "Get the subtasks and linked issues for BACKLOG-42 from Jira."
+    confidence: medium
+  - prompt: "Pull the Jira issue https://jira.company.com/browse/DEV-100 and show me its description."
+    confidence: medium
+  - prompt: "Fetch ticket OPS-55 from our Jira instance."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "What's the etymology of the word 'jira'?"
+    confidence: high
+  - prompt: "Fetch me a coffee."
+    confidence: high
+  - prompt: "What project management tools are alternatives to Jira?"
+    confidence: high
+  - prompt: "Use skill:docs-sync to update the documentation for this change."
+    confidence: medium
+  - prompt: "Run skill:sdlc-impl-strategy to plan this feature."
+    confidence: medium
+  - prompt: "Use skill:sdlc-lessons-learned to log what we learned."
+    confidence: medium

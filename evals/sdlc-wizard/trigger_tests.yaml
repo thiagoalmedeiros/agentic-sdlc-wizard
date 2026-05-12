@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-wizard
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-wizard to set up the development environment for this project."
+    confidence: high
+  - prompt: "Run the SDLC wizard to configure DevContainer, Graphify, and implementation plan."
+    confidence: high
+  - prompt: "Initial project setup — use the wizard to walk through all the SDLC capabilities."
+    confidence: high
+  - prompt: "Audit the existing SDLC configuration using the wizard skill."
+    confidence: medium
+  - prompt: "Add new SDLC capabilities to this project using the setup wizard."
+    confidence: medium
+  - prompt: "Use sdlc-wizard to check what's configured and what's missing in .wizard.json."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "Write a children's story about a wizard who loses his hat."
+    confidence: high
+  - prompt: "What class should I play in Dungeons and Dragons — wizard or sorcerer?"
+    confidence: high
+  - prompt: "How do I use the Windows setup wizard for installing software?"
+    confidence: high
+  - prompt: "Use skill:sdlc-devcontainer-setup to configure the dev container."
+    confidence: medium
+  - prompt: "Run skill:sdlc-graphify-setup to install graphify."
+    confidence: medium
+  - prompt: "Use skill:sdlc-wizard-eval to evaluate the existing skills."
+    confidence: medium

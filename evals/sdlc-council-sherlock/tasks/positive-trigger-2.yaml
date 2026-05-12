@@ -1,13 +1,44 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: sherlock-debug-cli-error
+name: Debug TypeError in CLI module
+description: >
+  Trigger sdlc-council-sherlock to investigate a runtime error in src/cli.js.
+  Verifies it reads files and proposes a specific fix.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-c
+  - debugging
 inputs:
-  prompt: I need assistance with sdlc council sherlock-related work
+  prompt: >
+    There is a TypeError: Cannot read properties of undefined in src/cli.js
+    when running the CLI. Use skill:sdlc-council-sherlock to locate the bug,
+    understand the context, and apply the minimal fix.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
-    - read_file
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-council-sherlock
+      mode: any_order
+      allow_extra: true
+  - name: reads-source
+    type: behavior
+    config:
+      required_tools:
+        - view
+  - name: prompt-quality
+    type: prompt
+    config:
+      prompt: >
+        The agent was asked to debug a TypeError in src/cli.js using sherlock.
+        Did the agent: (1) read source files to locate the issue, (2) identify
+        a specific line or variable as the root cause, and (3) propose or apply
+        a concrete fix? Score 1 if all three, 0 otherwise.
+      threshold: 0.7
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 60000
+      max_duration_ms: 180000
+      max_tool_calls: 15

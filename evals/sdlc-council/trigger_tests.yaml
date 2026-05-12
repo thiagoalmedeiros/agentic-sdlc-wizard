@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-council
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-council to implement a user authentication feature."
+    confidence: high
+  - prompt: "Run the full sdlc-council workflow to plan and build an API rate limiter."
+    confidence: high
+  - prompt: "I need the council to coordinate planning and implementation for a CI/CD pipeline."
+    confidence: high
+  - prompt: "Kick off the multi-agent council workflow for adding a payment module."
+    confidence: medium
+  - prompt: "Debate and plan the migration from REST to GraphQL using the council."
+    confidence: medium
+  - prompt: "Have the agents work together through all phases to deliver a caching layer."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "Tell me how a council of mages would design dragons in a D&D campaign."
+    confidence: high
+  - prompt: "What is a town council and how does it function?"
+    confidence: high
+  - prompt: "Give me a quick code review of this function."
+    confidence: high
+  - prompt: "Use skill:sdlc-impl-strategy to plan a health endpoint."
+    confidence: medium
+  - prompt: "Use skill:sdlc-strategy-debate to argue the pros/cons of microservices."
+    confidence: medium
+  - prompt: "Run skill:sdlc-council-daedalus to produce an architecture breakdown."
+    confidence: medium

@@ -1,0 +1,13 @@
+id: positive-trigger-001
+name: Positive Trigger 1
+description: Trigger sdlc-council-critic to review a proposal.
+tags:
+  - positive-trigger
+inputs:
+  prompt: Use skill:sdlc-council-critic to review this proposal — I want to migrate our monolith to microservices by splitting every function into its own service.
+expected:
+  should_trigger: true
+  behavior:
+    forbidden_tools:
+      - create
+      - bash

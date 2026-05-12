@@ -1,12 +1,36 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: jira-fetch-ticket-key
+name: Fetch Jira ticket by bare key
+description: >
+  Trigger jira-fetch with a bare issue key. Checks skill invocation and
+  that credential lookup is attempted before API call.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-e
+  - api-fetch
 inputs:
-  prompt: I need assistance with jira fetch-related work
+  prompt: >
+    Use skill:jira-fetch to fetch ticket BACKLOG-7 and save its details.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - jira-fetch
+      mode: any_order
+      allow_extra: false
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: jira-fetch
+        - type: tool_called
+          tool: bash
+  - name: mentions-key
+    type: text
+    config:
+      contains:
+        - BACKLOG-7

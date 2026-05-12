@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-council-sherlock
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-council-sherlock to diagnose why the auth middleware is throwing 401 errors."
+    confidence: high
+  - prompt: "Run Sherlock to fix the failing test in test/auth.test.js."
+    confidence: high
+  - prompt: "The CI pipeline is red — use the debugging skill to find and fix the root cause."
+    confidence: high
+  - prompt: "Sherlock should investigate this runtime error: TypeError: Cannot read property 'id' of undefined."
+    confidence: medium
+  - prompt: "Debug the memory leak in the WebSocket handler using the Sherlock skill."
+    confidence: medium
+  - prompt: "Use Sherlock to diagnose why the build is failing with ECONNREFUSED on port 5432."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "Recommend a Sherlock Holmes novel for a flight."
+    confidence: high
+  - prompt: "Tell me about the BBC TV series Sherlock."
+    confidence: high
+  - prompt: "How would a detective approach solving a logic puzzle?"
+    confidence: high
+  - prompt: "Use skill:sdlc-council-critic to review this implementation."
+    confidence: medium
+  - prompt: "Run skill:sdlc-thomas to validate that this feature is working."
+    confidence: medium
+  - prompt: "Use skill:sdlc-council-hephaestus to implement the login feature."
+    confidence: medium

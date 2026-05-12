@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-lessons-learned
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-lessons-learned to log the mistake I just made with the database migration."
+    confidence: high
+  - prompt: "Append a lessons-learned entry about why the Redis cache caused memory pressure."
+    confidence: high
+  - prompt: "Initialize the lessons.md file for this project and log our first discovered pattern."
+    confidence: high
+  - prompt: "Log what we learned from the failed deploy to the lessons file."
+    confidence: medium
+  - prompt: "Record the non-obvious pattern we found about race conditions in the lessons log."
+    confidence: medium
+  - prompt: "Update lessons.md with the mistake we made about not validating input at the boundary."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "What lessons did humanity learn from the 2008 financial crisis?"
+    confidence: high
+  - prompt: "List three life lessons from the book Atomic Habits."
+    confidence: high
+  - prompt: "What do you learn in a first-year computer science course?"
+    confidence: high
+  - prompt: "Use skill:sdlc-impl-strategy to create a plan for this feature."
+    confidence: medium
+  - prompt: "Run skill:sdlc-council to plan and implement the new API."
+    confidence: medium
+  - prompt: "Use skill:docs-sync to update the documentation after this change."
+    confidence: medium

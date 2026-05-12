@@ -1,26 +1,30 @@
 name: sdlc-strategy-debate-eval
-description: Auto-generated eval for sdlc-strategy-debate.
+description: >-
+  Eval suite for sdlc-strategy-debate — pre-implementation multi-skill debate.
+  Archetype A: skill_invocation + file grader (debate.md) + behavior budgets.
 skill: sdlc-strategy-debate
 version: "1.0"
 config:
   trials_per_task: 1
-  timeout_seconds: 300
+  timeout_seconds: 600
   parallel: false
   executor: copilot-sdk
-  model: gpt-4o-mini
+  model: gpt-5-mini
 metrics:
   - name: task_completion
     weight: 0.7
     threshold: 0.8
-    description: Did the skill complete trigger and anti-trigger checks?
+    description: Did the debate skill produce debate.md with correct sections?
   - name: efficiency
     weight: 0.3
     threshold: 0.7
-    description: Did the skill stay within behavior limits?
+    description: Did the skill stay within archetype-A behavior limits?
 graders:
   - type: behavior
-    name: token-budget
+    name: archetype-a-budget
     config:
-      max_tokens: 2000000
+      max_tokens: 300000
+      max_duration_ms: 600000
+      max_tool_calls: 80
 tasks:
   - "tasks/*.yaml"

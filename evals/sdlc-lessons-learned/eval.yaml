@@ -1,5 +1,7 @@
 name: sdlc-lessons-learned-eval
-description: Auto-generated eval for sdlc-lessons-learned.
+description: >-
+  Eval suite for sdlc-lessons-learned — lessons log skill.
+  Archetype E: file content_patterns + action_sequence + behavior budgets.
 skill: sdlc-lessons-learned
 version: "1.0"
 config:
@@ -7,20 +9,22 @@ config:
   timeout_seconds: 300
   parallel: false
   executor: copilot-sdk
-  model: gpt-4o-mini
+  model: gpt-5-mini
 metrics:
   - name: task_completion
     weight: 0.7
     threshold: 0.8
-    description: Did the skill complete trigger and anti-trigger checks?
+    description: Did the skill produce a correctly formatted lessons.md?
   - name: efficiency
     weight: 0.3
     threshold: 0.7
-    description: Did the skill stay within behavior limits?
+    description: Did the skill stay within archetype-E behavior limits?
 graders:
   - type: behavior
-    name: token-budget
+    name: archetype-e-budget
     config:
-      max_tokens: 2000000
+      max_tokens: 60000
+      max_duration_ms: 180000
+      max_tool_calls: 15
 tasks:
   - "tasks/*.yaml"

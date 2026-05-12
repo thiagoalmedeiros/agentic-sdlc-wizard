@@ -1,12 +1,38 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: sdlc-wizard-audit-config
+name: Audit existing SDLC configuration
+description: >
+  Trigger sdlc-wizard to audit the existing SDLC configuration and report
+  what capabilities are configured and what's missing.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-a
+  - wizard
 inputs:
-  prompt: adding new SDLC capabilities
+  prompt: >
+    Use skill:sdlc-wizard to audit the existing SDLC setup for this project.
+    Check .wizard.json and report which capabilities are configured.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - vscode_askQuestions
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-wizard
+      mode: any_order
+      allow_extra: true
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-wizard
+        - type: tool_called
+          tool: view
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 300000
+      max_duration_ms: 600000
+      max_tool_calls: 80

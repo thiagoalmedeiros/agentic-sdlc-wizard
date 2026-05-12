@@ -1,9 +1,29 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: devcontainer-negative-shipping-container
+name: Adversarial negative — shipping container vs freight car
+description: >
+  Adversarial negative. A question about shipping containers must NOT trigger
+  sdlc-devcontainer-setup.
 tags:
   - negative-trigger
+  - adversarial
 inputs:
-  prompt: "Tell me a short joke about coffee."
+  prompt: "Explain the difference between a shipping container and a freight car."
 expected:
   should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-devcontainer-files
+    type: file
+    config:
+      must_not_exist:
+        - .devcontainer/devcontainer.json
+  - name: no-docker-language
+    type: text
+    config:
+      not_contains:
+        - devcontainer.json
+        - docker-compose

@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-impl-strategy
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-impl-strategy to create an implementation plan for adding a /health endpoint."
+    confidence: high
+  - prompt: "Run sdlc-impl-strategy to plan the migration from MySQL to PostgreSQL."
+    confidence: high
+  - prompt: "I need a structured plan with tracking list for refactoring the auth module."
+    confidence: high
+  - prompt: "Create an implementation plan for building the notification service."
+    confidence: medium
+  - prompt: "Plan the technical steps for extracting the billing module into a microservice."
+    confidence: medium
+  - prompt: "Use the strategy skill to plan our database schema migration."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "Plan my weekend trip to Kyoto."
+    confidence: high
+  - prompt: "What's the best chess opening against the Sicilian?"
+    confidence: high
+  - prompt: "Give me a quick summary of what this function does."
+    confidence: high
+  - prompt: "Use skill:sdlc-council to run the full agent workflow."
+    confidence: medium
+  - prompt: "Use skill:sdlc-strategy-debate to debate whether to use microservices."
+    confidence: medium
+  - prompt: "Run skill:sdlc-council-daedalus to decompose this feature."
+    confidence: medium

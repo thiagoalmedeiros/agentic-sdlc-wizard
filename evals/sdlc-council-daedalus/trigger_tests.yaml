@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-council-daedalus
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-council-daedalus to decompose the feature: adding OAuth2 login."
+    confidence: high
+  - prompt: "Run Daedalus to produce a concrete implementation plan for a notification service."
+    confidence: high
+  - prompt: "I need the architecture and spec for splitting the billing module out of the monolith."
+    confidence: high
+  - prompt: "Have Daedalus break down the steps for migrating from PostgreSQL to MongoDB."
+    confidence: medium
+  - prompt: "Create an actionable plan with file paths and function signatures for a new API gateway."
+    confidence: medium
+  - prompt: "Use the Daedalus skill to explore the codebase and produce implementation batches."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "Summarize the Greek myth of Daedalus and Icarus."
+    confidence: high
+  - prompt: "Who was Daedalus in ancient Greek mythology?"
+    confidence: high
+  - prompt: "Design a maze puzzle for a video game level."
+    confidence: high
+  - prompt: "Use skill:sdlc-impl-strategy to write a plan for the health endpoint."
+    confidence: medium
+  - prompt: "Run skill:sdlc-council-hephaestus to write the code for login."
+    confidence: medium
+  - prompt: "Use skill:sdlc-council-critic to challenge this architecture decision."
+    confidence: medium

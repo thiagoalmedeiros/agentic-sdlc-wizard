@@ -1,13 +1,43 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: hephaestus-write-test-file
+name: Write test for install command
+description: >
+  Trigger sdlc-council-hephaestus to write a test file. Checks that the
+  test file is created with proper test structure via file + action_sequence graders.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-b
+  - implementation
 inputs:
-  prompt: I need assistance with sdlc council hephaestus-related work
+  prompt: >
+    Use skill:sdlc-council-hephaestus to write a unit test for the
+    install command in src/commands/install.js. Create the test file at
+    test/install.unit.test.js with at least one describe block and one it
+    block. Read the existing install.js first to understand what to test.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - read_file
-    - replace_string_in_file
+graders:
+  - name: test-file-created
+    type: file
+    config:
+      must_exist:
+        - test/install.unit.test.js
+      content_patterns:
+        - path: test/install.unit.test.js
+          must_match:
+            - "(?i)describe\\s*\\("
+            - "(?i)(it|test)\\s*\\("
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-council-hephaestus
+        - type: file_created
+          path_pattern: "test/install\.unit\.test\.js"
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

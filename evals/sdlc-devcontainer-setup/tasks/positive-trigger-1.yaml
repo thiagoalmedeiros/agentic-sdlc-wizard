@@ -1,13 +1,44 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: devcontainer-setup-nodejs
+name: Set up devcontainer for Node.js project
+description: >
+  Trigger sdlc-devcontainer-setup to create all three devcontainer files.
+  Verifies .devcontainer/ files are created with correct structure.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-d
+  - devcontainer
 inputs:
-  prompt: Use sdlc-devcontainer-setup to help me complete this task
+  prompt: >
+    Use skill:sdlc-devcontainer-setup to configure a development container for
+    this Node.js project. Create all required .devcontainer files.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - create_file
-    - run_in_terminal
+graders:
+  - name: devcontainer-files-exist
+    type: file
+    config:
+      must_exist:
+        - .devcontainer/devcontainer.json
+        - .devcontainer/docker-compose.yml
+        - .devcontainer/Dockerfile
+      content_patterns:
+        - path: .devcontainer/devcontainer.json
+          must_match:
+            - '"name"'
+            - "dockerComposeFile"
+        - path: .devcontainer/Dockerfile
+          must_match:
+            - "(?m)^FROM\\s"
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-devcontainer-setup
+      mode: any_order
+      allow_extra: true
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40

@@ -1,12 +1,41 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: strategy-debate-language-choice
+name: Debate TypeScript vs Go for CLI
+description: >
+  Trigger sdlc-strategy-debate to compare language options before implementation.
+  Checks that debate.md has synthesis section and leads to sdlc-impl-strategy.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-a
+  - debate
 inputs:
-  prompt: refactors
+  prompt: >
+    Use skill:sdlc-strategy-debate to debate whether to use TypeScript or Go
+    for the new CLI service in this project. Topic: cli-language-choice.
+    Produce the full debate but stop before writing plan.md.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - runSubagent
+graders:
+  - name: debate-file-exists
+    type: file
+    config:
+      must_exist:
+        - plans/cli-language-choice/debate.md
+      content_patterns:
+        - path: plans/cli-language-choice/debate.md
+          must_match:
+            - "(?i)(synthesis|recommendation|decision)"
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: sdlc-strategy-debate
+        - type: file_created
+          path_pattern: "plans/cli-language-choice/debate\.md"
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 300000
+      max_duration_ms: 600000
+      max_tool_calls: 80

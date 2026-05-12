@@ -1,26 +1,30 @@
 name: sdlc-devcontainer-setup-eval
-description: Auto-generated eval for sdlc-devcontainer-setup.
+description: >-
+  Eval suite for sdlc-devcontainer-setup — dev container setup wizard.
+  Archetype D: file.must_exist + content_patterns + behavior budgets.
 skill: sdlc-devcontainer-setup
 version: "1.0"
 config:
   trials_per_task: 1
-  timeout_seconds: 300
+  timeout_seconds: 600
   parallel: false
   executor: copilot-sdk
-  model: gpt-4o-mini
+  model: gpt-5-mini
 metrics:
   - name: task_completion
     weight: 0.7
     threshold: 0.8
-    description: Did the skill complete trigger and anti-trigger checks?
+    description: Did the skill produce the required devcontainer files?
   - name: efficiency
     weight: 0.3
     threshold: 0.7
-    description: Did the skill stay within behavior limits?
+    description: Did the skill stay within archetype-D behavior limits?
 graders:
   - type: behavior
-    name: token-budget
+    name: archetype-d-budget
     config:
-      max_tokens: 2000000
+      max_tokens: 200000
+      max_duration_ms: 300000
+      max_tool_calls: 40
 tasks:
   - "tasks/*.yaml"

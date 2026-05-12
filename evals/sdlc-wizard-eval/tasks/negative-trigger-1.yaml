@@ -1,9 +1,30 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: wizard-eval-negative-fan-fiction
+name: Adversarial negative — Harry Potter fan fiction
+description: >
+  Adversarial negative. A request to evaluate Harry Potter fan fiction must
+  NOT trigger sdlc-wizard-eval.
 tags:
   - negative-trigger
+  - adversarial
 inputs:
-  prompt: "creating new skills from scratch"
+  prompt: "Evaluate this Harry Potter fan fiction."
 expected:
   should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-waza-run
+    type: behavior
+    config:
+      forbidden_tools:
+        - bash
+  - name: no-eval-language
+    type: text
+    config:
+      not_contains:
+        - waza
+        - eval suite
+        - SKILL.md

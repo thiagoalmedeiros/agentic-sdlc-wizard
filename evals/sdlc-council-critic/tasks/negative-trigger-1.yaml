@@ -1,0 +1,9 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Adversarial negative — should NOT trigger sdlc-council-critic.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Write a movie critic's review of Blade Runner 2049."
+expected:
+  should_trigger: false

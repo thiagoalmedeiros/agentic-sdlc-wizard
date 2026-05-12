@@ -1,9 +1,30 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: sdlc-wizard-negative-childrens-story
+name: Adversarial negative — wizard children's story
+description: >
+  Adversarial negative. A children's story about a wizard must NOT trigger
+  sdlc-wizard. Verifies the skill declines creative writing requests.
 tags:
   - negative-trigger
+  - adversarial
 inputs:
-  prompt: "direct code changes"
+  prompt: "Write a children's story about a wizard who loses his hat."
 expected:
   should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-wizard-json
+    type: file
+    config:
+      must_not_exist:
+        - .wizard.json
+  - name: no-sdlc-language
+    type: text
+    config:
+      not_contains:
+        - devcontainer
+        - graphify
+        - sdlc capabilities

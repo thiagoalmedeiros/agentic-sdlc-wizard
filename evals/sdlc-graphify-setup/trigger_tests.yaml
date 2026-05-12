@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/trigger_tests.schema.json
+skill: sdlc-graphify-setup
+
+should_trigger_prompts:
+  - prompt: "Use skill:sdlc-graphify-setup to install graphify for this codebase."
+    confidence: high
+  - prompt: "Configure the knowledge graph so the AI agent can navigate the repo."
+    confidence: high
+  - prompt: "Set up graphify and create the persistent knowledge graph for this project."
+    confidence: high
+  - prompt: "I want the AI assistant to use a graph to understand this codebase — set that up."
+    confidence: medium
+  - prompt: "Install and configure graphify for codebase navigation in this workspace."
+    confidence: medium
+  - prompt: "Run the graphify setup skill to index this repository."
+    confidence: medium
+
+should_not_trigger_prompts:
+  - prompt: "How do I plot a bar graph in matplotlib?"
+    confidence: high
+  - prompt: "What is a graph database and how does Neo4j work?"
+    confidence: high
+  - prompt: "Explain graph theory and Dijkstra's algorithm."
+    confidence: high
+  - prompt: "Use skill:sdlc-devcontainer-setup to configure the dev environment."
+    confidence: medium
+  - prompt: "Run skill:sdlc-wizard to set up this project."
+    confidence: medium
+  - prompt: "Use skill:sdlc-impl-strategy to plan adding graph support to the API."
+    confidence: medium

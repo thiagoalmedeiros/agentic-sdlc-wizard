@@ -1,13 +1,43 @@
-id: positive-trigger-001
-name: Positive Trigger 1
-description: Auto-generated positive-trigger task.
+id: sherlock-debug-install-test
+name: Debug failing install test
+description: >
+  Trigger sdlc-council-sherlock to diagnose and fix a failing test in
+  test/install.test.js. Verifies sherlock runs tests and reads source.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-c
+  - debugging
 inputs:
-  prompt: Use sdlc-council-sherlock to help me complete this task
+  prompt: >
+    Use skill:sdlc-council-sherlock to diagnose and fix the failing unit test
+    in test/install.test.js. Run the tests, find the root cause, and apply
+    a fix. Record your findings.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - run_in_terminal
-    - read_file
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - sdlc-council-sherlock
+      mode: any_order
+      allow_extra: true
+  - name: runs-tests
+    type: behavior
+    config:
+      required_tools:
+        - bash
+  - name: diagnostic-output
+    type: text
+    config:
+      contains_any:
+        - root cause
+        - diagnos
+        - failing
+        - fix
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 60000
+      max_duration_ms: 180000
+      max_tool_calls: 15

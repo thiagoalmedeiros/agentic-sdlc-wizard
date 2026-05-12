@@ -1,13 +1,32 @@
-id: positive-trigger-002
-name: Positive Trigger 2
-description: Auto-generated positive-trigger task.
+id: docs-sync-update-agents-md
+name: Sync AGENTS.md after workflow change
+description: >
+  Trigger docs-sync to update AGENTS.md after a workflow change.
+  Checks that a diff is collected and the doc file is reviewed.
 tags:
-- positive-trigger
+  - positive-trigger
+  - archetype-e
+  - doc-file
 inputs:
-  prompt: I need assistance with docs sync-related work
+  prompt: >
+    Use skill:docs-sync to ensure AGENTS.md reflects the current agent workflows.
+    The sdlc-council workflow was recently updated. Check for drift and apply
+    any necessary updates.
 expected:
   should_trigger: true
-  behavior:
-    required_tools:
-    - read_file
-    - run_in_terminal
+graders:
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - type: skill_invoked
+          skill: docs-sync
+        - type: tool_called
+          tool: bash
+  - name: behavior-budget
+    type: behavior
+    config:
+      max_tokens: 60000
+      max_duration_ms: 180000
+      max_tool_calls: 15

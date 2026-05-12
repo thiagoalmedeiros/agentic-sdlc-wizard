@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/task.schema.json
+name: auto-generated-test
+inputs:
+  prompt: Create a file named hello.txt containing the word hello.
+id: auto-generated-test
+graders:
+  - name: tools-check
+    type: tool_constraint
+    config:
+      expect_tools:
+        - tool: create
+          path_pattern: /tmp/waza-4217373174/hello\.txt
+  - name: check-response
+    type: text
+    config:
+      contains_cs:
+        - |-
+          Creating the file at the workspace root so it's available in the current session: creating /tmp/waza-4217373174/hello.txt with the content "hello". Running the create action now.
+
+          I'll report intent and create the file in a single parallel tool call.File created: /tmp/waza-4217373174/hello.txt

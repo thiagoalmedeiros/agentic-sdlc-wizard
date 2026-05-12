@@ -1,9 +1,30 @@
-id: negative-trigger-001
-name: Negative Trigger 1
-description: Auto-generated negative-trigger task.
+id: sherlock-negative-holmes-novel
+name: Adversarial negative — Sherlock Holmes novel
+description: >
+  Adversarial negative. A question about Sherlock Holmes fiction must NOT
+  trigger sdlc-council-sherlock.
 tags:
   - negative-trigger
+  - adversarial
 inputs:
-  prompt: "Tell me a short joke about coffee."
+  prompt: "Recommend a Sherlock Holmes novel to read this weekend."
 expected:
   should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-debug-run
+    type: behavior
+    config:
+      forbidden_tools:
+        - bash
+  - name: no-debug-language
+    type: text
+    config:
+      not_contains:
+        - root cause
+        - stack trace
+        - test failure

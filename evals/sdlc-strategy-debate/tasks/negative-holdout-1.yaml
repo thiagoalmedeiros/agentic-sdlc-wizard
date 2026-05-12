@@ -1,0 +1,31 @@
+id: strategy-debate-holdout-presidential-debate
+name: Hold-out adversarial negative — US Presidential debate
+description: >
+  Hold-out negative. A question about US presidential debates must NOT trigger
+  sdlc-strategy-debate.
+tags:
+  - negative-trigger
+  - holdout
+  - adversarial
+inputs:
+  prompt: "What topics are typically covered in a US presidential debate?"
+expected:
+  should_trigger: false
+graders:
+  - name: no-skill-invoked
+    type: behavior
+    config:
+      forbidden_tools:
+        - skill
+  - name: no-debate-file
+    type: file
+    config:
+      must_not_exist:
+        - plans/presidential/debate.md
+  - name: no-sdlc-language
+    type: text
+    config:
+      not_contains:
+        - daedalus
+        - hephaestus
+        - implementation plan
