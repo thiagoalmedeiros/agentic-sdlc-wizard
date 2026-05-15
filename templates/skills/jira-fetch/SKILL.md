@@ -19,19 +19,9 @@ uses-skills:
 
 ## Procedure
 
-### Step 1 — Parse the Issue Key
+> ⚠️ **CREDENTIAL GUARD — run this before anything else**: Your very first action MUST be to run the `_load_jira_env` bash function from Step 1. If it exits non-zero, **stop immediately** and tell the user which variables are missing (`JIRA_DOMAIN`, `JIRA_EMAIL`, `JIRA_API_TOKEN`) and that they must create `.claude/.env` from `.claude/.env.sample`. **Never assume credentials exist. Never skip the credential check.**
 
-Extract the issue key from the user input. The input can be:
-
-- **Full URL**: `https://<domain>.atlassian.net/browse/PROJ-123` → extract `PROJ-123`
-- **Board URL**: `https://<domain>.atlassian.net/jira/software/projects/PROJ/boards/1?selectedIssue=PROJ-123` → extract `PROJ-123`
-- **Bare key**: `PROJ-123` → use as-is
-
-The issue key pattern is: `[A-Z][A-Z0-9]+-\d+`
-
-If the input does not contain a recognizable issue key, ask the user for clarification.
-
-### Step 2 — Load Credentials
+### Step 1 — Load Credentials
 
 Search for `JIRA_DOMAIN`, `JIRA_EMAIL`, and `JIRA_API_TOKEN` by checking the following locations **in order**, stopping at the first file that contains all three variables:
 
@@ -54,14 +44,41 @@ _load_jira_env() {
   if [[ -n "$JIRA_DOMAIN" && -n "$JIRA_EMAIL" && -n "$JIRA_API_TOKEN" ]]; then
     return 0
   fi
-  echo "ERROR: JIRA_DOMAIN, JIRA_EMAIL, and JIRA_API_TOKEN not found." >&2
-  echo "Create .claude/.env from .claude/.env.sample and set the values." >&2
+  echo "❌ JIRA credentials not configured. The following variables are required but were not found:"
+  echo "- JIRA_DOMAIN"
+  echo "- JIRA_EMAIL"
+  echo "- JIRA_API_TOKEN"
+  echo ""
+  echo "Copy \`.claude/.env.sample\` to \`.claude/.env\` and populate these values, then try again."
   return 1
 }
 _load_jira_env || exit 1
 ```
 
-If the function exits with an error, stop and instruct the user to create `.claude/.env` from `.claude/.env.sample`.
+If the function exits with an error, **stop immediately** and output this exact message (do not paraphrase or summarize — output it verbatim):
+
+```
+❌ JIRA credentials not configured. The following variables are required but were not found:
+- JIRA_DOMAIN
+- JIRA_EMAIL
+- JIRA_API_TOKEN
+
+Copy `.claude/.env.sample` to `.claude/.env` and populate these values, then try again.
+```
+
+Do not proceed to Step 2.
+
+### Step 2 — Parse the Issue Key
+
+Extract the issue key from the user input. The input can be:
+
+- **Full URL**: `https://<domain>.atlassian.net/browse/PROJ-123` → extract `PROJ-123`
+- **Board URL**: `https://<domain>.atlassian.net/jira/software/projects/PROJ/boards/1?selectedIssue=PROJ-123` → extract `PROJ-123`
+- **Bare key**: `PROJ-123` → use as-is
+
+The issue key pattern is: `[A-Z][A-Z0-9]+-\d+`
+
+If the input does not contain a recognizable issue key, ask the user for clarification.
 
 ### Step 3 — Fetch the Parent Ticket via REST API
 

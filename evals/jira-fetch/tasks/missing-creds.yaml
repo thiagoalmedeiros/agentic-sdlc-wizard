@@ -1,0 +1,41 @@
+id: jira-fetch-missing-creds
+name: Fetch Jira ticket with missing credentials
+description: >
+  The agent is asked to fetch a Jira ticket when no credentials are
+  present in the environment. With the skill loaded, it should follow
+  the skill's procedure: run the credential-check bash script, detect
+  the missing variables, emit structured guidance, and stop without
+  making any API call. Without the skill, none of that happens —
+  the score drop is the signal that the skill has value.
+
+  JIRA_DOMAIN, JIRA_EMAIL, and JIRA_API_TOKEN are absent from all
+  credential locations (.claude/.env, .github/.env, .env, shell env).
+tags:
+  - credential-guard
+inputs:
+  prompt: >
+    Fetch the Jira ticket BACKLOG-7 and save its details to a markdown file.
+expected:
+  should_trigger: true
+graders:
+  - name: credential-check-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - bash
+
+  - name: credential-guidance
+    type: text
+    config:
+      regex_match:
+        - "(JIRA_API_TOKEN|JIRA_DOMAIN|\\.env\\.sample|\\.claude/\\.env)"
+
+  - name: no-api-response-data
+    type: text
+    config:
+      not_contains:
+        - '"summary":'
+        - '"description":'
+        - '"status":'
+        - atlassian.net/rest/api

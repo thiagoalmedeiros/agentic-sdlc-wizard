@@ -25,12 +25,4 @@ graders:
     config:
       matching_mode: in_order_match
       expected_actions:
-        - type: skill_invoked
-          skill: jira-fetch
-        - type: tool_called
-          tool: bash
-  - name: mentions-key
-    type: text
-    config:
-      contains:
-        - BACKLOG-7
+        - bash

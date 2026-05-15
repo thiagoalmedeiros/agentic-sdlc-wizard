@@ -1,0 +1,30 @@
+version: "3"
+
+tasks:
+  eval:skill:
+    desc: Run all jira-fetch evals with the skill loaded
+    cmds:
+      - waza run evals/jira-fetch/eval.yaml -o evals/jira-fetch/results-with-skill.json
+
+  eval:baseline:
+    desc: Run all jira-fetch evals without the skill (unguided baseline)
+    cmds:
+      - waza run evals/jira-fetch/eval.yaml --no-skills -o evals/jira-fetch/results-no-skill.json
+
+  eval:compare:
+    desc: Run both conditions and write comparison report to evals/jira-fetch/ablation-report.md
+    cmds:
+      - cmd: waza run evals/jira-fetch/eval.yaml --tags credential-guard -o evals/jira-fetch/results-with-skill.json
+        ignore_error: true
+      - cmd: waza run evals/jira-fetch/eval.yaml --tags credential-guard --no-skills -o evals/jira-fetch/results-no-skill.json
+        ignore_error: true
+      - python3 scripts/generate_jira_fetch_report.py
+
+  eval:all:
+    desc: Run the full eval cycle — skill, baseline, and comparison report
+    cmds:
+      - cmd: task eval:skill
+        ignore_error: true
+      - cmd: task eval:baseline
+        ignore_error: true
+      - task: eval:compare

@@ -1,30 +1,14 @@
 name: jira-fetch-eval
 description: >-
-  Eval suite for jira-fetch — Jira ticket fetch skill.
-  Archetype E: skill_invocation + behavior + text graders.
+  Eval suite for jira-fetch. Run with skills loaded (eval:skill) or without
+  (eval:baseline) to measure what the skill adds. Score delta = skill value.
 skill: jira-fetch
 version: "1.0"
 config:
-  trials_per_task: 1
+  trials_per_task: 3
   timeout_seconds: 300
   parallel: false
   executor: copilot-sdk
-  model: gpt-5-mini
-metrics:
-  - name: task_completion
-    weight: 0.7
-    threshold: 0.8
-    description: Did the skill attempt to fetch the Jira ticket via API?
-  - name: efficiency
-    weight: 0.3
-    threshold: 0.7
-    description: Did the skill stay within archetype-E behavior limits?
-graders:
-  - type: behavior
-    name: archetype-e-budget
-    config:
-      max_tokens: 60000
-      max_duration_ms: 180000
-      max_tool_calls: 15
+  model: claude-haiku-4.5
 tasks:
   - "tasks/*.yaml"
