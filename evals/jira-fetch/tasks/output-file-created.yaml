@@ -1,0 +1,39 @@
+id: jira-fetch-output-file
+name: Ticket details saved to plans/<KEY>/context.md
+description: >
+  End-to-end happy-path check. The agent fetches BACKLOG-7 (credentials
+  are assumed present via environment) and must save the full ticket details
+  to plans/BACKLOG-7/context.md. Validates that the output file exists and
+  contains the expected ticket fields.
+tags:
+  - positive-trigger
+  - archetype-e
+  - output-file
+inputs:
+  prompt: >
+    Use skill:jira-fetch to fetch ticket BACKLOG-7 and save its details.
+expected:
+  should_trigger: true
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - jira-fetch
+      mode: any_order
+      allow_extra: false
+
+  - name: output-file-exists
+    type: file
+    config:
+      must_exist:
+        - plans/BACKLOG-7/context.md
+
+  - name: output-file-content
+    type: file
+    config:
+      content_patterns:
+        - path: plans/BACKLOG-7/context.md
+          must_match:
+            - "BACKLOG-7"
+            - "##"

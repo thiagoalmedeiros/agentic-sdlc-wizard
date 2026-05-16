@@ -1,0 +1,20 @@
+id: jira-fetch-no-trigger
+name: Do not invoke jira-fetch for unrelated prompt
+description: >
+  A prompt that has nothing to do with Jira tickets. The skill should NOT
+  be invoked. Validates that the trigger boundary is tight and the skill
+  does not fire on general questions about Jira or project management.
+tags:
+  - negative-trigger
+inputs:
+  prompt: >
+    What is Jira and how does it compare to Linear for project management?
+expected:
+  should_trigger: false
+graders:
+  - name: skill-not-invoked
+    type: trigger
+    config:
+      skill_path: jira-fetch
+      mode: negative
+      threshold: 0.6

@@ -1,0 +1,31 @@
+id: jira-fetch-full-url
+name: Fetch Jira ticket by full URL
+description: >
+  Trigger jira-fetch with a full Atlassian browse URL instead of a bare key.
+  Checks that the skill is invoked and that the agent correctly parses the
+  issue key from the URL before attempting the credential check.
+tags:
+  - positive-trigger
+  - archetype-e
+  - url-parse
+inputs:
+  prompt: >
+    Use skill:jira-fetch to fetch https://myorg.atlassian.net/browse/BACKLOG-7
+    and save its details.
+expected:
+  should_trigger: true
+graders:
+  - name: skill-invoked
+    type: skill_invocation
+    config:
+      required_skills:
+        - jira-fetch
+      mode: any_order
+      allow_extra: false
+
+  - name: action-sequence
+    type: action_sequence
+    config:
+      matching_mode: in_order_match
+      expected_actions:
+        - bash
