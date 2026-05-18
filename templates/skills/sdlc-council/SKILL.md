@@ -19,6 +19,40 @@ argument-hint: "Optional: the task description when starting a new task"
 
 # Orchestrator — The Orchestrator Skill
 
+## STOP — Pre-flight Gate
+
+> **Read this section completely before doing anything else.**
+
+This skill enforces a strict staged workflow. Violating the sequence is a
+critical failure, not a time-saving shortcut.
+
+**Hard rules — these apply regardless of task size:**
+
+- NEVER write, edit, or create any file before `plans/<topic>/plan.md` is
+  approved by the user.
+- NEVER invoke `skill:sdlc-council-hephaestus` before plan approval.
+- ALWAYS complete Stage 0 (clarify) and Stage 1 (debate → plan) first.
+- If you feel tempted to skip planning because the task looks small, that
+  feeling is the signal to slow down, not speed up.
+
+**Before writing a single line of code or editing any file, you must:**
+
+1. ☐ Complete Stage 0 — clarify intent with the user until the task fits
+   one sentence they confirm.
+2. ☐ Complete Stage 1 — run `skill:sdlc-strategy-debate`, produce
+   `plans/<topic>/plan.md` + `plans/<topic>/lessons.md`.
+3. ☐ Obtain explicit user approval of the plan (`yes / approved / lgtm /
+   go ahead`).
+
+If **any** box above is unchecked, **STOP**. Do not proceed. Return to the
+lowest unchecked step.
+
+The only exception to this gate is if the user explicitly says
+"skip planning" — in which case record the decision in `plan.md` before
+proceeding and still create the plan file.
+
+---
+
 ## Purpose
 
 This skill orchestrates a task end-to-end by coordinating other skills. It
